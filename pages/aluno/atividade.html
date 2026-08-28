@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Atividade adaptativa da plataforma ROAR.">
+    <title>ROAR | Atividade</title>
+    <link rel="stylesheet" href="../../public/css/base/variables.css">
+    <link rel="stylesheet" href="../../public/css/base/reset.css">
+    <link rel="stylesheet" href="../../public/css/base/typography.css">
+    <link rel="stylesheet" href="../../public/css/base/accessibility.css">
+    <link rel="stylesheet" href="../../public/css/components/feedback.css">
+    <link rel="stylesheet" href="../../public/css/layouts/activity.css">
+</head>
+<body class="activity-page">
+    <header class="activity-header">
+        <a class="activity-back" href="atividades.html" aria-label="Voltar para atividades">←</a>
+        <div class="activity-heading">
+            <h1 id="activity-title">Carregando atividade</h1>
+            <button class="audio-button" id="repeat-instruction" type="button" aria-label="Ouvir instrução novamente">🔊</button>
+            <p id="activity-instruction">Aguarde um momento.</p>
+        </div>
+        <span class="level-badge" id="level-badge">Nível</span>
+    </header>
+
+    <main class="activity-stage" id="activity-stage" aria-live="polite">
+        <div class="activity-loading" id="activity-loading">Preparando sua atividade...</div>
+    </main>
+
+    <footer class="activity-footer">
+        <div class="lex-feedback" aria-live="polite">
+            <img src="../../public/assets/imagens/dinoatividade.png" alt="LEX, mascote da ROAR">
+            <p id="lex-message">Vamos aprender juntos!</p>
+        </div>
+        <div class="activity-progress" aria-label="Progresso da atividade">
+            <span id="progress-label">0 de 0</span>
+            <progress id="activity-progress" value="0" max="1"></progress>
+        </div>
+        <button class="next-button" id="next-button" type="button" disabled>Próximo →</button>
+    </footer>
+
+    <div id="toast-container" class="toast-container"></div>
+    <script type="module" src="../../public/js/pages/aluno/atividade.js"></script>
+</body>
+</html>

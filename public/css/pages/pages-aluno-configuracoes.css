@@ -1,0 +1,148 @@
+/* Estilos exclusivos de configuracoes.html. */
+
+/* Seções de configuração */
+        .config-section { margin-bottom: var(--space-xl); }
+        .config-section-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--c-text);
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-sm);
+            border-bottom: 2px solid var(--c-border);
+        }
+        .config-section-title i {
+            font-size: 1.1rem;
+            color: var(--c-blue-mid);
+        }
+
+        /* Linha de configuração */
+        .config-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            gap: var(--space-lg);
+        }
+        .config-row:last-child { border-bottom: none; }
+        .config-row__left { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+        .config-row__label { font-size: 0.9rem; font-weight: 600; color: var(--c-text); }
+        .config-row__desc  { font-size: 0.78rem; color: var(--c-text-soft); }
+
+        /* Toggle switch */
+        .toggle {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+        .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .toggle__slider {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.15);
+            border-radius: 26px;
+            cursor: pointer;
+            transition: background var(--t-fast);
+        }
+        .toggle__slider::before {
+            content: '';
+            position: absolute;
+            width: 20px; height: 20px;
+            left: 3px; top: 3px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform var(--t-fast);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+        }
+        .toggle input:checked + .toggle__slider { background: var(--c-blue-mid); }
+        .toggle input:checked + .toggle__slider::before { transform: translateX(22px); }
+
+        /* Seletor de tema */
+        .theme-picker {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        .theme-option {
+            width: 40px; height: 40px;
+            border-radius: var(--r-md);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all var(--t-fast);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+        .theme-option:hover { transform: scale(1.08); }
+        .theme-option.active { border-color: var(--c-blue-mid); }
+        .theme-option--light { background: #FFFAFF; box-shadow: var(--shadow-sm); }
+        .theme-option--dark  { background: #191716; color: #fff; }
+
+        /* Seletor de tamanho de fonte */
+        .font-size-picker {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+        }
+        .fs-btn {
+            padding: 6px 14px;
+            border-radius: var(--r-sm);
+            border: 1.5px solid var(--c-border);
+            background: var(--c-secondary);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--t-fast);
+            color: var(--c-text);
+        }
+        .fs-btn.active { background: rgba(133,199,242,0.35); border-color: rgba(133,199,242,0.7); color: var(--c-blue-dark); }
+        .fs-btn:hover { border-color: rgba(133,199,242,0.6); }
+
+        /* Volume slider */
+        .vol-wrap {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        .vol-wrap input[type=range] {
+            -webkit-appearance: none;
+            width: 120px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(0,0,0,0.10);
+            outline: none;
+            cursor: pointer;
+        }
+        .vol-wrap input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: var(--c-blue-mid);
+            cursor: pointer;
+        }
+
+        /* Layout duas colunas */
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-xl);
+        }
+
+        @media (max-width: 768px) {
+            .config-grid { grid-template-columns: 1fr; }
+        }
+
+/* Classes geradas a partir dos antigos estilos inline. */
+.u-pages-aluno-configuracoes-001 { display:flex;align-items:center;gap:var(--space-md); }
+.u-pages-aluno-configuracoes-002 { width:140px;text-align:right; }
+.u-pages-aluno-configuracoes-003 { color:#b07000; }
+.u-pages-aluno-configuracoes-004 { width:130px; }
+.u-pages-aluno-configuracoes-005 { color:var(--c-text-soft);font-size:0.9rem; }
+.u-pages-aluno-configuracoes-006 { font-size:0.82rem; }
+.u-pages-aluno-configuracoes-007 { font-size:1rem; }
+.u-pages-aluno-configuracoes-008 { font-size:1.2rem; }
+.u-pages-aluno-configuracoes-009 { color:#b91c1c; }
+.u-pages-aluno-configuracoes-010 { background:rgba(185,28,28,0.10);color:#b91c1c;border:1.5px solid rgba(185,28,28,0.20); }
+.u-pages-aluno-configuracoes-011 { display:flex;justify-content:flex-end;margin-top:var(--space-md); }

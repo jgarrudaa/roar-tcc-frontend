@@ -1,0 +1,283 @@
+/* Estilos exclusivos de atividades.html. */
+
+/* ── Sidebar professor ── */
+        .sidebar { background: #1e3a5f; border-right-color: rgba(255,255,255,0.10); }
+        .sidebar__logo { filter: brightness(10); }
+        .sidebar__toggle { color: rgba(255,255,255,0.6); }
+        .sidebar__toggle:hover { color: #fff; }
+        .sidebar__link { color: rgba(255,255,255,0.75); }
+        .sidebar__link:hover { background: rgba(255,255,255,0.10); color: #fff; }
+        .sidebar__link.active { background: rgba(133,199,242,0.30); color: #fff; font-weight: 600; }
+        .sidebar__link i { color: inherit; }
+
+        /* ── Filtros ── */
+        .filter-bar {
+            display: flex; align-items: center;
+            gap: var(--space-sm); flex-wrap: wrap;
+            margin-bottom: var(--space-xl);
+        }
+        .filter-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 16px; border-radius: var(--r-full);
+            border: 1.5px solid var(--c-border);
+            background: var(--c-card);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.83rem; font-weight: 600;
+            color: var(--c-text-soft); cursor: pointer;
+            transition: all var(--t-fast); white-space: nowrap;
+        }
+        .filter-chip:hover { border-color: rgba(133,199,242,0.6); color: var(--c-blue-dark); }
+        .filter-chip.active {
+            background: rgba(133,199,242,0.25);
+            border-color: rgba(133,199,242,0.7);
+            color: var(--c-blue-dark);
+        }
+        .search-wrap {
+            flex: 1; position: relative; min-width: 200px;
+        }
+        .search-wrap i {
+            position: absolute; left: 14px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem; color: var(--c-text-soft); pointer-events: none;
+        }
+        .search-wrap input {
+            width: 100%; height: 42px;
+            padding: 0 16px 0 42px;
+            border: 1.5px solid var(--c-border);
+            border-radius: var(--r-full);
+            font-family: 'Poppins', sans-serif; font-size: 0.88rem;
+            color: var(--c-text); background: var(--c-card); outline: none;
+            transition: border-color var(--t-fast), box-shadow var(--t-fast);
+        }
+        .search-wrap input:focus {
+            border-color: rgba(133,199,242,0.8);
+            box-shadow: 0 0 0 3px rgba(133,199,242,0.15);
+        }
+        .search-wrap input::placeholder { color: var(--c-text-soft); }
+
+        /* ── Seção de categoria ── */
+        .cat-section { margin-bottom: var(--space-2xl); }
+        .cat-header {
+            display: flex; align-items: center;
+            gap: var(--space-md); margin-bottom: var(--space-md);
+            cursor: pointer; user-select: none;
+        }
+        .cat-icon {
+            width: 46px; height: 46px; border-radius: var(--r-md);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; flex-shrink: 0;
+        }
+        .cat-icon--blue { background: rgba(133,199,242,0.25); color: var(--c-blue-dark); }
+        .cat-icon--green { background: rgba(68,246,152,0.22); color: #1a7c49; }
+        .cat-icon--purple { background: rgba(168,85,247,0.18); color: #7c3aed; }
+        .cat-icon--orange { background: rgba(245,158,11,0.20); color: #b07000; }
+        .cat-header h2 { flex: 1; font-size: 1rem; font-weight: 700; color: var(--c-text); }
+        .cat-header .toggle-arrow { font-size: 0.9rem; color: var(--c-text-soft); transition: transform var(--t-fast); }
+        .cat-section.collapsed .toggle-arrow { transform: rotate(-90deg); }
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--space-md);
+            transition: all var(--t-med);
+        }
+        .cat-section.collapsed .cat-grid { display: none; }
+
+        /* ── Card de atividade (visão professor) ── */
+        .act-card {
+            background: var(--c-card);
+            border-radius: var(--r-lg);
+            border: 1.5px solid var(--c-border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            display: flex; flex-direction: column;
+            transition: all var(--t-fast);
+        }
+        .act-card:hover { box-shadow: var(--shadow-md); border-color: rgba(133,199,242,0.45); }
+        .act-card__top {
+            display: flex; align-items: flex-start;
+            gap: var(--space-md); padding: var(--space-md);
+        }
+        .act-icon {
+            width: 50px; height: 50px; border-radius: var(--r-md);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; flex-shrink: 0;
+        }
+        .act-icon--blue   { background: rgba(133,199,242,0.25); color: var(--c-blue-dark); }
+        .act-icon--green  { background: rgba(68,246,152,0.22);  color: #1a7c49; }
+        .act-icon--purple { background: rgba(168,85,247,0.18);  color: #7c3aed; }
+        .act-icon--orange { background: rgba(245,158,11,0.20);  color: #b07000; }
+        .act-card__info { flex: 1; min-width: 0; }
+        .act-card__name { font-size: 0.92rem; font-weight: 700; color: var(--c-text); margin-bottom: 2px; }
+        .act-card__meta-row { display: flex; gap: var(--space-sm); align-items: center; flex-wrap: wrap; margin-top: 4px; }
+
+        /* Barra de stats de turma */
+        .act-card__stats {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1px; border-top: 1px solid var(--c-border);
+            background: var(--c-border);
+        }
+        .act-stat {
+            background: var(--c-card);
+            text-align: center; padding: 8px 4px;
+        }
+        .act-stat__val { font-size: 0.9rem; font-weight: 800; color: var(--c-blue-dark); }
+        .act-stat__lbl { font-size: 0.65rem; font-weight: 600; color: var(--c-text-soft); text-transform: uppercase; letter-spacing: 0.04em; }
+
+        /* Botão de acesso ao modal de desbloqueio */
+        .act-card__footer {
+            padding: var(--space-sm) var(--space-md);
+            display: flex; align-items: center; justify-content: space-between;
+            border-top: 1px solid var(--c-border);
+        }
+        .unlock-count {
+            font-size: 0.78rem; color: var(--c-text-soft);
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        /* ── Badges de dificuldade ── */
+        .diff-dot-wrap { display: flex; gap: 3px; align-items: center; }
+        .ddot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-border); }
+        .ddot.on-easy   { background: #44F698; }
+        .ddot.on-medio  { background: #f59e0b; }
+        .ddot.on-dificil{ background: #ef4444; }
+
+        /* ── Modal de desbloqueio ── */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-box {
+            background: var(--c-card); border-radius: var(--r-xl);
+            padding: var(--space-xl); max-width: 680px; width: 94%;
+            max-height: 88vh; overflow-y: auto;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+            transform: translateY(20px); transition: transform 0.3s ease;
+        }
+        .modal-overlay.open .modal-box { transform: translateY(0); }
+        .modal-close {
+            background: none; border: none; cursor: pointer;
+            font-size: 1rem; color: var(--c-text-soft);
+            padding: 4px; border-radius: var(--r-sm);
+            transition: color var(--t-fast);
+        }
+        .modal-close:hover { color: var(--c-text); }
+
+        /* ── Tabela de alunos no modal ── */
+        .aluno-unlock-row {
+            display: flex; align-items: center;
+            gap: var(--space-md); padding: 10px var(--space-md);
+            border-radius: var(--r-md);
+            transition: background var(--t-fast);
+        }
+        .aluno-unlock-row:hover { background: rgba(133,199,242,0.07); }
+        .aluno-unlock-row + .aluno-unlock-row { border-top: 1px solid var(--c-border-subtle); }
+        .aluno-av {
+            width: 36px; height: 36px; border-radius: var(--r-full);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; font-weight: 700; color: #fff; flex-shrink: 0;
+        }
+        .aluno-info { flex: 1; }
+        .aluno-info__name { font-size: 0.85rem; font-weight: 700; color: var(--c-text); }
+        .aluno-info__meta { font-size: 0.73rem; color: var(--c-text-soft); }
+        .aluno-perf {
+            display: flex; gap: var(--space-md); align-items: center;
+            font-size: 0.78rem; font-weight: 700;
+        }
+        .perf-ac { color: #15803d; }
+        .perf-er { color: #b91c1c; }
+        .perf-xp { color: var(--c-blue-dark); }
+
+        /* Toggle switch */
+        .toggle-wrap { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .toggle-switch { position: relative; width: 44px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer; inset: 0;
+            background: var(--c-border); border-radius: 24px;
+            transition: background var(--t-fast);
+        }
+        .toggle-slider::before {
+            content: ''; position: absolute;
+            width: 18px; height: 18px; left: 3px; bottom: 3px;
+            background: #fff; border-radius: 50%;
+            transition: transform var(--t-fast);
+        }
+        .toggle-switch input:checked + .toggle-slider { background: #44F698; }
+        .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+        .toggle-lbl { font-size: 0.72rem; font-weight: 700; color: var(--c-text-soft); min-width: 70px; text-align: right; }
+        .toggle-lbl.on { color: #1a7c49; }
+
+        /* Barra de progresso mini no modal */
+        .mini-prog { width: 70px; height: 5px; background: var(--c-border); border-radius: var(--r-full); overflow: hidden; }
+        .mini-prog-fill { height: 100%; border-radius: var(--r-full); background: var(--c-blue-mid); }
+
+        /* Cabeçalho do modal de atividade */
+        .modal-act-header {
+            display: flex; align-items: center;
+            gap: var(--space-md); margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--c-border);
+        }
+        .modal-act-stats {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-sm); margin-bottom: var(--space-xl);
+        }
+        .mstat {
+            background: rgba(0,0,0,0.03); border-radius: var(--r-md);
+            padding: var(--space-md); text-align: center;
+        }
+        .mstat__val { font-size: 1.3rem; font-weight: 800; color: var(--c-blue-dark); }
+        .mstat__lbl { font-size: 0.68rem; font-weight: 600; color: var(--c-text-soft); text-transform: uppercase; letter-spacing: 0.04em; }
+
+        /* Separador turmas */
+        .turma-sep {
+            font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--c-text-soft);
+            padding: var(--space-sm) 0 4px; margin-top: var(--space-sm);
+        }
+
+        /* Toast */
+        #toast-container { position:fixed;bottom:var(--space-xl);right:var(--space-xl);z-index:9999;display:flex;flex-direction:column;gap:var(--space-sm); }
+
+        @media (max-width: 600px) {
+            .modal-act-stats { grid-template-columns: repeat(2,1fr); }
+            .cat-grid { grid-template-columns: 1fr; }
+        }
+
+/* Classes geradas a partir dos antigos estilos inline. */
+.u-pages-professor-atividades-001 { display:flex;align-items:center;gap:var(--space-md); }
+.u-pages-professor-atividades-002 { color:var(--c-blue-dark); }
+.u-pages-professor-atividades-003 { position:relative; }
+.u-pages-professor-atividades-004 { position:absolute;top:8px;right:8px;width:8px;height:8px;background:#ef4444;border-radius:50%; }
+.u-pages-professor-atividades-005 { background:#1e3a5f;color:#fff; }
+.u-pages-professor-atividades-006 { margin-bottom:var(--space-xl); }
+.u-pages-professor-atividades-007 { display:flex;gap:var(--space-md);flex-wrap:wrap;margin-bottom:var(--space-lg); }
+.u-pages-professor-atividades-008 { padding:9px var(--space-md);border:1.5px solid var(--c-border);border-radius:var(--r-full);font-family:'Poppins',sans-serif;font-size:0.88rem;background:var(--c-card);color:var(--c-text);cursor:pointer; }
+.u-pages-professor-atividades-009 { display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--space-xl); }
+.u-pages-professor-atividades-010 { border:none;margin:0;padding:0; }
+.u-pages-professor-atividades-011 { font-size:1.05rem;font-weight:800;color:var(--c-text); }
+.u-pages-professor-atividades-012 { font-size:0.8rem;color:var(--c-text-soft);margin-top:2px; }
+.u-pages-professor-atividades-013 { display:flex;gap:var(--space-sm);background:rgba(0,0,0,0.04);padding:4px;border-radius:var(--r-md);width:fit-content;margin-bottom:var(--space-lg); }
+.u-pages-professor-atividades-014 { margin-top:var(--space-xl);display:flex;gap:var(--space-md);justify-content:space-between;align-items:center; }
+.u-pages-professor-atividades-015 { margin-right:6px; }
+.u-pages-professor-atividades-016 { text-align:center;padding:var(--space-3xl);color:var(--c-text-soft); }
+.u-pages-professor-atividades-017 { font-size:2rem;display:block;margin-bottom:var(--space-md); }
+.u-pages-professor-atividades-018 { font-size:0.68rem; }
+.u-pages-professor-atividades-019 { display:flex;align-items:center;gap:3px;font-size:0.72rem;color:var(--c-text-soft); }
+.u-pages-professor-atividades-020 { font-size:0.72rem;color:#b07000;font-weight:700;display:flex;align-items:center;gap:3px; }
+.u-pages-professor-atividades-021 { margin-top:8px; }
+.u-pages-professor-atividades-022 { display:flex;justify-content:space-between;font-size:0.7rem;color:var(--c-text-soft);margin-bottom:3px; }
+.u-pages-professor-atividades-023 { font-weight:700; }
+.u-pages-professor-atividades-024 { height:6px; }
+.u-pages-professor-atividades-025 { color:#15803d; }
+.u-pages-professor-atividades-026 { color:#7c3aed; }
+.u-pages-professor-atividades-027 { color:#1a7c49; }
+.u-pages-professor-atividades-028 { margin-right:5px; }
+.u-pages-professor-atividades-029 { color:#b91c1c; }
+.u-pages-professor-atividades-030 { display:flex;align-items:center;gap:6px;margin-top:4px; }
+.u-pages-professor-atividades-031 { font-size:0.7rem;color:var(--c-text-soft); }
+.u-pages-professor-atividades-032 { font-size:0.75rem;color:var(--c-text-soft); }

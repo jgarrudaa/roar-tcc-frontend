@@ -1,0 +1,82 @@
+{
+  "modules": [
+    {
+      "id": "corpo-humano",
+      "title": "Corpo Humano",
+      "titleEn": "Human Body",
+      "status": "active",
+      "items": [
+        { "id": "head", "pt": "cabeça", "en": "HEAD", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/Cabeça.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/Cabeça.png" },
+        { "id": "arm", "pt": "braço", "en": "ARM", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/Braço.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/Braço.png" },
+        { "id": "belly", "pt": "barriga", "en": "BELLY", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/Barriga.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/Barriga.png" },
+        { "id": "leg", "pt": "perna", "en": "LEG", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/Perna.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/Perna.png" },
+        { "id": "foot", "pt": "pé", "en": "FOOT", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/Pé.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/Pé.png" }
+      ],
+      "activities": [
+        { "id": "corpo-humano-1", "stage": 1, "type": "recognize", "status": "active" },
+        { "id": "corpo-humano-2", "stage": 2, "type": "associate", "status": "active" },
+        { "id": "corpo-humano-3", "stage": 3, "type": "validate", "status": "active" }
+      ]
+    },
+    {
+      "id": "animais-fazenda",
+      "title": "Animais da Fazenda",
+      "titleEn": "Farm Animals",
+      "status": "active",
+      "items": [
+        { "id": "cow", "pt": "vaca", "en": "COW", "realImage": "/public/assets/imagens/modulos/fazenda/cow.jpg", "vectorImage": "/public/assets/imagens/modulos/fazenda/cow.jpg" },
+        { "id": "horse", "pt": "cavalo", "en": "HORSE", "realImage": "/public/assets/imagens/modulos/fazenda/horse.jpg", "vectorImage": "/public/assets/imagens/modulos/fazenda/horse.jpg" },
+        { "id": "pig", "pt": "porco", "en": "PIG", "realImage": "/public/assets/imagens/modulos/fazenda/pig.jpg", "vectorImage": "/public/assets/imagens/modulos/fazenda/pig.jpg" },
+        { "id": "duck", "pt": "pato", "en": "DUCK", "realImage": "/public/assets/imagens/modulos/fazenda/duck.jpg", "vectorImage": "/public/assets/imagens/modulos/fazenda/duck.jpg" },
+        { "id": "sheep", "pt": "ovelha", "en": "SHEEP", "realImage": "/public/assets/imagens/modulos/fazenda/sheep.jpg", "vectorImage": "/public/assets/imagens/modulos/fazenda/sheep.jpg" }
+      ],
+      "activities": [
+        { "id": "animais-fazenda-1", "stage": 1, "type": "recognize", "status": "active" },
+        { "id": "animais-fazenda-2", "stage": 2, "type": "associate", "status": "active" },
+        { "id": "animais-fazenda-3", "stage": 3, "type": "validate", "status": "blocked" }
+      ]
+    },
+    {
+      "id": "cores",
+      "title": "Cores",
+      "status": "preparing",
+      "items": [],
+      "activities": []
+    },
+    {
+      "id": "emocoes",
+      "title": "Emoções",
+      "status": "preparing",
+      "items": [],
+      "activities": []
+    },
+    {
+      "id": "comida",
+      "title": "Comida",
+      "status": "preparing",
+      "items": [],
+      "activities": []
+    },
+    {
+      "id": "familia",
+      "title": "Família",
+      "status": "preparing",
+      "items": [],
+      "activities": []
+    },
+    {
+      "id": "casa",
+      "title": "Casa",
+      "status": "preparing",
+      "items": [],
+      "activities": []
+    },
+    {
+      "id": "escola",
+      "title": "Escola",
+      "status": "preparing",
+      "items": [],
+      "activities": []
+    }
+  ]
+}

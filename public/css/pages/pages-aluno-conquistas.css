@@ -1,0 +1,62 @@
+/* Estilos exclusivos de conquistas.html. */
+
+.medals-section { margin-bottom: var(--space-2xl); }
+        .medal-big {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-lg);
+            border-radius: var(--r-lg);
+            border: 1.5px solid var(--c-border);
+            background: var(--c-secondary);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--t-fast);
+        }
+        .medal-big:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .medal-big.locked { opacity: 0.45; filter: grayscale(0.8); cursor: default; }
+        .medal-big.locked:hover { transform: none; box-shadow: var(--shadow-sm); }
+        .medal-big__icon {
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+        }
+        .medal-big__name { font-size: 0.9rem; font-weight: 700; color: var(--c-text); }
+        .medal-big__desc { font-size: 0.76rem; color: var(--c-text-soft); line-height: 1.3; }
+        .medal-big__date { font-size: 0.72rem; color: var(--c-blue-mid); font-weight: 500; }
+
+        .medals-grid-big {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: var(--space-md);
+        }
+
+        /* Mascote comemorando */
+        .congrats-banner {
+            background: rgba(133,199,242,0.18);
+            border: 1.5px solid rgba(133,199,242,0.35);
+            border-radius: var(--r-xl);
+            padding: var(--space-lg) var(--space-xl);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xl);
+            margin-bottom: var(--space-xl);
+        }
+        .congrats-banner img { height: 110px; }
+        .congrats-banner__text h2 { font-size: 1.4rem; font-weight: 800; color: var(--c-blue-dark); margin-bottom: 4px; }
+        .congrats-banner__text p  { font-size: 0.9rem; color: var(--c-text-soft); }
+
+        @media (max-width: 600px) {
+            .congrats-banner { flex-direction: column; text-align: center; }
+            .medals-grid-big { grid-template-columns: repeat(2, 1fr); }
+        }
+
+/* Classes geradas a partir dos antigos estilos inline. */
+.u-pages-aluno-conquistas-001 { display:flex;align-items:center;gap:var(--space-md); }
+.u-pages-aluno-conquistas-002 { display:flex;gap:var(--space-md);margin-top:var(--space-md); }
+.u-pages-aluno-conquistas-003 { padding:var(--space-sm) var(--space-md); }
+.u-pages-aluno-conquistas-004 { background:rgba(0,0,0,0.06);color:var(--c-text-soft); }
+.u-pages-aluno-conquistas-005 { font-size:0.7rem; }

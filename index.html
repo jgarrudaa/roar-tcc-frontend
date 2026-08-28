@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROAR — Inglês adaptativo para estudantes neurodivergentes</title>
+    <meta name="description" content="ROAR é uma plataforma educacional adaptativa de inglês para estudantes neurodivergentes, com triagem e atividades adequadas ao nível de suporte.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="public/js/pages/landing/index-1.js"></script>
+    <link rel="stylesheet" href="public/css/pages/index.css">
+</head>
+<body class="bg-quinary font-poppins text-secondary antialiased">
+
+    <!-- ============================================================
+         NAVBAR
+         ============================================================ -->
+    <nav class="fixed top-0 w-full z-50 bg-quinary/90 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <img src="public/assets/imagens/logo.png" alt="Logo ROAR" class="h-10">
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+                <a href=".#problema" class="text-secondary/70 hover:text-primary transition-colors">O Problema</a>
+                <a href=".#solucao" class="text-secondary/70 hover:text-primary transition-colors">Solução</a>
+                <a href=".#como-funciona" class="text-secondary/70 hover:text-primary transition-colors">Como Funciona</a>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="pages/auth/login-aluno.html" class="text-sm text-secondary/80 border border-secondary/20 px-4 py-2 rounded-lg hover:bg-secondary/10 transition-colors">Sou Aluno</a>
+                <a href="pages/auth/login-professor.html" class="text-sm text-quinary bg-primary px-4 py-2 rounded-lg font-semibold cta-btn">Sou Professor</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================================
+         HERO
+         ============================================================ -->
+    <section class="min-h-screen flex items-center relative overflow-hidden pt-20">
+        <!-- Gradiente de fundo sutil -->
+        <div class="absolute inset-0 bg-gradient-to-br from-quinary via-dark to-quinary"></div>
+        <div class="absolute top-1/4 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-senary/5 rounded-full blur-[100px]"></div>
+
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
+            <div class="fade-up">
+                <span class="inline-block bg-primary/10 text-primary text-xs font-bold px-4 py-1.5 rounded-full mb-6 uppercase tracking-wider">Educação Inclusiva + Tecnologia</span>
+
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
+                    Inglês adaptativo<br>
+                    para <span class="gradient-text">cada mente</span><br>
+                    que aprende diferente.
+                </h1>
+
+                <p class="text-secondary/60 text-lg leading-relaxed mb-8 max-w-lg">
+                    O ROAR é uma plataforma que adapta o ensino de inglês ao perfil de cada aluno com
+                    <strong class="text-secondary/90">perfis neurodivergentes</strong>,
+                    usando triagem inteligente e um motor adaptativo que respeita o ritmo e a forma de cada um aprender.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="pages/auth/login-aluno.html"
+                       class="cta-btn inline-flex items-center justify-center gap-2 bg-primary text-quinary font-bold px-8 py-4 rounded-xl text-lg">
+                        Entrar como Aluno
+                    </a>
+                    <a href="pages/auth/login-professor.html"
+                       class="cta-btn inline-flex items-center justify-center gap-2 border-2 border-senary text-senary font-bold px-8 py-4 rounded-xl text-lg hover:bg-senary hover:text-secondary">
+                        Entrar como Professor
+                    </a>
+                </div>
+            </div>
+
+            <div class="fade-up flex justify-center">
+                <img src="public/assets/imagens/dinooriginal.png" alt="Mascote ROAR" class="w-[320px] md:w-[400px] drop-shadow-[0_20px_40px_rgba(68,246,152,0.15)]">
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO: O PROBLEMA
+         ============================================================ -->
+    <section id="problema" class="py-24 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-dark to-quinary"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 fade-up">
+                <span class="text-primary text-sm font-bold uppercase tracking-wider">O Cenário Atual</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">A crise silenciosa da inclusão</h2>
+                <p class="text-secondary/50 max-w-2xl mx-auto">
+                    Milhões de alunos com TEA estão matriculados na rede de ensino,
+                    mas a maioria das ferramentas de aprendizado ignora suas necessidades específicas.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-8 card-hover fade-up">
+                    <div class="text-5xl font-extrabold text-primary mb-3 stat-glow">1:36</div>
+                    <div class="text-secondary/80 font-semibold mb-2">Prevalência Global</div>
+                    <p class="text-secondary/50 text-sm leading-relaxed">
+                        1 em cada 36 crianças é diagnosticada com TEA (CDC, 2023). No Brasil, são cerca de 6 milhões de pessoas.
+                    </p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-8 card-hover fade-up">
+                    <div class="text-5xl font-extrabold text-tertiary mb-3">85%</div>
+                    <div class="text-secondary/80 font-semibold mb-2">Sem Suporte Adequado</div>
+                    <p class="text-secondary/50 text-sm leading-relaxed">
+                        A grande maioria das plataformas de ensino de idiomas não oferece nenhum tipo de adaptação para perfis neurodivergentes.
+                    </p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-8 card-hover fade-up">
+                    <div class="text-5xl font-extrabold text-senary mb-3">∞</div>
+                    <div class="text-secondary/80 font-semibold mb-2">Potencial Desperdiçado</div>
+                    <p class="text-secondary/50 text-sm leading-relaxed">
+                        Cada aluno com TEA possui um perfil único de aprendizado. Ferramentas genéricas criam barreiras ao invés de pontes.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO: A SOLUÇÃO
+         ============================================================ -->
+    <section id="solucao" class="py-24">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 fade-up">
+                <span class="text-primary text-sm font-bold uppercase tracking-wider">A Solução</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">O que o ROAR faz diferente</h2>
+                <p class="text-secondary/50 max-w-2xl mx-auto">
+                    Três pilares que transformam o aprendizado de inglês em uma experiência respeitosa e eficaz.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Triagem -->
+                <div class="bg-gradient-to-b from-primary/10 to-transparent border border-primary/20 rounded-2xl p-8 card-hover fade-up">
+                    <div class="w-14 h-14 bg-primary/20 rounded-xl flex items-center justify-center mb-5">
+                        <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Triagem Inteligente</h3>
+                    <p class="text-secondary/50 text-sm leading-relaxed">
+                        No cadastro, o professor responde duas perguntas rápidas sobre o perfil do aluno.
+                        O sistema calcula automaticamente o nível de suporte. Depois da triagem, o professor visualiza o resultado, sem alterá-lo manualmente.
+                    </p>
+                </div>
+
+                <!-- Motor Adaptativo -->
+                <div class="bg-gradient-to-b from-senary/10 to-transparent border border-senary/20 rounded-2xl p-8 card-hover fade-up">
+                    <div class="w-14 h-14 bg-senary/20 rounded-xl flex items-center justify-center mb-5">
+                        <svg class="w-7 h-7 text-senary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Motor Adaptativo</h3>
+                    <p class="text-secondary/50 text-sm leading-relaxed">
+                        Cada atividade é renderizada dinamicamente com base no nível do aluno.
+                        Tamanho das hitboxes, tipo de instrução, uso de áudio — tudo se adapta automaticamente.
+                    </p>
+                </div>
+
+                <!-- Game Loop -->
+                <div class="bg-gradient-to-b from-tertiary/10 to-transparent border border-tertiary/20 rounded-2xl p-8 card-hover fade-up">
+                    <div class="w-14 h-14 bg-tertiary/20 rounded-xl flex items-center justify-center mb-5">
+                        <svg class="w-7 h-7 text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Game Loop Confortável</h3>
+                    <p class="text-secondary/50 text-sm leading-relaxed">
+                        Três etapas previsíveis: Reconhecer → Manipular → Validar.
+                        Sem surpresas, sem timers agressivos, sem estímulos excessivos.
+                        Aprendizado seguro e confortável.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SEÇÃO: COMO FUNCIONA (Timeline)
+         ============================================================ -->
+    <section id="como-funciona" class="py-24 bg-dark/50">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="text-center mb-16 fade-up">
+                <span class="text-primary text-sm font-bold uppercase tracking-wider">O Fluxo</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold mt-3 mb-4">Como funciona na prática</h2>
+            </div>
+
+            <div class="space-y-12">
+                <!-- Step 1 -->
+                <div class="flex gap-6 items-start fade-up">
+                    <div class="flex flex-col items-center">
+                        <div class="timeline-dot active"></div>
+                        <div class="w-0.5 h-full bg-primary/20 mt-2"></div>
+                    </div>
+                    <div class="pb-8">
+                        <span class="text-primary text-xs font-bold uppercase">Etapa 1</span>
+                        <h3 class="text-xl font-bold mt-1 mb-2">Cadastro e Triagem</h3>
+                        <p class="text-secondary/50 text-sm leading-relaxed">
+                            O professor cadastra o aluno e responde duas perguntas simples sobre comunicação verbal e nível de leitura.
+                            O sistema calcula automaticamente o nível de suporte TEA (1, 2 ou 3).
+                        </p>
+                    </div>
+                </div>
+                <!-- Step 2 -->
+                <div class="flex gap-6 items-start fade-up">
+                    <div class="flex flex-col items-center">
+                        <div class="timeline-dot active"></div>
+                        <div class="w-0.5 h-full bg-primary/20 mt-2"></div>
+                    </div>
+                    <div class="pb-8">
+                        <span class="text-senary text-xs font-bold uppercase">Etapa 2</span>
+                        <h3 class="text-xl font-bold mt-1 mb-2">Atividades Adaptadas</h3>
+                        <p class="text-secondary/50 text-sm leading-relaxed">
+                            O aluno acessa atividades de vocabulário (como Corpo Humano, Cores, Emoções) onde cada interação é ajustada:
+                            hitboxes maiores, instruções simplificadas e áudio automático para Nível 1; contexto e autonomia para Nível 3.
+                        </p>
+                    </div>
+                </div>
+                <!-- Step 3 -->
+                <div class="flex gap-6 items-start fade-up">
+                    <div class="flex flex-col items-center">
+                        <div class="timeline-dot active"></div>
+                        <div class="w-0.5 h-full bg-primary/20 mt-2"></div>
+                    </div>
+                    <div class="pb-8">
+                        <span class="text-tertiary text-xs font-bold uppercase">Etapa 3</span>
+                        <h3 class="text-xl font-bold mt-1 mb-2">Game Loop: Reconhecer → Manipular → Validar</h3>
+                        <p class="text-secondary/50 text-sm leading-relaxed">
+                            Cada lição segue 3 fases previsíveis. O aluno primeiro reconhece (Input Sensorial),
+                            depois manipula (Drag & Drop) e por fim valida o conhecimento (Quiz). Sem pressão, sem surpresas.
+                        </p>
+                    </div>
+                </div>
+                <!-- Step 4 -->
+                <div class="flex gap-6 items-start fade-up">
+                    <div class="flex flex-col items-center">
+                        <div class="timeline-dot active"></div>
+                    </div>
+                    <div>
+                        <span class="text-primary text-xs font-bold uppercase">Etapa 4</span>
+                        <h3 class="text-xl font-bold mt-1 mb-2">Relatórios para o Professor</h3>
+                        <p class="text-secondary/50 text-sm leading-relaxed">
+                            O professor acompanha o progresso de cada aluno em tempo real, com gráficos, histórico de acertos/erros
+                            e um gerador de relatório pedagógico por IA para o prontuário escolar.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         CTA FINAL
+         ============================================================ -->
+    <section class="py-24">
+        <div class="max-w-4xl mx-auto px-6 text-center fade-up">
+            <h2 class="text-3xl md:text-4xl font-extrabold mb-4">Pronto para transformar o<br>aprendizado?</h2>
+            <p class="text-secondary/50 mb-10 max-w-xl mx-auto">
+                Escolha seu perfil e acesse a plataforma agora.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="pages/auth/login-aluno.html"
+                   class="cta-btn inline-flex items-center justify-center gap-2 bg-primary text-quinary font-bold px-10 py-4 rounded-xl text-lg">
+                    Entrar como Aluno
+                </a>
+                <a href="pages/auth/login-professor.html"
+                   class="cta-btn inline-flex items-center justify-center gap-2 bg-senary text-secondary font-bold px-10 py-4 rounded-xl text-lg">
+                    Entrar como Professor
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         FOOTER
+         ============================================================ -->
+    <footer class="border-t border-white/5 py-10">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            <img src="public/assets/imagens/logo.png" alt="Logo ROAR" class="h-8 opacity-60">
+            <p class="text-secondary/30 text-sm text-center">
+                ROAR — Plataforma Adaptativa de Inglês para TEA. Projeto de TCC.
+            </p>
+            <div class="flex gap-6 text-secondary/30 text-sm">
+                <a href=".#problema" class="hover:text-primary transition-colors">Sobre</a>
+                <a href=".#solucao" class="hover:text-primary transition-colors">Recursos</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll fade-up animation -->
+    <script src="public/js/pages/landing/index-2.js"></script>
+</body>
+</html>

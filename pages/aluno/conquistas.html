@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROAR — Conquistas</title>
+    <meta name="description" content="Suas conquistas e medalhas no ROAR.">
+    <link rel="stylesheet" href="../../public/css/global.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
+    <link rel="stylesheet" href="../../public/css/pages/pages-aluno-conquistas.css">
+</head>
+<body>
+<div class="app-shell">
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar__logo-wrap">
+            <img src="../../public/assets/imagens/logo2.png" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
+            <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i class="fi fi-br-menu-burger"></i></button>
+        </div>
+        <nav class="sidebar__nav">
+            <a href="inicio.html"          class="sidebar__link"><i class="fi fi-br-home"></i><span>Início</span></a>
+            <a href="atividades.html"    class="sidebar__link"><i class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a>
+            <a href="desempenho.html"    class="sidebar__link"><i class="fi fi-br-chart-simple"></i><span>Desempenho</span></a>
+            <a href="perfil.html"        class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
+            <a href="configuracoes.html" class="sidebar__link"><i class="fi fi-br-settings"></i><span>Configurações</span></a>
+        </nav>
+        <div class="sidebar__footer">
+            <a href="../auth/login-aluno.html" class="sidebar__link"><i class="fi fi-br-exit"></i><span>Sair</span></a>
+        </div>
+    </aside>
+    <div class="main-content">
+        <header class="navbar">
+            <div class="u-pages-aluno-conquistas-001">
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button>
+                <div class="navbar__page-title">
+                    <h1>Conquistas</h1>
+                    <p>Suas medalhas e troféus conquistados.</p>
+                </div>
+            </div>
+            <div class="navbar__right">
+                <div class="navbar__avatar" title="Perfil">L</div>
+            </div>
+        </header>
+        <div class="page-body fade-in">
+
+            <!-- Banner com mascote -->
+            <div class="congrats-banner">
+                <img src="../../public/assets/imagens/dinooriginal.png" alt="Mascote Dino">
+                <div class="congrats-banner__text">
+                    <h2>Parabéns, Leandro!</h2>
+                    <p>Você conquistou <strong>4 medalhas</strong> até agora. Continue aprendendo para desbloquear mais!</p>
+                    <div class="u-pages-aluno-conquistas-002">
+                        <div class="stat-card u-pages-aluno-conquistas-003">
+                            <div class="stat-card__icon stat-card__icon--xp"><i class="fi fi-br-medal"></i></div>
+                            <div><div class="stat-card__label">Conquistadas</div><div class="stat-card__value">4</div></div>
+                        </div>
+                        <div class="stat-card u-pages-aluno-conquistas-003">
+                            <div class="stat-card__icon u-pages-aluno-conquistas-004"><i class="fi fi-br-lock"></i></div>
+                            <div><div class="stat-card__label">Bloqueadas</div><div class="stat-card__value">8</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conquistadas -->
+            <div class="medals-section">
+                <div class="section-header mb-md">
+                    <h2>Conquistadas</h2>
+                    <span class="badge badge--green">4 medalhas</span>
+                </div>
+                <div class="medals-grid-big" id="conquistadasGrid"></div>
+            </div>
+
+            <!-- Bloqueadas -->
+            <div class="medals-section">
+                <div class="section-header mb-md">
+                    <h2>A Desbloquear</h2>
+                    <span class="badge badge--blue">8 medalhas</span>
+                </div>
+                <div class="medals-grid-big" id="bloqueadasGrid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../public/js/pages/aluno/pages-aluno-conquistas-1.js"></script>
+</body>
+</html>

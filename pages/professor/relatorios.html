@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROAR â€” RelatÃ³rios de Desempenho</title>
+    <meta name="description" content="Dashboard completo de desempenho individual de cada aluno na plataforma ROAR.">
+    <link rel="stylesheet" href="../../public/css/global.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
+    <link rel="stylesheet" href="../../public/css/pages/pages-professor-relatorios.css">
+</head>
+<body>
+<div class="app-shell">
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- SIDEBAR PROFESSOR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar__logo-wrap">
+            <img src="../../public/assets/imagens/logo.png" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
+            <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i class="fi fi-br-menu-burger"></i></button>
+        </div>
+        <nav class="sidebar__nav">
+            <a href="inicio.html"       class="sidebar__link"><i class="fi fi-br-home"></i><span>In&iacute;cio</span></a>
+            <a href="alunos.html"     class="sidebar__link"><i class="fi fi-br-users"></i><span>Alunos</span></a>
+            <a href="atividades.html" class="sidebar__link"><i class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a>
+            <a href="relatorios.html" class="sidebar__link active"><i class="fi fi-br-chart-simple"></i><span>Relat&oacute;rios</span></a>
+            <a href="perfil.html"     class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
+        </nav>
+        <div class="sidebar__footer">
+            <a href="../auth/login-professor.html" class="sidebar__link"><i class="fi fi-br-exit"></i><span>Sair</span></a>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+        <header class="navbar">
+            <div class="u-pages-professor-relatorios-001">
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button>
+                <div class="navbar__page-title">
+                    <h1>Relat&oacute;rios <span class="u-pages-professor-relatorios-002">de Desempenho</span></h1>
+                    <p>Dashboard individual por aluno com gr&aacute;ficos e an&aacute;lise pedag&oacute;gica.</p>
+                </div>
+            </div>
+            <div class="navbar__right u-pages-professor-relatorios-001">
+                <button class="print-btn" onclick="window.print()">
+                    <i class="fi fi-br-print"></i> Imprimir Relat&oacute;rio
+                </button>
+                <button class="navbar__icon-btn u-pages-professor-relatorios-003" id="btnNotif" aria-label="Notifica&ccedil;&otilde;es">
+                    <i class="fi fi-br-bell"></i>
+                    <span class="u-pages-professor-relatorios-004"></span>
+                </button>
+                <div class="navbar__avatar u-pages-professor-relatorios-005" title="Perfil">A</div>
+            </div>
+        </header>
+
+        <div class="page-body fade-in">
+
+            <!-- Seletor mobile -->
+            <select class="mobile-student-sel" id="mobileSel" onchange="selecionarAluno(parseInt(this.value))"></select>
+
+            <div class="rel-layout">
+
+                <!-- Painel lateral -->
+                <div class="student-sidebar">
+                    <div class="student-sidebar__header">Selecionar Aluno</div>
+                    <div class="student-sidebar__list" id="studentList"></div>
+                </div>
+
+                <!-- Dashboard principal -->
+                <div class="dashboard-area" id="dashboardArea">
+                    <!-- populado via JS -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="../../public/js/pages/professor/pages-professor-relatorios-1.js"></script>
+</body>
+</html>
+
+
+

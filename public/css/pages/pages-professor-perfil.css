@@ -1,0 +1,16 @@
+.teacher-profile {
+    min-height: 100vh;
+    display: grid;
+    place-content: center;
+    gap: 24px;
+    padding: 32px;
+    background: var(--c-secondary);
+}
+
+.teacher-profile__back { color: var(--c-blue-mid); font-weight: 600; }
+.teacher-profile__panel { width: min(620px, 100%); padding: 32px; border: 1px solid var(--c-border); border-radius: 8px; background: var(--c-card); box-shadow: var(--shadow-sm); }
+.teacher-profile__eyebrow { margin-bottom: 6px; color: var(--c-blue-mid); font-weight: 600; }
+.teacher-profile__data { display: grid; gap: 12px; margin: 24px 0; }
+.teacher-profile__data div { padding-bottom: 12px; border-bottom: 1px solid var(--c-border); }
+.teacher-profile__data dt { color: var(--c-text-soft); font-size: 0.82rem; }
+.teacher-profile__data dd { margin: 3px 0 0; font-weight: 600; }

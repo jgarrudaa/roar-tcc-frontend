@@ -1,0 +1,190 @@
+/* Estilos exclusivos de inicio.html. */
+
+/* ---- Hero Card (continuar de onde parou) ---- */
+        .hero-card {
+            background: rgba(133,199,242,0.22);
+            border: 1.5px solid rgba(133,199,242,0.40);
+            border-radius: var(--r-xl);
+            padding: var(--space-lg) var(--space-xl);
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            position: relative;
+            overflow: hidden;
+            width: 85%;
+        }
+        .hero-card__img-wrap {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: rgba(133,199,242,0.40);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            font-size: 2rem;
+            color: var(--c-blue-dark);
+        }
+        .hero-card__content { flex: 1; min-width: 0; }
+        .hero-card__label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--c-blue-mid);
+            margin-bottom: 4px;
+        }
+        .hero-card__title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--c-text);
+            margin-bottom: var(--space-sm);
+        }
+        .hero-card__meta {
+            font-size: 0.8rem;
+            color: var(--c-text-soft);
+            margin-top: var(--space-xs);
+        }
+
+        /* ---- Mascote no canto da hero section ---- */
+        .hero-section {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: var(--space-lg);
+            align-items: end;
+            margin-bottom: var(--space-xl);
+        }
+        .hero-mascot {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: end;
+            padding-bottom: var(--space-md);
+        }
+        .hero-mascot__bubble {
+            background: #ffffff;
+            border: 1.5px solid var(--c-border);
+            border-radius: var(--r-md);
+            border-bottom-right-radius: 4px;
+            padding: var(--space-sm) var(--space-md);
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--c-text);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--space-sm);
+            white-space: nowrap;
+            text-align: center;
+            margin-right: var(--space-3xl);
+        }
+        .hero-mascot img {
+            height: 140px;
+            width: auto;
+        }
+
+        /* ---- Stats Bar ---- */
+        .stats-bar {
+            display: flex;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+            flex-wrap: wrap;
+        }
+        .stats-bar .stat-card { flex: 1; min-width: 120px; }
+
+        /* ---- Category Grid ---- */
+        .cat-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            padding: var(--space-lg) var(--space-md);
+            border-radius: var(--r-lg);
+            border: 1.5px solid var(--c-border);
+            background: var(--c-secondary);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all var(--t-fast);
+            text-align: center;
+        }
+        .cat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: rgba(133,199,242,0.6); }
+        .cat-card:active { transform: scale(0.96); }
+        .cat-card__icon {
+            width: 68px; height: 68px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+        }
+        .cat-card__icon i {
+            display: flex; align-items: center; justify-content: center; line-height: 1;
+        }
+        .cat-card__icon--a { background: rgba(133,199,242,0.35); color: var(--c-blue-dark); }
+        .cat-card__icon--b { background: rgba(68,246,152,0.35); color: #1a7c49; }
+        .cat-card__name {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--c-text);
+        }
+
+        /* ---- Atividades Recentes ---- */
+        .recent-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-sm) 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .recent-item:last-child { border-bottom: none; }
+        .recent-item__icon {
+            width: 40px; height: 40px;
+            border-radius: var(--r-md);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .recent-item__info { flex: 1; min-width: 0; }
+        .recent-item__name { font-size: 0.88rem; font-weight: 600; color: var(--c-text); }
+        .recent-item__meta { font-size: 0.78rem; color: var(--c-text-soft); }
+
+        /* ---- Bottom layout (Recentes + Atalhos) ---- */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-lg);
+            margin-top: var(--space-xl);
+        }
+
+        /* ---- Atalhos rápidos ---- */
+        .shortcut-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            border-radius: var(--r-md);
+            background: var(--c-secondary);
+            border: 1.5px solid var(--c-border);
+            cursor: pointer;
+            transition: all var(--t-fast);
+            text-align: left;
+            width: 100%;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--c-text);
+        }
+        .shortcut-btn:hover { background: rgba(133,199,242,0.15); border-color: rgba(133,199,242,0.5); }
+        .shortcut-btn i { font-size: 1.2rem; color: var(--c-blue-dark); }
+
+        @media (max-width: 768px) {
+            .hero-section { grid-template-columns: 1fr; }
+            .hero-mascot { display: none; }
+            .stats-bar { gap: var(--space-sm); }
+            .bottom-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .grid-categories { grid-template-columns: repeat(2, 1fr); }
+        }
+
+/* Classes geradas a partir dos antigos estilos inline. */
+.u-pages-aluno-inicio-001 { display:flex;align-items:center;gap:var(--space-md); }
+.u-pages-aluno-inicio-002 { color:var(--c-blue-dark); }
+.u-pages-aluno-inicio-003 { font-size:0.9rem;color:var(--c-text-soft);margin-bottom:var(--space-md); }
+.u-pages-aluno-inicio-004 { cursor:pointer; }
+.u-pages-aluno-inicio-005 { margin-bottom:8px; }
+.u-pages-aluno-inicio-006 { width:70%; }
+.u-pages-aluno-inicio-007 { display:flex;align-items:center;justify-content:space-between; }
+.u-pages-aluno-inicio-008 { color:#f59e0b; }
+.u-pages-aluno-inicio-009 { display:flex;flex-direction:column;gap:var(--space-sm); }

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <!-- Fonte Poppins via Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Configuração Tailwind: registro da fonte Poppins e cores do sistema -->
+    <script src="../../public/js/pages/auth/pages-auth-login-aluno-1.js"></script>
+    <link rel="stylesheet" href="../../public/css/pages/pages-auth-login-aluno.css">
+</head>
+
+<!--
+    body → CSS original:
+        background-color: #191716  |  font-family: Poppins  |  font-weight: 300
+        background-image: telalogin.png  |  background-size: cover
+        background-position: center  |  background-repeat: no-repeat
+        height: 100vh  |  display: flex  |  align-items: center  |  justify-content: center
+-->
+<body
+    class="bg-quinary font-poppins font-light not-italic
+           bg-cover bg-center bg-no-repeat
+           h-screen flex items-center justify-center u-pages-auth-login-aluno-001"
+   >
+
+    <!--
+        main → CSS original:
+            display: flex  |  height: 70%  |  width: 75%
+            margin: 0 auto  |  border-radius: 1rem
+    -->
+    <main class="flex h-[70%] w-[75%] mx-auto rounded-2xl">
+
+        <!-- =========================================================
+             Painel esquerdo: apresentação visual com logo, texto e mascote
+             CSS original: width: 50%  |  background: bg1.png (cover/center/no-repeat)
+             border-top-left-radius: 1rem  |  border-bottom-left-radius: 1rem
+             color: #FFFAFF  |  display: flex  |  justify-content: center
+             flex-direction: column  |  gap: 3rem  |  padding-left: 3rem  |  position: relative
+             ========================================================= -->
+        <section
+            class="w-1/2 bg-cover bg-center bg-no-repeat
+                   rounded-tl-2xl rounded-bl-2xl
+                   text-secondary
+                   flex justify-center flex-col gap-12 pl-12
+                   relative u-pages-auth-login-aluno-002"
+           >
+
+            <!-- logo → width: 200px  |  height: 80px -->
+            <img src="../../public/assets/imagens/logo.png" alt="Logo Roar"
+                 class="w-[200px] h-[80px]">
+
+            <h1>Olá, estudante</h1>
+
+            <!--
+                .container-left p → color: #FFFAFF  |  font-size: 1.1rem
+                span              → color: #44F698
+            -->
+            <p class="text-secondary text-[1.1rem]">
+                <span class="text-primary">Aprimore seu inglês</span> todos os dias.<br>
+                Pratique, aprenda e torne-se fluente<br>
+                mais rápido com nossa plataforma.
+            </p>
+
+            <!-- dino → position: absolute  |  width: 200px  |  height: 200px  |  right: 0  |  bottom: 0 -->
+            <img src="../../public/assets/imagens/dinooriginal.png" alt="Mascote Dino"
+                 class="absolute w-[200px] h-[200px] right-0 bottom-0 dino">
+        </section>
+
+        <!-- =========================================================
+             Painel direito: formulário de autenticação
+             CSS original: width: 50%  |  background-color: #FFFAFF
+             border-top-right-radius: 1rem  |  border-bottom-right-radius: 1rem
+             display: flex  |  flex-direction: column
+             justify-content: center  |  align-items: center
+             ========================================================= -->
+        <section class="w-1/2 bg-secondary
+                        rounded-tr-2xl rounded-br-2xl
+                        flex flex-col justify-center items-center">
+
+            <!--
+                form → height: 85%  |  width: 75%
+                       display: flex  |  flex-direction: column
+                       gap: 20px  |  margin: 0 auto
+            -->
+            <form id="student-login-form" class="h-[85%] w-[75%] flex flex-col gap-5 mx-auto">
+
+                <h1>Bem vindo de volta!</h1>
+
+                <!--
+                    h2 → color: #1F6CE3  |  border-bottom: solid 2px #1F6CE3  |  width: 16%
+                -->
+                <h2 class="text-senary border-b-2 border-senary w-[16%]">Login</h2>
+
+                <!--
+                    form input → width: 100%  |  height: 45px
+                                 border: solid 1px #00000027  |  border-radius: 0.5rem  |  padding: 0 1rem
+                    input:focus → outline: none  |  box-shadow: none  |  border: 1px solid #ccc
+                -->
+                <input
+                    id="emailInput"
+                    type="email"
+                    placeholder="E-mail"
+                    class="w-full h-[45px]
+                           border border-solid border-[#00000027] rounded-lg px-4
+                           focus:outline-none focus:shadow-none focus:border-[#ccc]">
+
+                <!--
+                    .password-wrap → position: relative  |  width: 100%
+                    .password-wrap input → padding-right: 3rem
+                -->
+                <div class="relative w-full">
+                    <input
+                        id="senha"
+                        type="password"
+                        placeholder="PIN (4 dígitos)"
+                        inputmode="numeric"
+                        maxlength="4"
+                        pattern="[0-9]{4}"
+                        class="w-full h-[45px]
+                               border border-solid border-[#00000027] rounded-lg px-4 pr-12
+                               focus:outline-none focus:shadow-none focus:border-[#ccc]">
+
+                    <!--
+                        .toggle-password → position: absolute  |  top: 50%  |  right: 1rem
+                                           transform: translateY(-50%)  |  width: 24px  |  height: 24px
+                                           cursor: pointer  |  user-select: none
+                    -->
+                    <span
+                        id="toggleSenhaIcon"
+                        class="absolute top-1/2 right-4 -translate-y-1/2
+                               w-6 h-6 cursor-pointer select-none text-gray-500 hover:text-gray-700 flex items-center justify-center"
+                        title="Mostrar senha">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                    </span>
+                </div>
+
+                <!--
+                    button → width: 100%  |  height: 45px  |  margin: 0 auto
+                             background-color: #1F6CE3  |  border: none  |  cursor: pointer
+                             color: #FFFAFF  |  border-radius: 0.5rem
+                             box-shadow: 0 0 10px #0000003f  |  font-size: 1.02rem
+                    button:focus → outline: none  |  box-shadow: none  |  border: 1px solid #ccc
+                -->
+                <button
+                    type="submit"
+                    class="w-full h-[45px] mx-auto
+                           bg-senary border-0 cursor-pointer
+                           text-secondary rounded-lg
+                           shadow-[0_0_10px_#0000003f] text-[1.02rem]
+                           focus:outline-none focus:shadow-none focus:border focus:border-[#ccc]">
+                    Login
+                </button>
+
+
+                <a href="/" class="text-senary no-underline">Esqueci minha senha</a>
+            </form>
+        </section>
+    </main>
+
+    <script src="../../public/js/roar-storage.js"></script>
+    <script src="../../public/js/pages/auth/pages-auth-login-aluno-2.js"></script>
+    <script type="module" src="../../public/js/pages/auth/login-aluno.js"></script>
+
+</body>
+</html>

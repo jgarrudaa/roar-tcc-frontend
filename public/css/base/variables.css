@@ -1,0 +1,21 @@
+:root {
+    --roar-primary: #44f698;
+    --roar-blue-light: #85c7f2;
+    --roar-blue: #28599a;
+    --roar-ink: #191716;
+    --roar-muted: #5a6376;
+    --roar-surface: #ffffff;
+    --roar-background: #f5f9fd;
+    --roar-border: #c9d3df;
+    --roar-success: #159b5d;
+    --roar-danger: #b42318;
+    --roar-radius-sm: 6px;
+    --roar-radius-md: 8px;
+    --roar-shadow: 0 3px 12px rgba(25, 23, 22, 0.12);
+    --roar-space-1: 4px;
+    --roar-space-2: 8px;
+    --roar-space-3: 12px;
+    --roar-space-4: 16px;
+    --roar-space-5: 24px;
+    --roar-space-6: 32px;
+}

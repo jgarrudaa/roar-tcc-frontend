@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROAR — Missões do Dia</title>
+    <meta name="description" content="Missões diárias do ROAR.">
+    <link rel="stylesheet" href="../../public/css/global.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
+    <script src="../../public/js/roar-theme.js"></script>
+    <link rel="stylesheet" href="../../public/css/pages/pages-aluno-missoes.css">
+</head>
+<body>
+<div class="app-shell">
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar__logo-wrap">
+            <img src="../../public/assets/imagens/logo2.png" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
+            <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i class="fi fi-br-menu-burger"></i></button>
+        </div>
+        <nav class="sidebar__nav">
+            <a href="inicio.html"          class="sidebar__link"><i class="fi fi-br-home"></i><span>Início</span></a>
+            <a href="atividades.html"    class="sidebar__link"><i class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a>
+            <a href="desempenho.html"    class="sidebar__link"><i class="fi fi-br-chart-simple"></i><span>Desempenho</span></a>
+            <a href="perfil.html"        class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
+            <a href="configuracoes.html" class="sidebar__link"><i class="fi fi-br-settings"></i><span>Configurações</span></a>
+        </nav>
+        <div class="sidebar__footer">
+            <a href="../auth/login-aluno.html" class="sidebar__link"><i class="fi fi-br-exit"></i><span>Sair</span></a>
+        </div>
+    </aside>
+    <div class="main-content">
+        <header class="navbar">
+            <div class="u-pages-aluno-missoes-001">
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button>
+                <div class="navbar__page-title">
+                    <h1>Missões do Dia</h1>
+                    <p id="dateLabel">Complete as missões e ganhe recompensas!</p>
+                </div>
+            </div>
+            <div class="navbar__right">
+                <div class="navbar__avatar" title="Perfil">L</div>
+            </div>
+        </header>
+        <div class="page-body fade-in">
+
+            <!-- Banner de progresso do dia -->
+            <div class="day-banner">
+                <div class="day-banner__left">
+                    <h2>Bom dia, Leandro!</h2>
+                    <p>Você completou <strong id="doneCount">1</strong> de <strong>5</strong> missões hoje.</p>
+                    <div class="progress-wrap progress-wrap--lg u-pages-aluno-missoes-002">
+                        <div class="progress-bar u-pages-aluno-missoes-003" id="dayProgress"></div>
+                    </div>
+                </div>
+                <div class="day-banner__prog">
+                    <div class="day-banner__prog-label">Recompensa total do dia</div>
+                    <div class="day-banner__prog-val"><i class="fi fi-br-star u-pages-aluno-missoes-004"></i> 200 XP</div>
+
+                </div>
+            </div>
+
+            <!-- Missões -->
+            <div id="missoesList"></div>
+
+            <!-- Missões de amanhã (locked) -->
+            <div class="u-pages-aluno-missoes-005">
+                <div class="section-header mb-md">
+                    <h2>Amanhã</h2>
+                    <span class="badge badge--blue"><i class="fi fi-br-lock"></i> Bloqueado</span>
+                </div>
+                <div class="u-pages-aluno-missoes-006">
+                    <i class="fi fi-br-calendar u-pages-aluno-missoes-007"></i>
+                    <p class="u-pages-aluno-missoes-008">As missões de amanhã estarão disponíveis às <strong>00:00</strong></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="../../public/js/pages/aluno/pages-aluno-missoes-1.js"></script>
+</body>
+</html>

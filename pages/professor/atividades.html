@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROAR — Gerenciar Atividades</title>
+    <meta name="description" content="Gerencie e desbloqueie atividades para os alunos na plataforma ROAR.">
+    <link rel="stylesheet" href="../../public/css/global.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
+    <link rel="stylesheet" href="../../public/css/pages/pages-professor-atividades.css">
+</head>
+<body>
+<div class="app-shell">
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- SIDEBAR PROFESSOR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar__logo-wrap">
+            <img src="../../public/assets/imagens/logo.png" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
+            <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i class="fi fi-br-menu-burger"></i></button>
+        </div>
+        <nav class="sidebar__nav">
+            <a href="inicio.html"       class="sidebar__link"><i class="fi fi-br-home"></i><span>In&iacute;cio</span></a>
+            <a href="alunos.html"     class="sidebar__link"><i class="fi fi-br-users"></i><span>Alunos</span></a>
+            <a href="atividades.html" class="sidebar__link active"><i class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a>
+            <a href="relatorios.html" class="sidebar__link"><i class="fi fi-br-chart-simple"></i><span>Relat&oacute;rios</span></a>
+            <a href="perfil.html"     class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
+        </nav>
+        <div class="sidebar__footer">
+            <a href="../auth/login-professor.html" class="sidebar__link"><i class="fi fi-br-exit"></i><span>Sair</span></a>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+        <header class="navbar">
+            <div class="u-pages-professor-atividades-001">
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button>
+                <div class="navbar__page-title">
+                    <h1>Atividades <span class="u-pages-professor-atividades-002">da Turma</span></h1>
+                    <p>Veja as estat&iacute;sticas e desbloqueie atividades individualmente para cada aluno.</p>
+                </div>
+            </div>
+            <div class="navbar__right u-pages-professor-atividades-001">
+                <button class="navbar__icon-btn u-pages-professor-atividades-003" id="btnNotif" aria-label="Notifica&ccedil;&otilde;es">
+                    <i class="fi fi-br-bell"></i>
+                    <span class="u-pages-professor-atividades-004"></span>
+                </button>
+                <div class="navbar__avatar u-pages-professor-atividades-005" title="Perfil">A</div>
+            </div>
+        </header>
+
+        <div class="page-body fade-in">
+
+            <!-- Stats gerais -->
+            <div class="grid-4 u-pages-professor-atividades-006" id="statsBar"></div>
+
+            <!-- Busca + filtros -->
+            <div class="u-pages-professor-atividades-007">
+                <div class="search-wrap">
+                    <i class="fi fi-br-search"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar atividade&hellip;" oninput="filtrar()">
+                </div>
+                <select class="filter-select u-pages-professor-atividades-008" id="sortSel" onchange="filtrar()">
+                    <option value="default">Ordenar</option>
+                    <option value="xp">Maior XP</option>
+                    <option value="nome">A&ndash;Z</option>
+                    <option value="acertos">Mais Acertos</option>
+                </select>
+            </div>
+            <div class="filter-bar" id="filterBar">
+                <button class="filter-chip active" data-f="all"><i class="fi fi-br-apps"></i> Todas</button>
+                <button class="filter-chip" data-f="corpo"><i class="fi fi-br-portrait"></i> Corpo Humano</button>
+                <button class="filter-chip" data-f="vocabulario"><i class="fi fi-br-book-open-cover"></i> Vocabul&aacute;rio</button>
+                <button class="filter-chip" data-f="emocoes"><i class="fi fi-br-astonished-face"></i> Emo&ccedil;&otilde;es</button>
+                <button class="filter-chip" data-f="animais"><i class="fi fi-br-paw"></i> Animais</button>
+                <button class="filter-chip" data-f="facil"><i class="fi fi-br-star"></i> F&aacute;cil</button>
+                <button class="filter-chip" data-f="medio"><i class="fi fi-br-star"></i> M&eacute;dio</button>
+            </div>
+
+            <!-- Listagem por categoria -->
+            <div id="atividadesContainer"></div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Atividade -->
+<div class="modal-overlay" id="modalAtiv">
+    <div class="modal-box">
+
+        <!-- Cabeçalho da atividade -->
+        <div class="u-pages-professor-atividades-009">
+            <div class="modal-act-header u-pages-professor-atividades-010">
+                <div class="act-icon" id="mActIcon"></div>
+                <div>
+                    <div id="mActNome" class="u-pages-professor-atividades-011"></div>
+                    <div id="mActMeta" class="u-pages-professor-atividades-012"></div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="fecharModal()" aria-label="Fechar"><i class="fi fi-br-cross"></i></button>
+        </div>
+
+        <!-- Stats gerais da atividade -->
+        <div class="modal-act-stats" id="mActStats"></div>
+
+        <!-- Abas Turma A / B -->
+        <div class="u-pages-professor-atividades-013">
+            <button class="tab-btn active" id="tabA" onclick="switchTab('A')">Turma A</button>
+            <button class="tab-btn"        id="tabB" onclick="switchTab('B')">Turma B</button>
+            <button class="tab-btn"        id="tabAll" onclick="switchTab('all')">Todos</button>
+        </div>
+
+        <!-- Lista de alunos -->
+        <div id="mAlunosList"></div>
+
+        <div class="u-pages-professor-atividades-014">
+            <button class="btn btn--secondary" id="btnDesbloquearTodos" onclick="desbloquearTodos()">
+                <i class="fi fi-br-unlock u-pages-professor-atividades-015"></i>Desbloquear Todos
+            </button>
+            <button class="btn btn--primary" onclick="fecharModal()">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="../../public/js/pages/professor/pages-professor-atividades-1.js"></script>
+</body>
+</html>

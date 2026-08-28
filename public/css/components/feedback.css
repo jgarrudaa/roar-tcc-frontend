@@ -1,0 +1,20 @@
+.toast-container {
+    position: fixed;
+    right: var(--roar-space-4);
+    bottom: var(--roar-space-4);
+    z-index: 2000;
+    display: grid;
+    gap: var(--roar-space-2);
+}
+
+.toast {
+    max-width: min(360px, calc(100vw - 32px));
+    padding: 12px 16px;
+    border: 1px solid var(--roar-border);
+    border-radius: var(--roar-radius-md);
+    background: var(--roar-surface);
+    box-shadow: var(--roar-shadow);
+}
+
+.toast--error { border-color: var(--roar-danger); }
+.toast--success { border-color: var(--roar-success); }

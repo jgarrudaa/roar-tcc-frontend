@@ -1,0 +1,93 @@
+/* Estilos exclusivos de missoes.html. */
+
+.mission-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            padding: var(--space-lg);
+            border-radius: var(--r-lg);
+            border: 1.5px solid var(--c-border);
+            background: var(--c-secondary);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--space-md);
+            transition: all var(--t-fast);
+        }
+        .mission-card.done {
+            background: rgba(68,246,152,0.08);
+            border-color: rgba(68,246,152,0.30);
+        }
+        .mission-card.done .mission-card__name { text-decoration: line-through; color: var(--c-text-soft); }
+        .mission-card__icon {
+            width: 56px; height: 56px;
+            border-radius: var(--r-md);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+        .mission-card__body { flex: 1; min-width: 0; }
+        .mission-card__name { font-size: 0.95rem; font-weight: 700; color: var(--c-text); margin-bottom: 4px; }
+        .mission-card__desc { font-size: 0.8rem; color: var(--c-text-soft); margin-bottom: var(--space-sm); }
+        .mission-card__reward {
+            display: flex;
+            gap: var(--space-md);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .mission-card__reward span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--c-text-soft);
+        }
+        .mission-card__check {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: 2px solid var(--c-border);
+            background: var(--c-secondary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--t-fast);
+            flex-shrink: 0;
+            color: transparent;
+        }
+        .mission-card.done .mission-card__check {
+            background: var(--c-primary);
+            border-color: var(--c-primary);
+            color: #1a7c49;
+        }
+
+        /* Banner do dia */
+        .day-banner {
+            background: rgba(133,199,242,0.18);
+            border: 1.5px solid rgba(133,199,242,0.35);
+            border-radius: var(--r-xl);
+            padding: var(--space-lg) var(--space-xl);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-xl);
+            flex-wrap: wrap;
+            gap: var(--space-md);
+        }
+        .day-banner__left h2 { font-size: 1.3rem; font-weight: 800; color: var(--c-blue-dark); }
+        .day-banner__left p  { font-size: 0.85rem; color: var(--c-text-soft); }
+        .day-banner__prog {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            min-width: 160px;
+        }
+        .day-banner__prog-label { font-size: 0.8rem; font-weight: 600; color: var(--c-text-soft); }
+        .day-banner__prog-val   { font-size: 1.4rem; font-weight: 800; color: var(--c-blue-dark); }
+
+/* Classes geradas a partir dos antigos estilos inline. */
+.u-pages-aluno-missoes-001 { display:flex;align-items:center;gap:var(--space-md); }
+.u-pages-aluno-missoes-002 { width:200px;margin-top:var(--space-sm); }
+.u-pages-aluno-missoes-003 { width:20%; }
+.u-pages-aluno-missoes-004 { color:#b07000; }
+.u-pages-aluno-missoes-005 { margin-top:var(--space-xl); }
+.u-pages-aluno-missoes-006 { padding:var(--space-xl);text-align:center;border-radius:var(--r-lg);border:1.5px dashed var(--c-border);color:var(--c-text-soft); }
+.u-pages-aluno-missoes-007 { font-size:2rem;display:block;margin-bottom:var(--space-sm);opacity:0.4; }
+.u-pages-aluno-missoes-008 { font-size:0.88rem; }

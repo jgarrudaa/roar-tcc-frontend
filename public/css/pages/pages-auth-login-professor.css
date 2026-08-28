@@ -1,0 +1,8 @@
+/* Estilos exclusivos de login-professor.html. */
+
+.dino { transition: all 0.2s ease; }
+        .toggle-password { cursor: pointer; user-select: none; }
+
+/* Classes geradas a partir dos antigos estilos inline. */
+.u-pages-auth-login-professor-001 { background-image:url('../../assets/imagens/telacadastro.png'); }
+.u-pages-auth-login-professor-002 { background-image:url('../../assets/imagens/bg2.png'); }

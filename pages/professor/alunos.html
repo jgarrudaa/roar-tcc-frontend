@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROAR — Desempenho dos Alunos</title>
+    <meta name="description" content="Acompanhe o desempenho individual de cada aluno nas atividades da plataforma ROAR.">
+    <link rel="stylesheet" href="../../public/css/global.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
+    <link rel="stylesheet" href="../../public/css/pages/pages-professor-alunos.css">
+</head>
+<body>
+<div class="app-shell">
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- SIDEBAR PROFESSOR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar__logo-wrap">
+            <img src="../../public/assets/imagens/logo.png" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
+            <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i class="fi fi-br-menu-burger"></i></button>
+        </div>
+        <nav class="sidebar__nav">
+            <a href="inicio.html"       class="sidebar__link"><i class="fi fi-br-home"></i><span>In&iacute;cio</span></a>
+            <a href="alunos.html"     class="sidebar__link active"><i class="fi fi-br-users"></i><span>Alunos</span></a>
+            <a href="atividades.html" class="sidebar__link"><i class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a>
+            <a href="relatorios.html" class="sidebar__link"><i class="fi fi-br-chart-simple"></i><span>Relat&oacute;rios</span></a>
+            <a href="perfil.html"     class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
+        </nav>
+        <div class="sidebar__footer">
+            <a href="../auth/login-professor.html" class="sidebar__link"><i class="fi fi-br-exit"></i><span>Sair</span></a>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+        <header class="navbar">
+            <div class="u-pages-professor-alunos-001">
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button>
+                <div class="navbar__page-title">
+                    <h1>Desempenho dos <span class="u-pages-professor-alunos-002">Alunos</span></h1>
+                    <p>Clique em um aluno para ver o desempenho detalhado por atividade.</p>
+                </div>
+            </div>
+            <div class="navbar__right u-pages-professor-alunos-001">
+                <button class="btn btn--primary u-pages-professor-alunos-003" onclick="window.location.href='cadastro-aluno.html'">
+                    <i class="fi fi-br-plus u-pages-professor-alunos-004"></i> Novo Aluno
+                </button>
+                <button class="navbar__icon-btn u-pages-professor-alunos-005" id="btnNotif" data-tooltip="Notifica&ccedil;&otilde;es" aria-label="Notifica&ccedil;&otilde;es">
+                    <i class="fi fi-br-bell"></i>
+                    <span class="u-pages-professor-alunos-006"></span>
+                </button>
+                <div class="navbar__avatar u-pages-professor-alunos-007" title="Perfil">A</div>
+            </div>
+        </header>
+
+        <div class="page-body fade-in">
+
+            <!-- Stats gerais da turma -->
+            <div class="grid-4 u-pages-professor-alunos-008" id="turmaStats"></div>
+
+            <!-- Filtros -->
+            <div class="filter-bar">
+                <div class="search-box">
+                    <i class="fi fi-br-search"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar aluno&hellip;" oninput="filtrarAlunos()">
+                </div>
+                <select class="filter-select" id="filterNivel" onchange="filtrarAlunos()">
+                    <option value="">Todos os n&iacute;veis</option>
+                    <option value="1">N&iacute;vel 1 &mdash; Suporte Visual Puro</option>
+                    <option value="2">N&iacute;vel 2 &mdash; Aprendiz Guiado</option>
+                    <option value="3">N&iacute;vel 3 &mdash; Autonomia Contextural</option>
+                </select>
+                <select class="filter-select" id="filterTurma" onchange="filtrarAlunos()">
+                    <option value="">Todas as turmas</option>
+                    <option value="A">Turma A</option>
+                    <option value="B">Turma B</option>
+                </select>
+                <select class="filter-select" id="filterOrdem" onchange="filtrarAlunos()">
+                    <option value="nome">Ordenar: Nome</option>
+                    <option value="xp">Ordenar: XP</option>
+                    <option value="prog">Ordenar: Progresso</option>
+                </select>
+            </div>
+
+            <!-- Cards dos alunos -->
+            <div class="students-grid" id="studentsGrid"></div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal detalhes do aluno -->
+<div class="modal-overlay" id="modalAluno">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="u-pages-professor-alunos-001">
+                <div class="student-avatar u-pages-professor-alunos-009" id="modalAvatar"></div>
+                <div>
+                    <div id="modalNome" class="u-pages-professor-alunos-010"></div>
+                    <div id="modalMeta" class="u-pages-professor-alunos-011"></div>
+                    <span class="nivel-tag" id="modalNivelTag"></span>
+                </div>
+            </div>
+            <button class="modal-close" onclick="fecharModal()" aria-label="Fechar">
+                <i class="fi fi-br-cross"></i>
+            </button>
+        </div>
+
+        <!-- Resumo numérico -->
+        <div class="modal-stats" id="modalStats"></div>
+
+        <!-- Grafico -->
+        <div class="section-header mb-md">
+            <h2 class="u-pages-professor-alunos-012">Desempenho por Atividade</h2>
+            <span class="u-pages-professor-alunos-013">Acertos &times; Erros</span>
+        </div>
+        <div class="activity-chart" id="modalChart"></div>
+        <div class="chart-legend">
+            <span><span class="legend-dot u-pages-professor-alunos-014"></span>Acertos</span>
+            <span><span class="legend-dot u-pages-professor-alunos-015"></span>Erros</span>
+        </div>
+
+        <!-- Tabela detalhada -->
+        <div class="section-header mb-md">
+            <h2 class="u-pages-professor-alunos-012">Detalhamento por Atividade</h2>
+        </div>
+        <table class="act-table">
+            <thead>
+                <tr>
+                    <th>Atividade</th>
+                    <th>Tipo</th>
+                    <th class="u-pages-professor-alunos-016">Acertos</th>
+                    <th class="u-pages-professor-alunos-016">Erros</th>
+                    <th>Aproveit.</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="modalTable"></tbody>
+        </table>
+
+        <div class="u-pages-professor-alunos-017">
+            <button class="btn btn--secondary" onclick="fecharModal()">Fechar</button>
+            <button class="btn btn--primary" id="btnRelatorio"><i class="fi fi-br-brain u-pages-professor-alunos-018"></i>Gerar Relat&oacute;rio</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="../../public/js/pages/professor/pages-professor-alunos-1.js"></script>
+</body>
+</html>

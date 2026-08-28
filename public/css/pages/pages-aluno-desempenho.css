@@ -1,0 +1,188 @@
+/* Estilos exclusivos de desempenho.html. */
+
+/* Abas */
+        .tabs {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xl);
+            background: rgba(0,0,0,0.04);
+            padding: 4px;
+            border-radius: var(--r-md);
+            width: fit-content;
+        }
+        .tab-btn {
+            padding: 8px 20px;
+            border-radius: var(--r-sm);
+            border: none;
+            background: transparent;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--c-text-soft);
+            cursor: pointer;
+            transition: all var(--t-fast);
+        }
+        .tab-btn.active {
+            background: var(--c-secondary);
+            color: var(--c-blue-dark);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Gráfico de barras CSS */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: var(--space-sm);
+            height: 160px;
+            padding-bottom: var(--space-md);
+            border-bottom: 2px solid var(--c-border);
+            position: relative;
+        }
+        .bar-chart__col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+        }
+        .bar-chart__bar {
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            background: rgba(133,199,242,0.5);
+            transition: height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            min-height: 4px;
+            position: relative;
+        }
+        .bar-chart__bar.highlight { background: var(--c-blue-mid); }
+        .bar-chart__bar:hover { background: var(--c-blue-mid); }
+        .bar-chart__label {
+            font-size: 0.72rem;
+            color: var(--c-text-soft);
+            font-weight: 500;
+        }
+        .bar-chart__val {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--c-blue-dark);
+            white-space: nowrap;
+        }
+
+        /* Gráfico de pizza (donut) CSS */
+        .donut-wrap {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xl);
+        }
+        .donut {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            flex-shrink: 0;
+        }
+        .donut canvas { position: absolute; inset: 0; }
+        .donut__center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .donut__pct {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--c-blue-dark);
+            line-height: 1;
+        }
+        .donut__lbl {
+            font-size: 0.7rem;
+            color: var(--c-text-soft);
+            font-weight: 500;
+        }
+        .donut-legend { flex: 1; display: flex; flex-direction: column; gap: var(--space-sm); }
+        .legend-item { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.82rem; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+        /* Cards de estatística grandes */
+        .big-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: var(--space-lg);
+            border-radius: var(--r-lg);
+            border: 1.5px solid var(--c-border);
+            background: var(--c-secondary);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+        }
+        .big-stat__icon {
+            width: 52px; height: 52px;
+            border-radius: var(--r-md);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            margin: 0 auto var(--space-sm);
+        }
+        .big-stat__value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--c-blue-dark);
+            line-height: 1;
+        }
+        .big-stat__label {
+            font-size: 0.8rem;
+            color: var(--c-text-soft);
+            font-weight: 500;
+        }
+
+        /* Ranking lista */
+        .ranking-card .rank-item { padding: var(--space-sm) 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .ranking-card .rank-item:last-child { border-bottom: none; }
+
+        /* Medalhas grid */
+        .medals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: var(--space-md);
+        }
+
+        /* Categorias Dominadas */
+        .category-progress-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        .cat-progress-icon {
+            width: 36px; height: 36px;
+            border-radius: var(--r-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .cat-progress-info { flex: 1; min-width: 0; }
+        .cat-progress-name { font-size: 0.88rem; font-weight: 600; color: var(--c-text); margin-bottom: 4px; }
+
+        @media (max-width: 768px) {
+            .stats-overview { grid-template-columns: repeat(2, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+            .donut-wrap { flex-direction: column; align-items: flex-start; }
+        }
+
+/* Classes geradas a partir dos antigos estilos inline. */
+.u-pages-aluno-desempenho-001 { display:flex;align-items:center;gap:var(--space-md); }
+.u-pages-aluno-desempenho-002 { margin-bottom:var(--space-xl); }
+.u-pages-aluno-desempenho-003 { background:rgba(68,246,152,0.25);color:#1a7c49; }
+.u-pages-aluno-desempenho-004 { background:#1F6CE3; }
+.u-pages-aluno-desempenho-005 { background:rgba(0,0,0,0.10); }
+.u-pages-aluno-desempenho-006 { margin-top:var(--space-sm);padding-top:var(--space-sm);border-top:1px solid var(--c-border); }
+.u-pages-aluno-desempenho-007 { color:var(--c-text-soft);font-size:0.9rem; }
+.u-pages-aluno-desempenho-008 { margin-left:4px; }
+.u-pages-aluno-desempenho-009 { height:0; }
+.u-pages-aluno-desempenho-010 { display:flex;align-items:center;gap:var(--space-sm); }
+.u-pages-aluno-desempenho-011 { flex:1; }
+.u-pages-aluno-desempenho-012 { font-size:0.78rem;font-weight:600;color:var(--c-text-soft);width:32px;text-align:right; }
