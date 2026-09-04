@@ -180,7 +180,7 @@ function selecionarAluno(id) {
 // ================================================================
 // RENDER DASHBOARD COMPLETO
 // ================================================================
-function renderDashboard() {
+function renderDashboardLegacy() {
     const s   = studentsData.find(x => x.id===selectedId);
     const nv  = NIVEL_INFO[s.nivel];
     const area = document.getElementById('dashboardArea');
@@ -516,6 +516,87 @@ function renderDashboard() {
 }
 
 // ================================================================
+// RELATÓRIO SIMPLIFICADO
+// ================================================================
+function renderDashboard() {
+    const student = studentsData.find((item) => item.id === selectedId);
+    const level = NIVEL_INFO[student.nivel];
+    const totalCorrect = student.atividades.reduce((sum, activity) => sum + activity.acertos, 0);
+    const totalErrors = student.atividades.reduce((sum, activity) => sum + activity.erros, 0);
+    const totalAnswers = totalCorrect + totalErrors;
+    const accuracy = totalAnswers ? Math.round((totalCorrect / totalAnswers) * 100) : 0;
+    const completed = student.atividades.filter((activity) => activity.status === 'done').length;
+    const strongModules = student.atividades.filter((activity) => {
+        const answers = activity.acertos + activity.erros;
+        return answers && activity.acertos / answers >= 0.7;
+    }).map((activity) => activity.nome);
+    const supportModules = student.atividades.filter((activity) => {
+        const answers = activity.acertos + activity.erros;
+        return answers && activity.acertos / answers < 0.7;
+    }).map((activity) => activity.nome);
+    const recommendation = supportModules.length
+        ? `Reforce os módulos ${supportModules.join(', ')} nas próximas aulas.`
+        : 'O aluno apresenta bom aproveitamento nos módulos realizados.';
+
+    const rows = student.atividades.map((activity) => {
+        const answers = activity.acertos + activity.erros;
+        const activityAccuracy = answers ? Math.round((activity.acertos / answers) * 100) : 0;
+        const status = activity.status === 'done'
+            ? 'Concluído'
+            : activity.status === 'prog' ? 'Em andamento' : 'Não iniciado';
+        return `
+            <tr>
+                <th scope="row">${activity.nome}</th>
+                <td><span class="simple-status simple-status--${activity.status}">${status}</span></td>
+                <td>${activity.acertos}</td>
+                <td>${activity.erros}</td>
+                <td><strong>${activityAccuracy}%</strong></td>
+            </tr>
+        `;
+    }).join('');
+
+    document.getElementById('dashboardArea').innerHTML = `
+        <section class="simple-student-card">
+            <div class="simple-student-heading">
+                <div class="hero-av" style="background:${student.avatarColor}">${student.name[0]}</div>
+                <div>
+                    <h2>${student.name}</h2>
+                    <p>Turma ${student.turma} · Último acesso: ${student.last}</p>
+                    <span class="nivel-tag ${level.cls}">${level.text}</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="simple-report-card" aria-labelledby="summary-title">
+            <h2 id="summary-title">Resumo</h2>
+            <div class="simple-summary-grid">
+                <div><strong>${student.prog}%</strong><span>Progresso geral</span></div>
+                <div><strong>${accuracy}%</strong><span>Aproveitamento</span></div>
+                <div><strong>${completed}/${student.atividades.length}</strong><span>Módulos concluídos</span></div>
+                <div><strong>${student.xp.toLocaleString('pt-BR')}</strong><span>XP total</span></div>
+            </div>
+        </section>
+
+        <section class="simple-report-card" aria-labelledby="modules-title">
+            <h2 id="modules-title">Desempenho por módulo</h2>
+            <p class="simple-section-help">Confira onde o aluno está indo bem e onde precisa de apoio.</p>
+            <div class="simple-table-wrap">
+                <table class="simple-report-table">
+                    <thead><tr><th>Módulo</th><th>Situação</th><th>Acertos</th><th>Erros</th><th>Aproveitamento</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="simple-report-card simple-guidance" aria-labelledby="guidance-title">
+            <h2 id="guidance-title">Orientação para a próxima aula</h2>
+            ${strongModules.length ? `<p><strong>Bom desempenho:</strong> ${strongModules.join(', ')}.</p>` : ''}
+            <p><strong>Sugestão:</strong> ${recommendation}</p>
+        </section>
+    `;
+}
+
+// ================================================================
 // SIDEBAR + MOBILE
 // ================================================================
 const sidebar   = document.getElementById('sidebar');
@@ -525,7 +606,6 @@ const mobileBtn = document.getElementById('mobileMenuBtn');
 toggle.addEventListener('click',  () => sidebar.classList.toggle('sidebar--collapsed'));
 mobileBtn.addEventListener('click',() => { sidebar.classList.add('open'); backdrop.classList.add('open'); });
 backdrop.addEventListener('click', () => { sidebar.classList.remove('open'); backdrop.classList.remove('open'); });
-document.getElementById('btnNotif').addEventListener('click', () => showToast('3 novas notifica\u00e7\u00f5es', 'info'));
 
 // ================================================================
 // TOAST
