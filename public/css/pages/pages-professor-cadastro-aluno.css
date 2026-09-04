@@ -10,9 +10,14 @@
     right: 24px;
 }
 
+.auth-page--student-register .auth-card {
+    height: min(86vh, 620px);
+    min-height: 520px;
+}
+
 .auth-form-panel--student-register {
     overflow: hidden;
-    padding: 32px 48px;
+    padding: 24px 40px;
     display: flex;
     flex-direction: column;
     justify-content: center;
