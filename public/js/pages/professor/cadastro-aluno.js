@@ -51,7 +51,13 @@ async function saveStudent() {
         });
         get("#confPin").textContent = result.pin;
         showToast(`Aluno cadastrado. PIN: ${result.pin}`, "success");
-        window.setTimeout(() => { window.location.href = "alunos.html"; }, 900);
+        window.setTimeout(() => {
+            if (window.roarNavigate) {
+                window.roarNavigate("alunos.html");
+            } else {
+                window.location.href = "alunos.html";
+            }
+        }, 900);
     } catch (error) {
         showToast(error.message, "error");
         button.disabled = false;

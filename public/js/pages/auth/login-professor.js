@@ -13,7 +13,11 @@ form?.addEventListener("submit", async (event) => {
             email: document.querySelector("#emailInput").value,
             password: document.querySelector("#senha").value,
         });
-        window.location.href = APP_CONFIG.routes.teacherHome;
+        if (window.roarNavigate) {
+            window.roarNavigate(APP_CONFIG.routes.teacherHome);
+        } else {
+            window.location.href = APP_CONFIG.routes.teacherHome;
+        }
     } catch (error) {
         showToast(error.message, "error");
     } finally {

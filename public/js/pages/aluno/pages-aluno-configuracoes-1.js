@@ -93,7 +93,13 @@ function saveConfig() {
 
 document.getElementById('btnSave').addEventListener('click',  saveConfig);
 document.getElementById('btnSave2').addEventListener('click', saveConfig);
-document.getElementById('btnLogout').addEventListener('click', () => { window.location.href = '../auth/login-aluno.html'; });
+document.getElementById('btnLogout').addEventListener('click', () => {
+    if (window.roarNavigate) {
+        window.roarNavigate('../auth/login-aluno.html');
+    } else {
+        window.location.href = '../auth/login-aluno.html';
+    }
+});
 document.getElementById('btnDados').addEventListener('click',  () => { showToast('Exportação de dados em breve', 'info'); });
 
 // ============================================================

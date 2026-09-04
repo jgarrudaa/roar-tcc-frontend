@@ -10,14 +10,9 @@
     right: 24px;
 }
 
-.auth-page--student-register .auth-card {
-    height: min(86vh, 620px);
-    min-height: 520px;
-}
-
 .auth-form-panel--student-register {
     overflow: hidden;
-    padding: 24px 40px;
+    padding: 24px 44px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -29,16 +24,18 @@
 }
 
 .auth-form-panel--student-register .auth-form-header {
-    gap: 8px;
+    gap: 6px;
+    margin-bottom: 2px;
 }
 
 .auth-form-panel--student-register .auth-form-header h2 {
-    font-size: 22px;
+    font-size: 21px;
+    margin: 0;
 }
 
 .auth-form-panel--student-register .auth-form-label {
-    padding-bottom: 4px;
-    font-size: 14px;
+    padding-bottom: 3px;
+    font-size: 13.5px;
 }
 
 .student-register-step {
@@ -46,7 +43,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .student-register-step[hidden] {
@@ -54,21 +51,21 @@
 }
 
 .student-register-fields {
-    gap: 8px;
+    gap: 7px;
 }
 
-/* Inputs mais finos para caber o botão com folga */
+/* Inputs mais finos para caber no card de tamanho padrão */
 .auth-form-panel--student-register .auth-input {
-    height: 38px;
-    padding: 0 14px;
-    font-size: 14px;
+    height: 35px;
+    padding: 0 13px;
+    font-size: 13.5px;
     border-radius: 8px;
 }
 
 .auth-select {
     appearance: none;
     background-image: linear-gradient(45deg, transparent 50%, #6b7280 50%), linear-gradient(135deg, #6b7280 50%, transparent 50%);
-    background-position: calc(100% - 18px) 16px, calc(100% - 13px) 16px;
+    background-position: calc(100% - 18px) 15px, calc(100% - 13px) 15px;
     background-size: 5px 5px, 5px 5px;
     background-repeat: no-repeat;
 }
@@ -91,13 +88,14 @@
     color: #6b7280;
     font-size: 11px;
     text-align: center;
+    line-height: 1.2;
 }
 
 /* Botão azul normal igual aos outros botões */
 .auth-form-panel--student-register .buttonlogin,
 .auth-form-panel--student-register .auth-submit {
     width: 100%;
-    height: 42px;
+    height: 40px;
     border: 0;
     border-radius: 8px;
     color: var(--auth-white, #fffaff);
@@ -238,8 +236,3 @@
     background: #34d884;
 }
 
-@media (max-width: 900px) {
-    .auth-form-panel--student-register {
-        min-height: 620px;
-    }
-}

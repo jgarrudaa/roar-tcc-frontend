@@ -19,7 +19,13 @@ form?.addEventListener("submit", async (event) => {
             password: document.querySelector("#senha").value,
         });
         showToast("Cadastro realizado com sucesso.", "success");
-        window.setTimeout(() => { window.location.href = "login-professor.html"; }, 500);
+        window.setTimeout(() => {
+            if (window.roarNavigate) {
+                window.roarNavigate("login-professor.html");
+            } else {
+                window.location.href = "login-professor.html";
+            }
+        }, 500);
     } catch (error) {
         showToast(error.message, "error");
     } finally {

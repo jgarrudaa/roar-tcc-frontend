@@ -49,7 +49,13 @@ function init() {
     categorias.forEach(cat => {
         const el = document.createElement('div');
         el.className = 'cat-card';
-        el.onclick = () => window.location.href = cat.link;
+        el.onclick = () => {
+            if (window.roarNavigate) {
+                window.roarNavigate(cat.link);
+            } else {
+                window.location.href = cat.link;
+            }
+        };
         el.innerHTML = `
             <div class="cat-card__icon cat-card__icon--${cat.color}">
                 <i class="${cat.icon}"></i>

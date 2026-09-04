@@ -45,7 +45,12 @@ function createModuleCard(module, index) {
 
     card.append(icon, title, progress, bar);
     card.addEventListener("click", () => {
-        window.location.href = `atividade.html?modulo=${encodeURIComponent(module.id)}&etapa=${module.nextStage}`;
+        const url = `atividade.html?modulo=${encodeURIComponent(module.id)}&etapa=${module.nextStage}`;
+        if (window.roarNavigate) {
+            window.roarNavigate(url);
+        } else {
+            window.location.href = url;
+        }
     });
     return card;
 }

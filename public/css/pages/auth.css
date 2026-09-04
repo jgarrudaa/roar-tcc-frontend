@@ -1,4 +1,5 @@
 @import url("../components/feedback.css");
+@import url("../components/transitions.css");
 
 :root {
     --auth-blue: #1f6ce3;
@@ -107,7 +108,7 @@ input {
 }
 
 .auth-highlight--green {
-    color: var(--auth-green);
+    color: #098241;
 }
 
 .auth-highlight--blue {

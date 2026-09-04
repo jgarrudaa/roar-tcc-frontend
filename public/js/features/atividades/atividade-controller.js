@@ -45,10 +45,13 @@ export async function createActivityController({ moduleId, stage, elements }) {
             const completed = engine.next();
             if (!completed) return;
             await atividadeService.complete(activity.id, stats);
-            if (stage < 3) {
-                window.location.href = `atividade.html?modulo=${encodeURIComponent(moduleId)}&etapa=${stage + 1}`;
+            const nextUrl = stage < 3
+                ? `atividade.html?modulo=${encodeURIComponent(moduleId)}&etapa=${stage + 1}`
+                : "atividades.html";
+            if (window.roarNavigate) {
+                window.roarNavigate(nextUrl);
             } else {
-                window.location.href = "atividades.html";
+                window.location.href = nextUrl;
             }
         },
     };
