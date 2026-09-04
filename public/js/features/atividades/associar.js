@@ -89,6 +89,7 @@ function contextualSentence(context) {
     const { module, elements, onCorrect, onWrong } = context;
     let index = 0;
     let selected = [];
+    let autoAdvanceTimer = null;
 
     function render() {
         const item = module.items[index];
@@ -116,6 +117,11 @@ function contextualSentence(context) {
                     onCorrect(item);
                     elements.setProgress(index + 1, module.items.length);
                     elements.nextButton.disabled = false;
+                    // Auto-avanço após acertar a frase
+                    clearTimeout(autoAdvanceTimer);
+                    autoAdvanceTimer = window.setTimeout(() => {
+                        elements.nextButton.click();
+                    }, 1200);
                 } else {
                     elements.setMessage("Você errou. Tente novamente e observe a ordem da frase.");
                     audioService.speak("Você errou. Tente novamente.");
@@ -136,6 +142,7 @@ function contextualSentence(context) {
         start: render,
         repeatInstruction: () => audioService.speak("Organize as palavras para formar uma frase."),
         next() {
+            clearTimeout(autoAdvanceTimer);
             if (index < module.items.length - 1) {
                 index += 1;
                 elements.nextButton.disabled = true;

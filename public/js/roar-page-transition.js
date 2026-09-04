@@ -34,7 +34,7 @@
         // Executa a transição antes de alterar a URL
         window.setTimeout(function () {
             window.location.href = url;
-        }, 200);
+        }, 120);
 
         // Trava de segurança: remove a classe se a página não descarregar em 2.5s
         window.setTimeout(function () {

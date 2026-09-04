@@ -4,6 +4,7 @@ import { createImage } from "./activity-helpers.js";
 export function createRecognizeActivity(context) {
     const { module, student, elements, onCorrect } = context;
     let index = 0;
+    let autoAdvanceTimer = null;
 
     function instruction(item) {
         if (student.supportLevel === 1) return `Clique em ${item.pt}.`;
@@ -33,6 +34,11 @@ export function createRecognizeActivity(context) {
             elements.nextButton.disabled = false;
             elements.setProgress(index + 1, module.items.length);
             onCorrect(item);
+            // Auto-avanço automático após revelar a palavra
+            clearTimeout(autoAdvanceTimer);
+            autoAdvanceTimer = window.setTimeout(() => {
+                elements.nextButton.click();
+            }, 1400);
         }, { once: true });
         content.append(imageButton, word);
         elements.stage.append(content);
@@ -47,6 +53,7 @@ export function createRecognizeActivity(context) {
             audioService.speak(instruction(module.items[index]));
         },
         next() {
+            clearTimeout(autoAdvanceTimer);
             if (index < module.items.length - 1) {
                 index += 1;
                 elements.nextButton.disabled = true;

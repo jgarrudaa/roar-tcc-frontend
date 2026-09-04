@@ -4,6 +4,7 @@ import { createButton, createImage, shuffle } from "./activity-helpers.js";
 export function createValidateActivity(context) {
     const { module, student, elements, onCorrect, onWrong } = context;
     let index = 0;
+    let autoAdvanceTimer = null;
 
     function instruction(item) {
         if (student.supportLevel === 1) return `Selecione a imagem de ${item.pt}.`;
@@ -38,6 +39,11 @@ export function createValidateActivity(context) {
                     elements.setProgress(index + 1, module.items.length);
                     onCorrect(item);
                     Array.from(grid.children).forEach((choice) => { choice.disabled = true; });
+                    // Auto-avanço: passa para o próximo item automaticamente
+                    clearTimeout(autoAdvanceTimer);
+                    autoAdvanceTimer = window.setTimeout(() => {
+                        elements.nextButton.click();
+                    }, 1200);
                     return;
                 }
                 button.classList.add("is-wrong");
@@ -59,6 +65,7 @@ export function createValidateActivity(context) {
         start: render,
         repeatInstruction: () => audioService.speak(instruction(module.items[index])),
         next() {
+            clearTimeout(autoAdvanceTimer);
             if (index < module.items.length - 1) {
                 index += 1;
                 elements.nextButton.disabled = true;
