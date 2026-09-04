@@ -37,9 +37,9 @@ input {
 }
 
 .auth-card {
-    width: min(85vw, 1440px);
-    height: min(65vh, 600px);
-    min-height: 540px;
+    width: min(90vw, 1200px);
+    height: min(72vh, 560px);
+    min-height: 500px;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     overflow: hidden;
@@ -55,12 +55,14 @@ input {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: flex-start;
     gap: 48px;
     overflow: visible;
     color: var(--auth-white);
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
+    height: 100%;
 }
 
 .auth-logo {
@@ -74,6 +76,7 @@ input {
 .auth-copy {
     position: relative;
     z-index: 2;
+    text-align: left;
 }
 
 .auth-greeting,
@@ -111,23 +114,24 @@ input {
 
 .auth-mascot-stage {
     position: absolute;
-    z-index: 3;
-    right: 0;
-    bottom: 0;
-    width: 250px;
-    height: 220px;
+    z-index: 10;
+    right: 24px;
+    bottom: 30px;
+    width: 220px;
+    height: 200px;
     display: grid;
     place-items: end center;
     pointer-events: none;
+    transform: none;
 }
 
 .auth-dino {
     position: absolute;
-    left: 50%;
-    bottom: 0;
+    left: 85%;
+    bottom: -35px;
     width: auto;
-    height: 200px;
-    max-width: 250px;
+    height: 180px;
+    max-width: 220px;
     object-fit: contain;
     object-position: center bottom;
     transform: translateX(-50%);
@@ -139,20 +143,21 @@ input {
     min-width: 0;
     display: grid;
     place-items: center;
-    padding: 48px;
+    padding: 24px 48px;
     background: var(--auth-white);
+    height: 100%;
 }
 
 .auth-form {
     width: min(100%, 540px);
-    min-height: 480px;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
 .auth-form--register {
-    min-height: 540px;
+    min-height: 0;
 }
 
 .auth-form-header {

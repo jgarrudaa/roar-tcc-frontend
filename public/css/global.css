@@ -1919,6 +1919,10 @@ textarea {
     filter: brightness(0);
 }
 
+html[data-theme="dark"] .sidebar .sidebar__logo {
+    filter: brightness(0) invert(1);
+}
+
 .teacher-area .sidebar__logo {
     filter: brightness(0) invert(1);
 }
