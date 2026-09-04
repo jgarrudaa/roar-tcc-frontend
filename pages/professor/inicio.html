@@ -9,14 +9,14 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
     <link rel="stylesheet" href="../../public/css/pages/pages-professor-inicio.css">
 </head>
-<body>
+<body class="teacher-area">
 <div class="app-shell">
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <!-- SIDEBAR PROFESSOR -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar__logo-wrap">
-            <img src="../../public/assets/imagens/logo.png" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
+            <img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
             <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i class="fi fi-br-menu-burger"></i></button>
         </div>
         <nav class="sidebar__nav">
@@ -37,8 +37,8 @@
             <div class="u-pages-professor-inicio-001">
                 <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button>
                 <div class="navbar__page-title">
-                    <h1>Olá, <span class="u-pages-professor-inicio-002">Professora Ana Paula</span></h1>
-                    <p>Acompanhe o progresso da sua turma.</p>
+                    <h1>Visão geral</h1>
+                    <p>Resumo da turma e itens que precisam de atenção.</p>
                 </div>
             </div>
             <div class="navbar__right u-pages-professor-inicio-001">
@@ -49,7 +49,7 @@
                     <i class="fi fi-br-bell"></i>
                     <span class="u-pages-professor-inicio-006"></span>
                 </button>
-                <div class="navbar__avatar u-pages-professor-inicio-007" title="Perfil">A</div>
+                <a href="perfil.html" class="navbar__avatar u-pages-professor-inicio-007" title="Perfil" aria-label="Abrir perfil">A</a>
             </div>
         </header>
 
@@ -101,7 +101,7 @@
                 <!-- Alunos com Nível e Progresso -->
                 <div class="card">
                     <div class="section-header mb-md">
-                        <h2>Alunos & Níveis de Suporte</h2>
+                        <h2>Alunos e níveis de suporte</h2>
                         <a href="alunos.html" class="btn btn--secondary btn--sm">Ver todos</a>
                     </div>
                     <div id="alunosNivelList">
@@ -127,7 +127,7 @@
                 <!-- Histórico de Acertos/Erros -->
                 <div class="card">
                     <div class="section-header mb-md">
-                        <h2>Histórico por Aluno</h2>
+                        <h2>Desempenho por aluno</h2>
                     </div>
                     <!-- Seletor de aluno -->
                     <select id="histAluno" class="u-pages-professor-inicio-013">

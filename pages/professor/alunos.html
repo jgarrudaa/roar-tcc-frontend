@@ -9,14 +9,14 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
     <link rel="stylesheet" href="../../public/css/pages/pages-professor-alunos.css">
 </head>
-<body>
+<body class="teacher-area">
 <div class="app-shell">
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <!-- SIDEBAR PROFESSOR -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar__logo-wrap">
-            <img src="../../public/assets/imagens/logo.png" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
+            <img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
             <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i class="fi fi-br-menu-burger"></i></button>
         </div>
         <nav class="sidebar__nav">
@@ -37,8 +37,8 @@
             <div class="u-pages-professor-alunos-001">
                 <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button>
                 <div class="navbar__page-title">
-                    <h1>Desempenho dos <span class="u-pages-professor-alunos-002">Alunos</span></h1>
-                    <p>Clique em um aluno para ver o desempenho detalhado por atividade.</p>
+                    <h1>Alunos</h1>
+                    <p>Consulte a turma e acompanhe o desempenho individual.</p>
                 </div>
             </div>
             <div class="navbar__right u-pages-professor-alunos-001">
@@ -49,7 +49,7 @@
                     <i class="fi fi-br-bell"></i>
                     <span class="u-pages-professor-alunos-006"></span>
                 </button>
-                <div class="navbar__avatar u-pages-professor-alunos-007" title="Perfil">A</div>
+                <a href="perfil.html" class="navbar__avatar u-pages-professor-alunos-007" title="Perfil" aria-label="Abrir perfil">A</a>
             </div>
         </header>
 
@@ -68,7 +68,7 @@
                     <option value="">Todos os n&iacute;veis</option>
                     <option value="1">N&iacute;vel 1 &mdash; Suporte Visual Puro</option>
                     <option value="2">N&iacute;vel 2 &mdash; Aprendiz Guiado</option>
-                    <option value="3">N&iacute;vel 3 &mdash; Autonomia Contextural</option>
+                    <option value="3">N&iacute;vel 3 &mdash; Autonomia Contextual</option>
                 </select>
                 <select class="filter-select" id="filterTurma" onchange="filtrarAlunos()">
                     <option value="">Todas as turmas</option>

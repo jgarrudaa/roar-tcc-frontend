@@ -40,7 +40,7 @@ const studentsData = [
 const nivelLabels = {
     1: { text: 'Nível 1 — Suporte Visual Puro', cls: 'nivel-1' },
     2: { text: 'Nível 2 — Aprendiz Guiado', cls: 'nivel-2' },
-    3: { text: 'Nível 3 — Autonomia Contextural', cls: 'nivel-3' },
+    3: { text: 'Nível 3 — Autonomia Contextual', cls: 'nivel-3' },
 };
 
 const notifData = [

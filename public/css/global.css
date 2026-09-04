@@ -186,6 +186,11 @@ textarea {
     transition: transform var(--t-fast);
 }
 
+[data-theme="dark"] .sidebar__logo,
+.dark-theme .sidebar__logo {
+    filter: invert(1);
+}
+
 .sidebar__logo:hover {
     transform: scale(1.04);
 }
@@ -1279,11 +1284,13 @@ textarea {
         left: 0;
         top: 0;
         height: 100%;
-        width: var(--sidebar-w);
+        width: min(82vw, 280px);
+        min-width: min(82vw, 280px);
         transform: translateX(-100%);
         box-shadow: var(--shadow-lg);
         z-index: 200;
         transition: transform var(--t-med);
+        overflow: hidden;
     }
 
     .sidebar.open {
@@ -1367,10 +1374,18 @@ textarea {
 @media (max-width: 768px) {
     .mobile-menu-btn {
         display: flex;
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        flex: 0 0 44px;
     }
 
     .sidebar__toggle {
         display: none;
+    }
+
+    .btn--sm {
+        min-height: 44px;
     }
 }
 
@@ -1880,4 +1895,117 @@ textarea {
     background: var(--c-modal-bg) !important;
     border: 1px solid var(--c-border) !important;
     color: var(--c-text) !important;
+}
+
+/* ============================================================
+   ÁREA DO PROFESSOR — interface administrativa simples
+   ============================================================ */
+.teacher-area {
+    --teacher-navy: #173554;
+    --teacher-blue: #2563a8;
+    --teacher-surface: #f4f6f8;
+}
+
+.teacher-area * { scrollbar-width: none; -ms-overflow-style: none; }
+.teacher-area *::-webkit-scrollbar { display: none; }
+
+.teacher-area .sidebar {
+    background: var(--teacher-navy);
+    border-right-color: rgba(255, 255, 255, 0.12);
+    padding-top: 32px;
+}
+
+.teacher-area .sidebar__logo {
+    filter: invert(1) brightness(2);
+}
+
+.teacher-area .sidebar__toggle,
+.teacher-area .sidebar__link,
+.teacher-area .sidebar__link i,
+.teacher-area .sidebar__link span {
+    color: #fff;
+}
+
+.teacher-area .sidebar__toggle { opacity: 1; }
+.teacher-area .sidebar__toggle:hover { color: #fff; opacity: 1; }
+.teacher-area .sidebar__link { opacity: 1; border-radius: 8px; }
+.teacher-area .sidebar__link:hover { background: rgba(255,255,255,0.10); color: #fff; opacity: 1; }
+.teacher-area .sidebar__link.active { background: rgba(255,255,255,0.17); color: #fff; opacity: 1; }
+.teacher-area .sidebar__footer { border-top: 1px solid rgba(255,255,255,0.12); padding-top: 12px; }
+
+.teacher-area .main-content {
+    background: var(--teacher-surface);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.teacher-area .main-content::-webkit-scrollbar { display: none; }
+.teacher-area .navbar {
+    min-height: 92px;
+    padding: 18px 36px;
+    background: var(--teacher-navy);
+    border-bottom: 1px solid rgba(255,255,255,.12);
+    box-shadow: none;
+}
+
+.teacher-area .navbar__page-title h1 { font-size: 1.35rem; color: #fff; }
+.teacher-area .navbar__page-title p { margin-top: 2px; font-size: 0.78rem; color: rgba(255,255,255,.76); }
+.teacher-area .navbar__icon-btn,
+.teacher-area .mobile-menu-btn { color: #fff; }
+.teacher-area .navbar__icon-btn:hover,
+.teacher-area .mobile-menu-btn:hover { color: #fff; background: rgba(255,255,255,.12); }
+.teacher-area .navbar .btn--primary { color: var(--teacher-navy); background: #fff; }
+.teacher-area .navbar .btn--primary:hover { color: var(--teacher-navy); background: #eef4fa; }
+.teacher-area .navbar__avatar { color: var(--teacher-navy); background: #fff; }
+.teacher-area .page-body { width: 100%; max-width: 1440px; margin: 0 auto; padding: 28px 36px 44px; overflow: visible; }
+
+.teacher-area .card,
+.teacher-area .stat-card,
+.teacher-area .student-card,
+.teacher-area .activity-card,
+.teacher-area .act-card,
+.teacher-area .student-sidebar,
+.teacher-area .dashboard-area > * {
+    border: 1px solid #dce2e8;
+    border-radius: 10px;
+    box-shadow: none;
+}
+
+.teacher-area .card { padding: 22px; }
+.teacher-area .stat-card { min-height: 104px; padding: 18px; }
+.teacher-area .stat-card__icon { width: 42px; height: 42px; border-radius: 8px; font-size: 1rem; }
+.teacher-area .stat-card__label { font-size: 0.72rem; font-weight: 500; color: #667586; }
+.teacher-area .stat-card__value { font-size: 1.45rem; color: #172b3f; }
+.teacher-area .section-header h2 { font-size: 0.95rem; color: #172b3f; }
+.teacher-area .student-card:hover,
+.teacher-area .act-card:hover { transform: none; box-shadow: none; border-color: #aebbc8; }
+.teacher-area .students-grid,
+.teacher-area .cat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.teacher-area .filter-chip { border-radius: 7px; padding: 7px 12px; font-weight: 500; }
+.teacher-area .cat-icon,
+.teacher-area .act-icon { border-radius: 7px; }
+.teacher-area .student-card::before { display: none; }
+.teacher-area .stat-card__icon { display: none; }
+.teacher-area .filter-chip i { display: none; }
+.teacher-area .nivel-tag i { display: none; }
+
+.teacher-area .modal-box {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.teacher-area .modal-box::-webkit-scrollbar { display: none; }
+
+.teacher-area .btn { border-radius: 7px; box-shadow: none; }
+.teacher-area .btn--primary { background: var(--teacher-blue); }
+.teacher-area .btn--primary:hover { background: #1c4f89; transform: none; box-shadow: none; }
+.teacher-area input,
+.teacher-area select,
+.teacher-area textarea { border-radius: 7px !important; }
+
+@media (max-width: 900px) {
+    .teacher-area .navbar { min-height: 78px; padding: 14px 18px; }
+    .teacher-area .navbar__page-title p { display: none; }
+    .teacher-area .page-body { padding: 20px 16px 36px; }
+    .teacher-area .sidebar { padding-top: 24px; }
+    .teacher-area .students-grid,
+    .teacher-area .cat-grid { grid-template-columns: 1fr; }
 }

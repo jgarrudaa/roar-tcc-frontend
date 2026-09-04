@@ -1,25 +1,33 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Perfil do professor na plataforma ROAR.">
-    <title>ROAR | Perfil do professor</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROAR — Perfil do Professor</title>
     <link rel="stylesheet" href="../../public/css/global.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
     <link rel="stylesheet" href="../../public/css/pages/pages-professor-perfil.css">
 </head>
-<body>
-    <main class="teacher-profile">
-        <a class="teacher-profile__back" href="inicio.html">← Voltar</a>
-        <section class="teacher-profile__panel">
-            <p class="teacher-profile__eyebrow">Perfil do professor</p>
-            <h1>Ana Paula</h1>
-            <dl class="teacher-profile__data">
-                <div><dt>Email</dt><dd>ana.paula@roar.dev</dd></div>
-                <div><dt>CPF</dt><dd>***.***.***-**</dd></div>
-            </dl>
-            <p>Esses dados serão carregados pela API quando o backend estiver conectado.</p>
-        </section>
-    </main>
-</body>
-</html>
+<body class="teacher-area">
+<div class="app-shell">
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar__logo-wrap"><img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'"><button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i class="fi fi-br-menu-burger"></i></button></div>
+        <nav class="sidebar__nav" aria-label="Navegação principal">
+            <a href="inicio.html" class="sidebar__link"><i class="fi fi-br-home"></i><span>Início</span></a><a href="alunos.html" class="sidebar__link"><i class="fi fi-br-users"></i><span>Alunos</span></a><a href="atividades.html" class="sidebar__link"><i class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a><a href="relatorios.html" class="sidebar__link"><i class="fi fi-br-chart-simple"></i><span>Relatórios</span></a><a href="perfil.html" class="sidebar__link active" aria-current="page"><i class="fi fi-br-user"></i><span>Perfil</span></a>
+        </nav>
+        <div class="sidebar__footer"><a href="../auth/login-professor.html" class="sidebar__link"><i class="fi fi-br-exit"></i><span>Sair</span></a></div>
+    </aside>
+    <div class="main-content">
+        <header class="navbar"><div class="profile-title-wrap"><button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button><div class="navbar__page-title"><h1>Meu perfil</h1><p>Consulte seus dados pessoais e profissionais.</p></div></div><a href="perfil.html" class="navbar__avatar profile-navbar-avatar" title="Ana Paula" aria-label="Abrir perfil">AP</a></header>
+        <main class="page-body fade-in profile-page">
+            <section class="profile-summary" aria-labelledby="profile-name"><div class="profile-avatar" aria-hidden="true">AP</div><div class="profile-summary__text"><p class="profile-summary__label">Conta de professor</p><h2 id="profile-name">Ana Paula Ribeiro</h2><p>Professora de Língua Inglesa</p></div><span class="profile-status"><span></span> Conta ativa</span></section>
+            <div class="profile-grid">
+                <section class="card profile-section"><div class="profile-section__heading"><i class="fi fi-br-user"></i><div><h2>Dados pessoais</h2><p>Identificação e contato.</p></div></div><dl class="profile-data"><div><dt>Nome completo</dt><dd>Ana Paula Ribeiro</dd></div><div><dt>E-mail</dt><dd>ana.paula@escola.edu.br</dd></div><div><dt>Telefone</dt><dd>(11) 98765-4321</dd></div><div><dt>CPF</dt><dd>***.***.***-42</dd></div></dl></section>
+                <section class="card profile-section"><div class="profile-section__heading"><i class="fi fi-br-briefcase"></i><div><h2>Dados profissionais</h2><p>Vínculo e atuação na instituição.</p></div></div><dl class="profile-data"><div><dt>Instituição</dt><dd>Escola Municipal Horizonte</dd></div><div><dt>Disciplina</dt><dd>Língua Inglesa</dd></div><div><dt>Turmas</dt><dd>Turma A e Turma B</dd></div><div><dt>Matrícula</dt><dd>PROF-2025-018</dd></div></dl></section>
+            </div>
+            <section class="card profile-section"><div class="profile-section__heading"><i class="fi fi-br-settings"></i><div><h2>Conta</h2><p>Resumo de acesso à plataforma.</p></div></div><dl class="profile-data profile-data--account"><div><dt>Tipo de acesso</dt><dd>Professor</dd></div><div><dt>Último acesso</dt><dd>Hoje, às 08:32</dd></div><div><dt>Idioma</dt><dd>Português (Brasil)</dd></div></dl></section>
+        </main>
+    </div>
+</div>
+<script src="../../public/js/pages/professor/pages-professor-perfil-1.js"></script>
+</body></html>

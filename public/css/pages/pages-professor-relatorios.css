@@ -83,12 +83,8 @@
             position: relative; overflow: hidden;
         }
         .aluno-hero::before {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0; height: 5px;
+            content: none;
         }
-        .hero-lvl1::before { background: linear-gradient(90deg,#44F698,#22d3ee); }
-        .hero-lvl2::before { background: linear-gradient(90deg,#85C7F2,#3B82F6); }
-        .hero-lvl3::before { background: linear-gradient(90deg,#a855f7,#ec4899); }
         .aluno-hero__top {
             display: flex; align-items: center;
             gap: var(--space-lg); margin-bottom: var(--space-xl);

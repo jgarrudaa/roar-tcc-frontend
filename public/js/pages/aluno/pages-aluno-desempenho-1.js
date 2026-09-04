@@ -12,7 +12,7 @@ const catData = [
     { name: 'Corpo Humano', icon: 'fi fi-br-user',      color: '#85C7F2', prog: 70 },
     { name: 'Cores',        icon: 'fi fi-br-palette',    color: '#44F698', prog: 100 },
     { name: 'Animais',      icon: 'fi fi-br-cat',        color: '#85C7F2', prog: 50 },
-    { name: 'Emoções',      icon: 'fi fi-br-astonished-face', color: '#44F698', prog: 60 },
+    { name: 'Emoções',      icon: 'fi fi-br-grin-alt', color: '#44F698', prog: 60 },
     { name: 'Comida',       icon: 'fi fi-br-hamburger',      color: '#44F698', prog: 0 },
 ];
 

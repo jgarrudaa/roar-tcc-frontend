@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROAR â€” RelatÃ³rios de Desempenho</title>
+    <title>ROAR — Relatórios de Desempenho</title>
     <meta name="description" content="Dashboard completo de desempenho individual de cada aluno na plataforma ROAR.">
     <link rel="stylesheet" href="../../public/css/global.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
     <link rel="stylesheet" href="../../public/css/pages/pages-professor-relatorios.css">
 </head>
-<body>
+<body class="teacher-area">
 <div class="app-shell">
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <!-- SIDEBAR PROFESSOR -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar__logo-wrap">
-            <img src="../../public/assets/imagens/logo.png" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
+            <img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
             <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i class="fi fi-br-menu-burger"></i></button>
         </div>
         <nav class="sidebar__nav">
@@ -37,8 +37,8 @@
             <div class="u-pages-professor-relatorios-001">
                 <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button>
                 <div class="navbar__page-title">
-                    <h1>Relat&oacute;rios <span class="u-pages-professor-relatorios-002">de Desempenho</span></h1>
-                    <p>Dashboard individual por aluno com gr&aacute;ficos e an&aacute;lise pedag&oacute;gica.</p>
+                    <h1>Relat&oacute;rios</h1>
+                    <p>Analise o desempenho de um aluno por vez.</p>
                 </div>
             </div>
             <div class="navbar__right u-pages-professor-relatorios-001">
@@ -49,7 +49,7 @@
                     <i class="fi fi-br-bell"></i>
                     <span class="u-pages-professor-relatorios-004"></span>
                 </button>
-                <div class="navbar__avatar u-pages-professor-relatorios-005" title="Perfil">A</div>
+                <a href="perfil.html" class="navbar__avatar u-pages-professor-relatorios-005" title="Perfil" aria-label="Abrir perfil">A</a>
             </div>
         </header>
 

@@ -11,7 +11,7 @@ const ROAR = {
         userName: 'Leandro',
         userInitial: 'L',
         xp: 1240,
-        nivel: 2,           /* 1=Suporte Visual Puro | 2=Aprendiz Guiado | 3=Autonomia Contextural */
+        nivel: 2,           /* 1=Suporte Visual Puro | 2=Aprendiz Guiado | 3=Autonomia Contextual */
         streak: 7,
         progressoGeral: 40,
         progress: {},        /* { "corpo-humano": { etapaAtual:1, acertos:5, erros:1, xpGanho:30 } } */
@@ -26,7 +26,7 @@ const ROAR = {
         recent: [
             { name: 'Corpo Humano', cat: 'Vocabulário', xp: 50, icon: 'fi fi-br-portrait', color: 'a' },
             { name: 'Cores',        cat: 'Vocabulário', xp: 40, icon: 'fi fi-br-palette',  color: 'b' },
-            { name: 'Emoções',      cat: 'Vocabulário', xp: 35, icon: 'fi fi-br-astonished-face', color: 'b' },
+            { name: 'Emoções',      cat: 'Vocabulário', xp: 35, icon: 'fi fi-br-grin-alt', color: 'b' },
         ]
     },
 
@@ -39,7 +39,7 @@ const ROAR = {
             let parsed = JSON.parse(raw);
             if (parsed.recent) {
                 parsed.recent.forEach(r => {
-                    if (r.name === 'Emoções') r.icon = 'fi fi-br-astonished-face';
+                    if (r.name === 'Emoções') r.icon = 'fi fi-br-grin-alt';
                 });
             }
             return { ...this.defaults, ...parsed };
@@ -99,7 +99,7 @@ const ROAR = {
     nivelLabels: {
         1: { text: 'Nível 1 — Suporte Visual Puro',  short: 'N1', cls: 'nivel-1' },
         2: { text: 'Nível 2 — Aprendiz Guiado',      short: 'N2', cls: 'nivel-2' },
-        3: { text: 'Nível 3 — Autonomia Contextural', short: 'N3', cls: 'nivel-3' },
+        3: { text: 'Nível 3 — Autonomia Contextual', short: 'N3', cls: 'nivel-3' },
     },
 
     /* Limpa tudo (para testes) */

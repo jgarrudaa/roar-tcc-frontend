@@ -10,7 +10,7 @@ const AVATAR_COLORS = [
 const NIVEL_LABELS = {
     1: 'N\u00edvel 1 \u2014 Suporte Visual Puro',
     2: 'N\u00edvel 2 \u2014 Aprendiz Guiado',
-    3: 'N\u00edvel 3 \u2014 Autonomia Contextural',
+    3: 'N\u00edvel 3 \u2014 Autonomia Contextual',
 };
 
 const studentsData = [
@@ -140,7 +140,7 @@ const allCategories = [
         ]
     },
     {
-        id:'emocoes', name:'Emo\u00e7\u00f5es', icon:'fi fi-br-astonished-face', iconCls:'purple',
+        id:'emocoes', name:'Emo\u00e7\u00f5es', icon:'fi fi-br-grin-alt', iconCls:'purple',
         atividades: [
             {
                 id:'d1', name:'Express\u00f5es Faciais', tipo:'Identificar Imagens',

@@ -3,7 +3,7 @@
 const NIVEL_LABELS = {
     1: { text: 'N\u00edvel 1 \u2014 Suporte Visual Puro', cls: 'tag-1', cardCls: 'nivel-1' },
     2: { text: 'N\u00edvel 2 \u2014 Aprendiz Guiado', cls: 'tag-2', cardCls: 'nivel-2' },
-    3: { text: 'N\u00edvel 3 \u2014 Autonomia Contextural', cls: 'tag-3', cardCls: 'nivel-3' },
+    3: { text: 'N\u00edvel 3 \u2014 Autonomia Contextual', cls: 'tag-3', cardCls: 'nivel-3' },
 };
 
 const AVATAR_COLORS = [

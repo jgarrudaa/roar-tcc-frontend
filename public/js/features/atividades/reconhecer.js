@@ -31,6 +31,7 @@ export function createRecognizeActivity(context) {
             audioService.speak(item.en, "en-US");
             elements.setMessage(`Muito bem! ${item.pt} em inglês é ${item.en}.`);
             elements.nextButton.disabled = false;
+            elements.setProgress(index + 1, module.items.length);
             onCorrect(item);
         }, { once: true });
         content.append(imageButton, word);

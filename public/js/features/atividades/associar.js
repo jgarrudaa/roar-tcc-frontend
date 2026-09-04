@@ -53,6 +53,7 @@ function guidedAssociation(context) {
             button.type = "button";
             button.className = "choice-card";
             button.dataset.id = item.id;
+            button.setAttribute("aria-label", `Selecionar imagem de ${item.pt}`);
             button.append(createImage(item, student.supportLevel));
             button.addEventListener("click", () => {
                 imageSelection?.classList.remove("is-selected");
@@ -113,6 +114,7 @@ function contextualSentence(context) {
                 if (selected.join(" ") === expected.join(" ")) {
                     elements.setMessage("Muito bem! A frase está correta.");
                     onCorrect(item);
+                    elements.setProgress(index + 1, module.items.length);
                     elements.nextButton.disabled = false;
                 } else {
                     elements.setMessage("Você errou. Tente novamente e observe a ordem da frase.");

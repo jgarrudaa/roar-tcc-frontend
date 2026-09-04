@@ -9,14 +9,14 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
     <link rel="stylesheet" href="../../public/css/pages/pages-professor-atividades.css">
 </head>
-<body>
+<body class="teacher-area">
 <div class="app-shell">
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
     <!-- SIDEBAR PROFESSOR -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar__logo-wrap">
-            <img src="../../public/assets/imagens/logo.png" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
+            <img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
             <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i class="fi fi-br-menu-burger"></i></button>
         </div>
         <nav class="sidebar__nav">
@@ -37,8 +37,8 @@
             <div class="u-pages-professor-atividades-001">
                 <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button>
                 <div class="navbar__page-title">
-                    <h1>Atividades <span class="u-pages-professor-atividades-002">da Turma</span></h1>
-                    <p>Veja as estat&iacute;sticas e desbloqueie atividades individualmente para cada aluno.</p>
+                    <h1>Atividades</h1>
+                    <p>Consulte resultados e defina quais atividades estão disponíveis.</p>
                 </div>
             </div>
             <div class="navbar__right u-pages-professor-atividades-001">
@@ -46,7 +46,7 @@
                     <i class="fi fi-br-bell"></i>
                     <span class="u-pages-professor-atividades-004"></span>
                 </button>
-                <div class="navbar__avatar u-pages-professor-atividades-005" title="Perfil">A</div>
+                <a href="perfil.html" class="navbar__avatar u-pages-professor-atividades-005" title="Perfil" aria-label="Abrir perfil">A</a>
             </div>
         </header>
 
@@ -72,7 +72,7 @@
                 <button class="filter-chip active" data-f="all"><i class="fi fi-br-apps"></i> Todas</button>
                 <button class="filter-chip" data-f="corpo"><i class="fi fi-br-portrait"></i> Corpo Humano</button>
                 <button class="filter-chip" data-f="vocabulario"><i class="fi fi-br-book-open-cover"></i> Vocabul&aacute;rio</button>
-                <button class="filter-chip" data-f="emocoes"><i class="fi fi-br-astonished-face"></i> Emo&ccedil;&otilde;es</button>
+                <button class="filter-chip" data-f="emocoes"><i class="fi fi-br-grin-alt"></i> Emo&ccedil;&otilde;es</button>
                 <button class="filter-chip" data-f="animais"><i class="fi fi-br-paw"></i> Animais</button>
                 <button class="filter-chip" data-f="facil"><i class="fi fi-br-star"></i> F&aacute;cil</button>
                 <button class="filter-chip" data-f="medio"><i class="fi fi-br-star"></i> M&eacute;dio</button>

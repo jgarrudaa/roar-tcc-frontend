@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Atividade adaptativa da plataforma ROAR.">
     <title>ROAR | Atividade</title>
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
     <link rel="stylesheet" href="../../public/css/base/variables.css">
     <link rel="stylesheet" href="../../public/css/base/reset.css">
     <link rel="stylesheet" href="../../public/css/base/typography.css">
@@ -14,10 +15,14 @@
 </head>
 <body class="activity-page">
     <header class="activity-header">
-        <a class="activity-back" href="atividades.html" aria-label="Voltar para atividades">←</a>
+        <a class="activity-back" href="atividades.html" aria-label="Voltar para atividades">
+            <i class="fi fi-br-arrow-left"></i>
+        </a>
         <div class="activity-heading">
             <h1 id="activity-title">Carregando atividade</h1>
-            <button class="audio-button" id="repeat-instruction" type="button" aria-label="Ouvir instrução novamente">🔊</button>
+            <button class="audio-button" id="repeat-instruction" type="button" aria-label="Ouvir instrução novamente">
+                <i class="fi fi-br-volume"></i>
+            </button>
             <p id="activity-instruction">Aguarde um momento.</p>
         </div>
         <span class="level-badge" id="level-badge">Nível</span>
@@ -36,7 +41,7 @@
             <span id="progress-label">0 de 0</span>
             <progress id="activity-progress" value="0" max="1"></progress>
         </div>
-        <button class="next-button" id="next-button" type="button" disabled>Próximo →</button>
+        <button class="next-button" id="next-button" type="button" disabled>Próximo <i class="fi fi-br-arrow-right" aria-hidden="true"></i></button>
     </footer>
 
     <div id="toast-container" class="toast-container"></div>

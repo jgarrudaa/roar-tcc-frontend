@@ -6,6 +6,7 @@ export function createValidateActivity(context) {
     let index = 0;
 
     function instruction(item) {
+        if (student.supportLevel === 1) return `Selecione a imagem de ${item.pt}.`;
         return student.supportLevel === 3
             ? `Qual palavra em inglês representa ${item.pt} nesta situação?`
             : `Selecione a palavra que indica ${item.pt}.`;
@@ -26,6 +27,7 @@ export function createValidateActivity(context) {
             const button = createButton(option.en);
             if (student.supportLevel === 1) {
                 button.replaceChildren(createImage(option, 1));
+                button.setAttribute("aria-label", `Selecionar imagem de ${option.pt}`);
             }
             button.addEventListener("click", () => {
                 if (option.id === item.id) {
@@ -33,6 +35,7 @@ export function createValidateActivity(context) {
                     elements.setMessage("Muito bem! Resposta correta.");
                     audioService.speak("Muito bem! Resposta correta.");
                     elements.nextButton.disabled = false;
+                    elements.setProgress(index + 1, module.items.length);
                     onCorrect(item);
                     Array.from(grid.children).forEach((choice) => { choice.disabled = true; });
                     return;

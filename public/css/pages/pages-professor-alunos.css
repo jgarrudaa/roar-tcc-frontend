@@ -157,6 +157,13 @@
             transform: translateY(20px);
             transition: transform 0.3s ease;
         }
+
+        .teacher-area .modal-box { max-width: 900px; overflow-x: hidden; }
+        .teacher-area .act-table { table-layout: fixed; font-size: 0.74rem; }
+        .teacher-area .act-table th,
+        .teacher-area .act-table td { padding: 8px 7px; overflow-wrap: anywhere; }
+        .teacher-area .status-pill { padding: 3px 7px; white-space: normal; }
+        .teacher-area .status-pill i { display: none; }
         .modal-overlay.open .modal-box { transform: translateY(0); }
         .modal-header {
             display: flex;

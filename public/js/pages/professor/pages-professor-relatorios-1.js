@@ -10,7 +10,7 @@ const AVATAR_COLORS = [
 const NIVEL_INFO = {
     1: { text: 'N\u00edvel 1 \u2014 Suporte Visual Puro', cls: 'tag-1', heroCls: 'hero-lvl1', color: '#1a7c49' },
     2: { text: 'N\u00edvel 2 \u2014 Aprendiz Guiado', cls: 'tag-2', heroCls: 'hero-lvl2', color: '#1e5a9e' },
-    3: { text: 'N\u00edvel 3 \u2014 Autonomia Contextural', cls: 'tag-3', heroCls: 'hero-lvl3', color: '#7c3aed' },
+    3: { text: 'N\u00edvel 3 \u2014 Autonomia Contextual', cls: 'tag-3', heroCls: 'hero-lvl3', color: '#7c3aed' },
 };
 
 const studentsData = [

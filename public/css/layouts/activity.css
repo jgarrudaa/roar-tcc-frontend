@@ -25,10 +25,19 @@
     color: var(--roar-blue);
     background: var(--roar-blue-light);
     text-decoration: none;
+    transition: transform 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
 }
 
-.activity-back { width: 56px; height: 56px; font-size: 30px; font-weight: 600; }
-.audio-button { width: 38px; height: 38px; font-size: 18px; }
+.activity-back { width: 56px; height: 56px; box-shadow: 0 5px 14px rgba(15, 79, 125, 0.16); }
+.audio-button { width: 42px; height: 42px; vertical-align: middle; }
+.activity-back:hover, .audio-button:hover { transform: translateY(-2px); background: #d5edfb; }
+.activity-back:active, .audio-button:active { transform: translateY(0); }
+.activity-back:focus-visible, .audio-button:focus-visible { outline: 3px solid var(--roar-blue); outline-offset: 3px; }
+.activity-icon { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2.35; stroke-linecap: round; stroke-linejoin: round; }
+.audio-button .activity-icon { width: 23px; height: 23px; }
+.activity-back .fi, .audio-button .fi { display: flex; align-items: center; line-height: 1; }
+.activity-back .fi { font-size: 26px; }
+.audio-button .fi { font-size: 23px; }
 
 .activity-heading { text-align: center; }
 .activity-heading h1 { margin-bottom: 6px; font-size: clamp(24px, 3vw, 38px); letter-spacing: 0; }
@@ -52,7 +61,8 @@
     border-radius: var(--roar-radius-md);
     background: var(--roar-surface);
     box-shadow: var(--roar-shadow);
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .activity-loading, .activity-error, .activity-blocked {
@@ -64,7 +74,8 @@
 }
 
 .activity-content { height: 100%; display: grid; place-items: center; gap: 12px; }
-.prompt-image { max-height: min(45vh, 420px); width: auto; object-fit: contain; }
+.prompt-image { max-width: min(72vw, 760px); max-height: min(54vh, 560px); width: auto; height: auto; object-fit: contain; }
+.activity-content > .prompt-image { max-height: min(38vh, 340px); }
 .revealed-word { font-size: clamp(34px, 6vw, 72px); color: var(--roar-blue); font-weight: 700; }
 
 .choice-grid {
@@ -85,6 +96,8 @@
 }
 
 .choice-card img { height: min(17vh, 150px); margin: 0 auto 8px; object-fit: contain; }
+.activity-content > .choice-card { padding: clamp(14px, 2vh, 22px); }
+.activity-content > .choice-card .prompt-image { width: auto; height: min(34vh, 320px); max-width: min(72vw, 760px); max-height: min(54vh, 560px); margin: 0 auto; }
 .choice-card.is-selected { border-color: var(--roar-blue); background: #eaf5fc; }
 .choice-card.is-correct { border-color: var(--roar-success); background: #e9fff3; }
 .choice-card.is-wrong { border-color: var(--roar-danger); background: #fff1f0; }
@@ -108,7 +121,8 @@
 .lex-feedback p { margin: 0; }
 .activity-progress { display: grid; gap: 5px; color: var(--roar-muted); font-size: 13px; }
 .activity-progress progress { width: 100%; accent-color: var(--roar-blue); }
-.next-button { min-height: 52px; padding: 0 22px; border: 0; border-radius: var(--roar-radius-md); background: var(--roar-blue); color: white; font-weight: 700; }
+.next-button { min-height: 52px; padding: 0 22px; border: 0; border-radius: var(--roar-radius-md); background: var(--roar-blue); color: white; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.next-button .fi { display: flex; align-items: center; line-height: 1; }
 .next-button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 @media (max-width: 760px) {
@@ -124,6 +138,9 @@
     .activity-progress { display: none; }
     .next-button { min-height: 46px; padding-inline: 14px; }
     .activity-content { gap: 6px; }
+    .prompt-image { max-width: min(86vw, 620px); max-height: min(48vh, 430px); }
+    .activity-content > .prompt-image { max-height: min(34vh, 280px); }
+    .activity-content > .choice-card .prompt-image { height: min(28vh, 240px); max-width: min(78vw, 520px); }
     .association-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
     .association-grid .choice-card { min-height: 44px; padding: 4px 2px; font-size: 11px; }
     .association-grid .choice-card img { width: 100%; height: min(10vh, 72px); margin-bottom: 3px; }

@@ -8,7 +8,7 @@ const categorias = [
     { name: 'Corpo Humano', icon: 'fi fi-br-portrait',      color: 'a', link: 'atividade.html?modulo=corpo-humano&etapa=1' },
     { name: 'Cores',        icon: 'fi fi-br-palette',       color: 'b', link: 'atividades.html' },
     { name: 'Animais',      icon: 'fi fi-br-paw',           color: 'a', link: 'atividades.html' },
-    { name: 'Emoções',      icon: 'fi fi-br-astonished-face',    color: 'b', link: 'atividades.html' },
+    { name: 'Emoções',      icon: 'fi fi-br-grin-alt',           color: 'b', link: 'atividades.html' },
     { name: 'Comida',       icon: 'fi fi-br-hamburger',   color: 'b', link: 'atividades.html' },
     { name: 'Família',      icon: 'fi fi-br-users',         color: 'a', link: 'atividades.html' },
     { name: 'Casa',         icon: 'fi fi-br-house-chimney', color: 'a', link: 'atividades.html' },
@@ -16,10 +16,10 @@ const categorias = [
 ];
 
 const mascotMsgs = [
-    'Você está indo\nmuito bem! <i class="fi fi-br-star u-pages-aluno-inicio-008"></i>',
-    'Continue assim,\ncampeão! <i class="fi fi-br-trophy u-pages-aluno-inicio-008"></i>',
+    'Você está indo\nmuito bem!',
+    'Continue assim,\ncampeão!',
     'Hoje é um ótimo\ndia para aprender!',
-    'Você consegue! <i class="fi fi-br-sparkles u-pages-aluno-inicio-008"></i>',
+    'Você consegue!',
     'Que orgulho de você!',
 ];
 let mascotIdx = 0;
