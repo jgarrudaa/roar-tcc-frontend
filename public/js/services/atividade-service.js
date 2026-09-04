@@ -14,11 +14,20 @@ async function getMockContext(moduleId, stage) {
         readMock("/public/mocks/aluno-atual.json"),
         readMock("/public/mocks/modulos.json"),
     ]);
+    const selectedLevel = Number(localStorage.getItem("roarSupportLevel"));
+    const supportModes = {
+        1: "Suporte Visual Puro",
+        2: "Aprendiz Guiado",
+        3: "Autonomia Contextual",
+    };
+    const currentStudent = supportModes[selectedLevel]
+        ? { ...student, supportLevel: selectedLevel, supportMode: supportModes[selectedLevel] }
+        : student;
     const module = modulePayload.modules.find((item) => item.id === moduleId);
     if (!module) throw new Error("Módulo não encontrado.");
     const activity = module.activities.find((item) => item.stage === stage);
     if (!activity) throw new Error("Etapa não encontrada.");
-    return { student, module, activity };
+    return { student: currentStudent, module, activity };
 }
 
 export const atividadeService = Object.freeze({
