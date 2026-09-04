@@ -4,8 +4,10 @@ import { showToast } from "../../components/toast.js";
 
 const get = (selector) => document.querySelector(selector);
 const showStep = (step) => {
-    document.querySelectorAll(".step-container").forEach((element) => element.classList.add("hidden"));
-    get(`#step${step}`).classList.remove("hidden");
+    document.querySelectorAll(".student-register-step").forEach((element) => {
+        element.hidden = true;
+    });
+    get(`#step${step}`).hidden = false;
 };
 
 get("#cpfAluno")?.addEventListener("input", (event) => {

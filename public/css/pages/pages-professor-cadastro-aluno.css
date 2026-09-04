@@ -1,5 +1,173 @@
-/* Estilos exclusivos de cadastro-aluno.html. */
+.auth-page--student-register {
+    background-image: url("../../assets/imagens/telalogin.png");
+}
 
-/* Classes geradas a partir dos antigos estilos inline. */
-.u-pages-professor-cadastro-aluno-001 { background-image: url('../../assets/imagens/telalogin.png'); }
-.u-pages-professor-cadastro-aluno-002 { background-image: url('../../assets/imagens/bg1.png'); }
+.auth-page--student-register .auth-visual {
+    background-image: url("../../assets/imagens/bg1.png");
+}
+
+.auth-page--student-register .auth-mascot-stage {
+    right: -65px;
+}
+
+.auth-form-panel--student-register {
+    overflow: hidden;
+}
+
+.auth-form--student-register {
+    height: 100%;
+    min-height: 0;
+}
+
+.student-register-step {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.student-register-step[hidden] {
+    display: none;
+}
+
+.student-register-fields {
+    gap: 12px;
+}
+
+.auth-select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, #6b7280 50%), linear-gradient(135deg, #6b7280 50%, transparent 50%);
+    background-position: calc(100% - 19px) 20px, calc(100% - 14px) 20px;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+}
+
+.student-pin-field {
+    display: grid;
+    gap: 4px;
+}
+
+.student-pin {
+    color: #374151;
+    background: #f3f4f6;
+    font-weight: 600;
+    text-align: center;
+}
+
+.student-pin-field p,
+.student-help {
+    margin: 0;
+    color: #6b7280;
+    font-size: 12px;
+    text-align: center;
+}
+
+.auth-switch--center {
+    text-align: center;
+}
+
+.student-quiz,
+.student-confirmation {
+    min-height: 0;
+    display: grid;
+    gap: 16px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.student-question {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.student-question legend,
+.student-level-label {
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.student-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.student-option:hover {
+    border-color: #1f6ce3;
+    background: #f7faff;
+}
+
+.student-register-actions {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 16px;
+    margin-top: auto;
+}
+
+.auth-secondary {
+    height: 46px;
+    border: 2px solid #1f6ce3;
+    border-radius: 8px;
+    color: #1f6ce3;
+    background: transparent;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.auth-secondary:hover {
+    background: #eef5ff;
+}
+
+.student-summary {
+    padding: 16px;
+    border-radius: 8px;
+    background: #f3f4f6;
+}
+
+.student-summary p {
+    margin: 0 0 8px;
+}
+
+.student-summary small {
+    color: #6b7280;
+}
+
+.student-pin-value {
+    color: #1f6ce3;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.student-level {
+    border: 2px solid #44f698;
+    background: #ecfdf5;
+    font-weight: 600;
+}
+
+.auth-submit--success {
+    color: #191716;
+    background: #44f698;
+    font-weight: 700;
+}
+
+.auth-submit--success:hover {
+    background: #34d884;
+}
+
+@media (max-width: 900px) {
+    .auth-form-panel--student-register {
+        min-height: 620px;
+    }
+}

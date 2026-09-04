@@ -1915,8 +1915,12 @@ textarea {
     padding-top: 32px;
 }
 
+.sidebar .sidebar__logo {
+    filter: brightness(0);
+}
+
 .teacher-area .sidebar__logo {
-    filter: invert(1) brightness(2);
+    filter: brightness(0) invert(1);
 }
 
 .teacher-area .sidebar__toggle,

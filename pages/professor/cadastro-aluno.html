@@ -1,212 +1,129 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro</title>
-
-    <!-- Fonte Poppins via Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Configuração Tailwind: registro da fonte Poppins e cores do sistema -->
-    <script src="../../public/js/pages/professor/pages-professor-cadastro-aluno-1.js"></script>
-    <link rel="stylesheet" href="../../public/css/pages/pages-professor-cadastro-aluno.css">
+    <title>ROAR — Cadastro de Aluno</title>
+    <meta name="description" content="Cadastro e triagem de aluno no sistema ROAR.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../public/css/pages/auth.css?v=3">
+    <link rel="stylesheet" href="../../public/css/pages/pages-professor-cadastro-aluno.css?v=3">
 </head>
-
-<!--
-    body → CSS original:
-        background-color: #191716  |  font-family: Poppins  |  font-weight: 300
-        background-image: telalogin.png  |  background-size: cover
-        background-position: center  |  background-repeat: no-repeat
-        height: 100vh  |  display: flex  |  align-items: center  |  justify-content: center
--->
-<body
-    class="bg-quinary font-poppins font-light not-italic
-           bg-cover bg-center bg-no-repeat
-           h-screen flex items-center justify-center u-pages-professor-cadastro-aluno-001"
-   >
-
-    <!--
-        main → CSS original:
-            display: flex  |  height: 70%  |  width: 75%
-            margin: 0 auto  |  border-radius: 1rem
-    -->
-    <main class="flex h-[70%] w-[75%] mx-auto rounded-2xl">
-
-        <!-- =========================================================
-             Painel esquerdo: apresentação visual com logo, texto e mascote
-             CSS original: width: 50%  |  background: bg1.png (cover/center/no-repeat)
-             border-top-left-radius: 1rem  |  border-bottom-left-radius: 1rem
-             color: #FFFAFF  |  display: flex  |  justify-content: center
-             flex-direction: column  |  gap: 3rem  |  padding-left: 3rem  |  position: relative
-             ========================================================= -->
-        <section
-            class="w-1/2 bg-cover bg-center bg-no-repeat
-                   rounded-tl-2xl rounded-bl-2xl
-                   text-secondary
-                   flex justify-center flex-col gap-12 pl-12
-                   relative u-pages-professor-cadastro-aluno-002"
-           >
-
-            <!-- logo → width: 200px  |  height: 80px -->
-            <img src="../../public/assets/imagens/logo.svg" alt="Logo Roar"
-                 class="w-[200px] h-[80px]">
-
-            <h1>Olá, Professor</h1>
-
-            <!--
-                .container-left p → color: #FFFAFF  |  font-size: 1.1rem
-                span              → color: #44F698
-            -->
-            <p class="text-secondary text-[1.1rem]">
-                <span class="text-primary">Aprimore seu inglês</span> todos os dias.<br>
-                Pratique, aprenda e torne-se fluente<br>
-                mais rápido com nossa plataforma.
-            </p>
-
-            <img src="../../public/assets/imagens/dino2.png" alt="Mascote Dino"
-                 class="absolute w-[150px] h-[200px] right-[-2%] bottom-0 dino">
+<body class="auth-page auth-page--student-register">
+    <main class="auth-card">
+        <section class="auth-visual" aria-labelledby="student-register-greeting">
+            <img src="../../public/assets/imagens/logo.svg" alt="ROAR" class="auth-logo">
+            <div class="auth-copy">
+                <h1 id="student-register-greeting" class="auth-greeting">Olá, Professor</h1>
+                <p><strong class="auth-highlight auth-highlight--green">Cadastre seu aluno</strong> e personalize o aprendizado.<br>Faça uma triagem simples e acompanhe<br>cada etapa do seu desenvolvimento.</p>
+            </div>
+            <div class="auth-mascot-stage" aria-hidden="true">
+                <img src="../../public/assets/imagens/dino2.png" alt="" class="auth-dino">
+            </div>
         </section>
 
-        <!-- =========================================================
-             Painel direito: formulário de cadastro de aluno
-             CSS original: width: 50%  |  background-color: #FFFAFF
-             border-top-right-radius: 1rem  |  border-bottom-right-radius: 1rem
-             display: flex  |  flex-direction: column
-             justify-content: center  |  align-items: center
-             ========================================================= -->
-        <section class="w-1/2 bg-secondary
-                        rounded-tr-2xl rounded-br-2xl
-                        flex flex-col justify-center items-center">
+        <section class="auth-form-panel auth-form-panel--student-register">
+            <form id="cadastroForm" class="auth-form auth-form--student-register">
+                <section id="step1" class="student-register-step">
+                    <header class="auth-form-header">
+                        <h2>Cadastre seu aluno!</h2>
+                        <p class="auth-form-label">Dados</p>
+                    </header>
 
-            <form id="cadastroForm" class="h-[90%] w-[80%] flex flex-col mx-auto relative overflow-hidden">
+                    <div class="auth-fields student-register-fields">
+                        <label class="sr-only" for="nomeAluno">Nome</label>
+                        <input id="nomeAluno" class="auth-input" type="text" placeholder="Nome" autocomplete="name" required>
 
-                <!-- STEP 1: DADOS -->
-                <div id="step1" class="step-container flex flex-col gap-4 w-full h-full transition-transform duration-300">
-                    <h1 class="text-2xl font-bold text-quinary">Cadastre seu aluno!</h1>
-                    <h2 class="text-senary border-b-2 border-senary w-[16%]">Dados</h2>
+                        <label class="sr-only" for="anoEscolar">Ano escolar</label>
+                        <select id="anoEscolar" class="auth-input auth-select" required>
+                            <option value="" disabled selected>Ano Escolar</option>
+                            <option value="6">6º Ano</option>
+                            <option value="7">7º Ano</option>
+                            <option value="8">8º Ano</option>
+                            <option value="9">9º Ano</option>
+                            <option value="em1">1º Ano E.M.</option>
+                            <option value="em2">2º Ano E.M.</option>
+                            <option value="em3">3º Ano E.M.</option>
+                        </select>
 
-                    <input type="text" id="nomeAluno" placeholder="Nome" class="w-full h-[45px] border border-[#00000027] rounded-lg px-4 focus:outline-none focus:border-[#ccc]">
+                        <label class="sr-only" for="emailAluno">E-mail</label>
+                        <input id="emailAluno" class="auth-input" type="email" placeholder="E-mail" autocomplete="email" required>
 
-                    <select id="anoEscolar" class="w-full h-[45px] border border-[#00000027] rounded-lg px-4 focus:outline-none focus:border-[#ccc] bg-white">
-                        <option value="" disabled selected>Ano Escolar</option>
-                        <option value="6">6º Ano</option>
-                        <option value="7">7º Ano</option>
-                        <option value="8">8º Ano</option>
-                        <option value="9">9º Ano</option>
-                        <option value="em1">1º Ano E.M.</option>
-                        <option value="em2">2º Ano E.M.</option>
-                        <option value="em3">3º Ano E.M.</option>
-                    </select>
+                        <label class="sr-only" for="cpfAluno">CPF</label>
+                        <input id="cpfAluno" class="auth-input" type="text" placeholder="CPF" inputmode="numeric" maxlength="14" autocomplete="off" required>
 
-                    <input type="email" id="emailAluno" placeholder="E-mail" class="w-full h-[45px] border border-[#00000027] rounded-lg px-4 focus:outline-none focus:border-[#ccc]">
-
-                    <input type="text" id="cpfAluno" placeholder="CPF" maxlength="14" class="w-full h-[45px] border border-[#00000027] rounded-lg px-4 focus:outline-none focus:border-[#ccc]">
-
-                    <div class="relative w-full">
-                        <input id="pinGerado" type="text" value="Gerado após o cadastro" readonly class="w-full h-[45px] border border-[#00000027] rounded-lg px-4 bg-gray-100 text-center font-bold text-lg focus:outline-none">
-                        <p class="text-xs text-gray-500 text-center mt-1">PIN gerado automaticamente (anote)</p>
-                    </div>
-
-                    <button type="button" data-action="next-triage" class="w-full h-[45px] mt-auto bg-senary text-secondary rounded-lg shadow-[0_0_10px_#0000003f] text-[1.02rem] font-semibold hover:bg-blue-700 transition-colors">
-                        Próximo &rarr;
-                    </button>
-                    
-                    <p class="text-center mt-2">Já tem uma conta?
-                        <a href="../auth/login-aluno.html" class="text-senary no-underline font-semibold hover:underline">Fazer login</a>
-                    </p>
-                </div>
-
-                <!-- STEP 2: QUIZ DE TRIAGEM -->
-                <div id="step2" class="step-container hidden flex flex-col gap-4 w-full h-full transition-transform duration-300">
-                    <h1 class="text-2xl font-bold text-quinary">Triagem</h1>
-                    <h2 class="text-senary border-b-2 border-senary w-[16%]">Quiz</h2>
-
-                    <div class="flex-1 overflow-y-auto pr-2">
-                        <div class="mb-5">
-                            <label class="block font-semibold mb-2 text-sm">1. Comunicação Verbal</label>
-                            <div class="flex flex-col gap-2">
-                                <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50 text-sm">
-                                    <input type="radio" name="pergunta1" value="A1"> Não-verbal/fala restrita
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50 text-sm">
-                                    <input type="radio" name="pergunta1" value="A2"> Frases curtas/diretas
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50 text-sm">
-                                    <input type="radio" name="pergunta1" value="A3"> Fluente
-                                </label>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block font-semibold mb-2 text-sm">2. Nível de Leitura</label>
-                            <div class="flex flex-col gap-2">
-                                <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50 text-sm">
-                                    <input type="radio" name="pergunta2" value="B1"> Não alfabetizado
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50 text-sm">
-                                    <input type="radio" name="pergunta2" value="B2"> Leitura funcional inicial
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50 text-sm">
-                                    <input type="radio" name="pergunta2" value="B3"> Lê textos curtos
-                                </label>
-                            </div>
+                        <div class="student-pin-field">
+                            <label class="sr-only" for="pinGerado">PIN do aluno</label>
+                            <input id="pinGerado" class="auth-input student-pin" type="text" value="Gerado após o cadastro" readonly>
+                            <p>PIN gerado automaticamente. Anote-o após concluir.</p>
                         </div>
                     </div>
 
-                    <div class="flex gap-4 mt-auto">
-                        <button type="button" data-action="back-data" class="w-1/3 h-[45px] border-2 border-senary text-senary rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                            &larr; Voltar
-                        </button>
-                        <button type="button" data-action="calculate-level" class="w-2/3 h-[45px] bg-senary text-secondary rounded-lg shadow-[0_0_10px_#0000003f] font-semibold hover:bg-blue-700 transition-colors">
-                            Próximo &rarr;
-                        </button>
+                    <button type="button" data-action="next-triage" class="auth-submit">Próximo →</button>
+                    <p class="auth-switch auth-switch--center">Já tem uma conta? <a href="../auth/login-aluno.html" class="auth-link auth-link--strong">Fazer login</a></p>
+                </section>
+
+                <section id="step2" class="student-register-step" hidden>
+                    <header class="auth-form-header">
+                        <h2>Triagem</h2>
+                        <p class="auth-form-label">Quiz</p>
+                    </header>
+
+                    <div class="student-quiz">
+                        <fieldset class="student-question">
+                            <legend>1. Comunicação verbal</legend>
+                            <label class="student-option"><input type="radio" name="pergunta1" value="A1"> Não-verbal/fala restrita</label>
+                            <label class="student-option"><input type="radio" name="pergunta1" value="A2"> Frases curtas/diretas</label>
+                            <label class="student-option"><input type="radio" name="pergunta1" value="A3"> Fluente</label>
+                        </fieldset>
+
+                        <fieldset class="student-question">
+                            <legend>2. Nível de leitura</legend>
+                            <label class="student-option"><input type="radio" name="pergunta2" value="B1"> Não alfabetizado</label>
+                            <label class="student-option"><input type="radio" name="pergunta2" value="B2"> Leitura funcional inicial</label>
+                            <label class="student-option"><input type="radio" name="pergunta2" value="B3"> Lê textos curtos</label>
+                        </fieldset>
                     </div>
-                </div>
 
-                <!-- STEP 3: CONFIRMAÇÃO -->
-                <div id="step3" class="step-container hidden flex flex-col gap-4 w-full h-full transition-transform duration-300">
-                    <h1 class="text-2xl font-bold text-quinary">Confirmação</h1>
-                    <h2 class="text-senary border-b-2 border-senary w-[30%]">Conclusão</h2>
+                    <div class="student-register-actions">
+                        <button type="button" data-action="back-data" class="auth-secondary">← Voltar</button>
+                        <button type="button" data-action="calculate-level" class="auth-submit">Próximo →</button>
+                    </div>
+                </section>
 
-                    <div class="flex-1 overflow-y-auto pr-2 flex flex-col gap-4">
-                        <div class="bg-gray-100 p-4 rounded-lg">
+                <section id="step3" class="student-register-step" hidden>
+                    <header class="auth-form-header">
+                        <h2>Confirmação</h2>
+                        <p class="auth-form-label">Conclusão</p>
+                    </header>
+
+                    <div class="student-confirmation">
+                        <div class="student-summary">
                             <p><strong>Nome:</strong> <span id="confNome"></span></p>
-                            <p><strong>PIN:</strong> <span id="confPin" class="text-senary font-bold text-lg"></span></p>
-                            <p class="text-xs text-gray-500 mt-1">Guarde este PIN para o aluno fazer login.</p>
+                            <p><strong>PIN:</strong> <span id="confPin" class="student-pin-value"></span></p>
+                            <small>Guarde este PIN para o aluno fazer login.</small>
                         </div>
 
-                        <div>
-                            <label class="block font-semibold mb-2">Nível Calculado</label>
-                            <select id="nivelFinal" disabled class="w-full h-[45px] border-2 border-primary rounded-lg px-4 focus:outline-none bg-green-50 font-bold">
-                                <option value="1">Nível 1 - Suporte Visual Puro</option>
-                                <option value="2">Nível 2 - Aprendiz Guiado</option>
-                                <option value="3">Nível 3 - Autonomia Contextual</option>
-                            </select>
-                            <p class="text-xs text-gray-500 mt-2">Resultado calculado pela triagem. O professor apenas visualiza.</p>
-                        </div>
+                        <label class="student-level-label" for="nivelFinal">Nível calculado</label>
+                        <select id="nivelFinal" class="auth-input student-level" disabled>
+                            <option value="1">Nível 1 - Suporte Visual Puro</option>
+                            <option value="2">Nível 2 - Aprendiz Guiado</option>
+                            <option value="3">Nível 3 - Autonomia Contextual</option>
+                        </select>
+                        <p class="student-help">Resultado calculado pela triagem. O professor apenas visualiza.</p>
                     </div>
 
-                    <div class="flex gap-4 mt-auto">
-                        <button type="button" data-action="back-triage" class="w-1/3 h-[45px] border-2 border-senary text-senary rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                            &larr; Voltar
-                        </button>
-                        <button type="button" data-action="save-student" class="w-2/3 h-[45px] bg-primary text-quinary rounded-lg shadow-[0_0_10px_#0000003f] font-bold hover:bg-green-400 transition-colors">
-                            Salvar Cadastro
-                        </button>
+                    <div class="student-register-actions">
+                        <button type="button" data-action="back-triage" class="auth-secondary">← Voltar</button>
+                        <button type="button" data-action="save-student" class="auth-submit auth-submit--success">Salvar cadastro</button>
                     </div>
-                </div>
-
+                </section>
             </form>
         </section>
     </main>
 
     <script type="module" src="../../public/js/pages/professor/cadastro-aluno.js"></script>
-
 </body>
-
 </html>

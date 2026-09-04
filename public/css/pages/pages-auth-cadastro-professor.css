@@ -1,8 +1,12 @@
-/* Estilos exclusivos de cadastro-professor.html. */
+.auth-page--teacher-register {
+    background-image: url("../../assets/imagens/telacadastro.png");
+}
 
-.dino { transition: all 0.2s ease; }
-        .toggle-password { cursor: pointer; user-select: none; }
+.auth-page--teacher-register .auth-visual {
+    background-image: url("../../assets/imagens/bg2.png");
+}
 
-/* Classes geradas a partir dos antigos estilos inline. */
-.u-pages-auth-cadastro-professor-001 { background-image:url('../../assets/imagens/telacadastro.png'); }
-.u-pages-auth-cadastro-professor-002 { background-image:url('../../assets/imagens/bg2.png'); }
+.auth-page--teacher-register .auth-mascot-stage {
+    right: -65px;
+    bottom: 20px;
+}
