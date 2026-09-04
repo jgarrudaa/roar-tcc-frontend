@@ -1,3 +1,5 @@
+@import url("../components/feedback.css");
+
 :root {
     --auth-blue: #1f6ce3;
     --auth-green: #44f698;
@@ -238,7 +240,7 @@ input {
     font-size: 20px;
     line-height: 1;
 }
-
+.buttonlogin,
 .auth-submit {
     width: 100%;
     height: 46px;
@@ -253,15 +255,45 @@ input {
     transition: background 0.2s ease, transform 0.2s ease;
 }
 
+.buttonlogin:hover,
 .auth-submit:hover {
-    background: #185dc4;
+    background: var(--auth-blue);
 }
 
+.buttonlogin:active,
 .auth-submit:active {
     transform: translateY(1px);
 }
 
+.buttonlogin:disabled,
 .auth-submit:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.buttoncadastro {
+    width: 100%;
+    height: 46px;
+    border: 0;
+    border-radius: 8px;
+    color: var(--auth-white);
+    background: var(--auth-green);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.buttoncadastro:hover {
+    background: var(--auth-green);
+}
+
+.buttoncadastro:active {
+    transform: translateY(1px);
+}
+
+.buttoncadastro:disabled {
     cursor: wait;
     opacity: 0.65;
 }
@@ -302,6 +334,51 @@ input {
     white-space: nowrap;
     border: 0;
 }
+
+/* ============================================================
+   Tema do Professor — Verde (var(--auth-green))
+   ============================================================ */
+.auth-page--teacher-login .auth-card,
+.auth-page--teacher-register .auth-card,
+.auth-page--teacher-recovery .auth-card {
+    box-shadow: 0 20px 55px rgba(68, 246, 152, 0.12);
+}
+
+.auth-page--teacher-login .auth-form-label,
+.auth-page--teacher-register .auth-form-label,
+.auth-page--teacher-recovery .auth-form-label {
+    border-bottom-color: var(--auth-green);
+    color: var(--auth-green);
+}
+
+.auth-page--teacher-login .auth-input:focus,
+.auth-page--teacher-register .auth-input:focus,
+.auth-page--teacher-recovery .auth-input:focus {
+    border-color: var(--auth-green);
+    box-shadow: 0 0 0 3px rgba(68, 246, 152, 0.25);
+}
+
+.auth-page--teacher-login .auth-password-toggle:hover,
+.auth-page--teacher-login .auth-password-toggle:focus-visible,
+.auth-page--teacher-register .auth-password-toggle:hover,
+.auth-page--teacher-register .auth-password-toggle:focus-visible,
+.auth-page--teacher-recovery .auth-password-toggle:hover,
+.auth-page--teacher-recovery .auth-password-toggle:focus-visible {
+    color: var(--auth-green);
+}
+
+.auth-page--teacher-login .auth-link,
+.auth-page--teacher-register .auth-link,
+.auth-page--teacher-recovery .auth-link {
+    color: var(--auth-green);
+}
+
+.auth-page--teacher-login .auth-link:hover,
+.auth-page--teacher-register .auth-link:hover,
+.auth-page--teacher-recovery .auth-link:hover {
+    color: var(--auth-green);
+}
+
 
 @media (max-width: 900px) {
     .auth-page {

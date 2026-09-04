@@ -12,6 +12,10 @@
 
 .auth-form-panel--student-register {
     overflow: hidden;
+    padding: 32px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .auth-form--student-register {
@@ -19,11 +23,25 @@
     min-height: 0;
 }
 
+.auth-form-panel--student-register .auth-form-header {
+    gap: 8px;
+}
+
+.auth-form-panel--student-register .auth-form-header h2 {
+    font-size: 22px;
+}
+
+.auth-form-panel--student-register .auth-form-label {
+    padding-bottom: 4px;
+    font-size: 14px;
+}
+
 .student-register-step {
     height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    justify-content: center;
+    gap: 12px;
 }
 
 .student-register-step[hidden] {
@@ -31,20 +49,28 @@
 }
 
 .student-register-fields {
-    gap: 12px;
+    gap: 8px;
+}
+
+/* Inputs mais finos para caber o botão com folga */
+.auth-form-panel--student-register .auth-input {
+    height: 38px;
+    padding: 0 14px;
+    font-size: 14px;
+    border-radius: 8px;
 }
 
 .auth-select {
     appearance: none;
     background-image: linear-gradient(45deg, transparent 50%, #6b7280 50%), linear-gradient(135deg, #6b7280 50%, transparent 50%);
-    background-position: calc(100% - 19px) 20px, calc(100% - 14px) 20px;
+    background-position: calc(100% - 18px) 16px, calc(100% - 13px) 16px;
     background-size: 5px 5px, 5px 5px;
     background-repeat: no-repeat;
 }
 
 .student-pin-field {
     display: grid;
-    gap: 4px;
+    gap: 2px;
 }
 
 .student-pin {
@@ -58,8 +84,49 @@
 .student-help {
     margin: 0;
     color: #6b7280;
-    font-size: 12px;
+    font-size: 11px;
     text-align: center;
+}
+
+/* Botão azul normal igual aos outros botões */
+.auth-form-panel--student-register .buttonlogin,
+.auth-form-panel--student-register .auth-submit {
+    width: 100%;
+    height: 42px;
+    border: 0;
+    border-radius: 8px;
+    color: var(--auth-white, #fffaff);
+    background: var(--auth-blue, #1f6ce3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-form-panel--student-register .buttonlogin:hover,
+.auth-form-panel--student-register .auth-submit:hover {
+    background: var(--auth-blue, #1f6ce3);
+    filter: brightness(0.92);
+}
+
+.auth-form-panel--student-register .buttonlogin:active,
+.auth-form-panel--student-register .auth-submit:active {
+    transform: translateY(1px);
+}
+
+.auth-form-panel--student-register .buttonlogin:disabled,
+.auth-form-panel--student-register .auth-submit:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.auth-form-panel--student-register .auth-switch {
+    margin: 0;
+    font-size: 14px;
 }
 
 .auth-switch--center {

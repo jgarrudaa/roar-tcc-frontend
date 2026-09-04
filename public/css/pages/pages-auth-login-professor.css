@@ -9,3 +9,23 @@
 .auth-page--teacher-login .auth-mascot-stage {
     right: 24px;
 }
+
+.auth-page--teacher-login .auth-form-label {
+    border-bottom-color: var(--auth-green);
+    color: var(--auth-green);
+}
+
+.auth-page--teacher-login .auth-input:focus {
+    border-color: var(--auth-green);
+    box-shadow: 0 0 0 3px rgba(68, 246, 152, 0.25);
+}
+
+.auth-page--teacher-login .auth-password-toggle:hover,
+.auth-page--teacher-login .auth-password-toggle:focus-visible {
+    color: var(--auth-green);
+}
+
+.auth-page--teacher-login .auth-link {
+    color: var(--auth-green);
+}
+

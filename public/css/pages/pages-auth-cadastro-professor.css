@@ -10,3 +10,23 @@
     right: 24px;
     bottom: 32px;
 }
+
+.auth-page--teacher-register .auth-form-label {
+    border-bottom-color: var(--auth-green);
+    color: var(--auth-green);
+}
+
+.auth-page--teacher-register .auth-input:focus {
+    border-color: var(--auth-green);
+    box-shadow: 0 0 0 3px rgba(68, 246, 152, 0.25);
+}
+
+.auth-page--teacher-register .auth-password-toggle:hover,
+.auth-page--teacher-register .auth-password-toggle:focus-visible {
+    color: var(--auth-green);
+}
+
+.auth-page--teacher-register .auth-link {
+    color: var(--auth-green);
+}
+

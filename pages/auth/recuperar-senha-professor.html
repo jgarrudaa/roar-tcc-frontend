@@ -9,16 +9,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
+    <link rel="stylesheet" href="../../public/css/components/feedback.css">
     <link rel="stylesheet" href="../../public/css/pages/auth.css?v=3">
     <link rel="stylesheet" href="../../public/css/pages/pages-auth-login-professor.css?v=3">
 </head>
-<body class="auth-page auth-page--teacher-login">
+<body class="auth-page auth-page--teacher-login auth-page--teacher-recovery">
     <main class="auth-card">
         <section class="auth-visual" aria-labelledby="recovery-greeting">
             <img src="../../public/assets/imagens/logo.svg" alt="ROAR" class="auth-logo">
             <div class="auth-copy">
                 <h1 id="recovery-greeting" class="auth-greeting">Recupere sua senha</h1>
-                <p><strong class="auth-highlight auth-highlight--blue">Estamos aqui para ajudar.</strong><br>Informe seu e-mail para receber<br>as instruções de acesso.</p>
+                <p><strong class="auth-highlight auth-highlight--green">Estamos aqui para ajudar.</strong><br>Informe seu e-mail para receber<br>as instruções de acesso.</p>
             </div>
             <div class="auth-mascot-stage" aria-hidden="true"><img src="../../public/assets/imagens/dino2.png" alt="" class="auth-dino"></div>
         </section>
@@ -26,7 +27,7 @@
             <form id="teacher-recovery-form" class="auth-form">
                 <header class="auth-form-header"><h2>Esqueci minha senha</h2><p class="auth-form-label">Recuperação de acesso</p></header>
                 <div class="auth-fields"><label class="sr-only" for="emailInput">E-mail</label><input id="emailInput" class="auth-input" type="email" placeholder="E-mail do professor" autocomplete="email" required></div>
-                <button class="auth-submit" type="submit">Enviar instruções</button>
+                <button class="buttoncadastro" type="submit">Enviar instruções</button>
                 <a href="login-professor.html" class="auth-link auth-link--small">Voltar para o login</a>
             </form>
         </section>
