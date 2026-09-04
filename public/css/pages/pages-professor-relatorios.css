@@ -53,7 +53,6 @@
         .student-item:hover { background: rgba(133,199,242,0.10); }
         .student-item.active {
             background: rgba(133,199,242,0.20);
-            border-left: 3px solid var(--c-blue-mid);
         }
         .student-item.active .si-name { color: var(--c-blue-dark); font-weight: 700; }
         .si-av {
@@ -73,6 +72,104 @@
 
         /* â”€â”€ Dashboard do aluno â”€â”€ */
         .dashboard-area { display: flex; flex-direction: column; gap: var(--space-lg); }
+
+        /* Relatório simplificado */
+        .simple-student-card,
+        .simple-report-card {
+            padding: 22px;
+            border: 1px solid var(--c-border);
+            border-radius: var(--r-lg);
+            background: var(--c-card);
+        }
+        .simple-student-heading {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+        }
+        .simple-student-heading h2,
+        .simple-report-card h2 {
+            margin: 0;
+            color: var(--c-text);
+        }
+        .simple-student-heading h2 { font-size: 1.25rem; }
+        .simple-student-heading p {
+            margin: 3px 0 6px;
+            color: var(--c-text-soft);
+            font-size: 0.82rem;
+        }
+        .simple-report-card h2 {
+            margin-bottom: var(--space-md);
+            font-size: 1rem;
+        }
+        .simple-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            border: 1px solid var(--c-border);
+            border-radius: var(--r-md);
+            overflow: hidden;
+        }
+        .simple-summary-grid > div {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            padding: 18px;
+            border-right: 1px solid var(--c-border);
+        }
+        .simple-summary-grid > div:last-child { border-right: 0; }
+        .simple-summary-grid strong {
+            color: var(--c-blue-dark);
+            font-size: 1.3rem;
+        }
+        .simple-summary-grid span {
+            color: var(--c-text-soft);
+            font-size: 0.75rem;
+        }
+        .simple-section-help {
+            margin: -8px 0 var(--space-md);
+            color: var(--c-text-soft);
+            font-size: 0.8rem;
+        }
+        .simple-table-wrap { overflow-x: auto; }
+        .simple-report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .simple-report-table th,
+        .simple-report-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--c-border-subtle);
+            text-align: left;
+        }
+        .simple-report-table thead th {
+            color: var(--c-text-soft);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+        .simple-report-table tbody th {
+            color: var(--c-text);
+            font-weight: 600;
+        }
+        .simple-report-table tbody tr:last-child > * { border-bottom: 0; }
+        .simple-status {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .simple-status--done { color: #166534; background: #dcfce7; }
+        .simple-status--prog { color: #92400e; background: #fef3c7; }
+        .simple-status--none { color: #475569; background: #e2e8f0; }
+        .simple-guidance {
+            border-left: 4px solid var(--c-blue-mid);
+        }
+        .simple-guidance p {
+            margin: 6px 0 0;
+            color: var(--c-text);
+            font-size: 0.84rem;
+            line-height: 1.6;
+        }
 
         /* Hero card do aluno */
         .aluno-hero {
@@ -318,6 +415,10 @@
             .hero-info { min-width: 0; }
             .hero-info__name { overflow-wrap: anywhere; }
             .hero-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .simple-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .simple-summary-grid > div:nth-child(2) { border-right: 0; }
+            .simple-summary-grid > div:nth-child(-n+2) { border-bottom: 1px solid var(--c-border); }
+            .simple-student-heading { align-items: flex-start; gap: var(--space-md); }
             .donut-wrap { gap: var(--space-md); }
             .hbar-lbl { width: 92px; }
 
@@ -348,6 +449,9 @@
             .navbar__right { gap: var(--space-sm) !important; }
             .print-btn { padding: 8px 10px; font-size: 0.72rem; }
             .hero-av { width: 56px; height: 56px; font-size: 1.25rem; }
+            .simple-summary-grid { grid-template-columns: 1fr; }
+            .simple-summary-grid > div { border-right: 0; border-bottom: 1px solid var(--c-border); }
+            .simple-summary-grid > div:last-child { border-bottom: 0; }
         }
 
         @media print {

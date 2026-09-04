@@ -63,19 +63,16 @@
                 </div>
                 <select class="filter-select u-pages-professor-atividades-008" id="sortSel" onchange="filtrar()">
                     <option value="default">Ordenar</option>
-                    <option value="xp">Maior XP</option>
                     <option value="nome">A&ndash;Z</option>
                     <option value="acertos">Mais Acertos</option>
                 </select>
             </div>
             <div class="filter-bar" id="filterBar">
-                <button class="filter-chip active" data-f="all"><i class="fi fi-br-apps"></i> Todas</button>
-                <button class="filter-chip" data-f="corpo"><i class="fi fi-br-portrait"></i> Corpo Humano</button>
-                <button class="filter-chip" data-f="vocabulario"><i class="fi fi-br-book-open-cover"></i> Vocabul&aacute;rio</button>
-                <button class="filter-chip" data-f="emocoes"><i class="fi fi-br-grin-alt"></i> Emo&ccedil;&otilde;es</button>
-                <button class="filter-chip" data-f="animais"><i class="fi fi-br-paw"></i> Animais</button>
-                <button class="filter-chip" data-f="facil"><i class="fi fi-br-star"></i> F&aacute;cil</button>
-                <button class="filter-chip" data-f="medio"><i class="fi fi-br-star"></i> M&eacute;dio</button>
+                <button class="filter-chip active" data-f="all">Todas</button>
+                <button class="filter-chip" data-f="corpo">Corpo Humano</button>
+                <button class="filter-chip" data-f="vocabulario">Vocabul&aacute;rio</button>
+                <button class="filter-chip" data-f="emocoes">Emo&ccedil;&otilde;es</button>
+                <button class="filter-chip" data-f="animais">Animais</button>
             </div>
 
             <!-- Listagem por categoria -->
@@ -92,7 +89,6 @@
         <!-- Cabeçalho da atividade -->
         <div class="u-pages-professor-atividades-009">
             <div class="modal-act-header u-pages-professor-atividades-010">
-                <div class="act-icon" id="mActIcon"></div>
                 <div>
                     <div id="mActNome" class="u-pages-professor-atividades-011"></div>
                     <div id="mActMeta" class="u-pages-professor-atividades-012"></div>
@@ -101,25 +97,30 @@
             <button class="modal-close" onclick="fecharModal()" aria-label="Fechar"><i class="fi fi-br-cross"></i></button>
         </div>
 
-        <!-- Stats gerais da atividade -->
+        <!-- Resumo do módulo -->
         <div class="modal-act-stats" id="mActStats"></div>
 
-        <!-- Abas Turma A / B -->
-        <div class="u-pages-professor-atividades-013">
-            <button class="tab-btn active" id="tabA" onclick="switchTab('A')">Turma A</button>
-            <button class="tab-btn"        id="tabB" onclick="switchTab('B')">Turma B</button>
-            <button class="tab-btn"        id="tabAll" onclick="switchTab('all')">Todos</button>
-        </div>
+        <section class="module-activity-details" id="moduleDetails" aria-labelledby="moduleActivitiesTitle">
+            <h3 id="moduleActivitiesTitle">Atividades do módulo</h3>
+            <div id="mModuleActivities"></div>
+        </section>
 
-        <!-- Lista de alunos -->
-        <div id="mAlunosList"></div>
+        <section id="moduleManagement" aria-label="Liberação do módulo">
+            <!-- Abas Turma A / B -->
+            <div class="u-pages-professor-atividades-013">
+                <button class="tab-btn active" id="tabA" onclick="switchTab('A')">Turma A</button>
+                <button class="tab-btn"        id="tabB" onclick="switchTab('B')">Turma B</button>
+                <button class="tab-btn"        id="tabAll" onclick="switchTab('all')">Todos</button>
+            </div>
 
-        <div class="u-pages-professor-atividades-014">
-            <button class="btn btn--secondary" id="btnDesbloquearTodos" onclick="desbloquearTodos()">
-                <i class="fi fi-br-unlock u-pages-professor-atividades-015"></i>Desbloquear Todos
-            </button>
-            <button class="btn btn--primary" onclick="fecharModal()">Fechar</button>
-        </div>
+            <!-- Lista de alunos -->
+            <div id="mAlunosList"></div>
+
+            <div class="u-pages-professor-atividades-014">
+                <button class="btn btn--secondary" id="btnDesbloquearTodos" onclick="desbloquearTodos()">Liberar módulo para todos</button>
+                <button class="btn btn--primary" onclick="fecharModal()">Fechar</button>
+            </div>
+        </section>
     </div>
 </div>
 

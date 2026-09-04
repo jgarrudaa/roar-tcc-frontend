@@ -12,6 +12,9 @@ const NIVEL_LABELS = {
     2: 'N\u00edvel 2 \u2014 Aprendiz Guiado',
     3: 'N\u00edvel 3 \u2014 Autonomia Contextual',
 };
+const XP_PER_ACTIVITY = 50;
+const MODULE_XP = 150;
+const MODULE_ACTIVITY_TYPES = ["Reconhecer", "Associar", "Validar"];
 
 const studentsData = [
     { id:1, name:'Leandro Matos',   turma:'A', nivel:1, xp:1240, avatarColor:AVATAR_COLORS[0] },
@@ -220,19 +223,32 @@ const allCategories = [
     },
 ];
 
-// Estado de desbloqueios: { actId: Set(alunoIds) }
-const unlocks = {};
-allCategories.forEach(cat => cat.atividades.forEach(a => {
-    // começa com todos desbloqueados por padrão
-    unlocks[a.id] = new Set(studentsData.map(s => s.id));
-}));
+allCategories.forEach((category) => {
+    const sourceActivities = category.atividades;
+    category.atividades = MODULE_ACTIVITY_TYPES.map((name, index) => {
+        const source = sourceActivities[index] || sourceActivities[sourceActivities.length - 1];
+        return {
+            ...source,
+            id: `${category.id}-${category.name}-${index + 1}`,
+            name,
+            tipo: name,
+            xp: XP_PER_ACTIVITY,
+        };
+    });
+});
+
+// Estado de desbloqueios por módulo: { moduleId: Set(alunoIds) }
+const moduleUnlocks = {};
+allCategories.forEach((category) => {
+    moduleUnlocks[`${category.id}-${category.name}`] = new Set(studentsData.map((student) => student.id));
+});
 
 // ================================================================
 // ESTADO GLOBAL
 // ================================================================
 let activeFilter = 'all';
 let searchTerm   = '';
-let currentActId = null;
+let currentModuleId = null;
 let currentTab   = 'A';
 
 // ================================================================
@@ -259,13 +275,22 @@ function renderStatsBar() {
     });
 }
 
-// ================================================================
-// RENDER: CARDS POR CATEGORIA
-// ================================================================
-function diffDots(dif) {
-    const n = dif==='facil'?1:dif==='medio'?2:3;
-    const cls = dif==='facil'?'on-easy':dif==='medio'?'on-medio':'on-dificil';
-    return [1,2,3].map(i=>`<span class="ddot${i<=n?' '+cls:''}"></span>`).join('');
+function moduleKey(category) {
+    return `${category.id}-${category.name}`;
+}
+
+function getModuleStats(category) {
+    const activities = category.atividades;
+    const averageAccuracy = Math.round(activities.reduce((sum, activity) => sum + activity.stats.mediaAcertos, 0) / activities.length);
+    const completedStudents = studentsData.filter((student) => activities.every((activity) => {
+        const performance = activity.alunosPerf.find((item) => item.id === student.id);
+        return performance?.prog === 100;
+    })).length;
+    return {
+        averageAccuracy,
+        completedStudents,
+        totalXp: completedStudents * activities.length * XP_PER_ACTIVITY,
+    };
 }
 
 function renderAll() {
@@ -274,33 +299,30 @@ function renderAll() {
     const q = searchTerm.toLowerCase();
 
     let anyFound = false;
-    allCategories.forEach(cat => {
-        let ativs = cat.atividades.filter(a => {
-            const matchF = activeFilter==='all'||cat.id===activeFilter||a.dif===activeFilter;
-            const matchS = !q || a.name.toLowerCase().includes(q) || a.tipo.toLowerCase().includes(q);
-            return matchF && matchS;
-        });
-        if(ativs.length===0) return;
+    let modules = allCategories.filter((category) => {
+        const matchFilter = activeFilter === 'all' || category.id === activeFilter;
+        const matchSearch = !q || category.name.toLowerCase().includes(q) || category.atividades.some((activity) => (
+            activity.name.toLowerCase().includes(q) || activity.tipo.toLowerCase().includes(q)
+        ));
+        return matchFilter && matchSearch;
+    });
+
+    const order = document.getElementById('sortSel').value;
+    if (order === 'nome') modules = modules.slice().sort((a, b) => a.name.localeCompare(b.name, 'pt'));
+    if (order === 'acertos') modules = modules.slice().sort((a, b) => getModuleStats(b).averageAccuracy - getModuleStats(a).averageAccuracy);
+
+    modules.forEach(cat => {
         anyFound = true;
 
-        // Ordenação
-        const ord = document.getElementById('sortSel').value;
-        if(ord==='xp')      ativs = ativs.slice().sort((a,b)=>b.xp-a.xp);
-        if(ord==='nome')    ativs = ativs.slice().sort((a,b)=>a.name.localeCompare(b.name,'pt'));
-        if(ord==='acertos') ativs = ativs.slice().sort((a,b)=>b.stats.mediaAcertos-a.stats.mediaAcertos);
-
-        const iconCls = `cat-icon--${cat.iconCls}`;
         const section = document.createElement('section');
         section.className = 'cat-section';
         section.innerHTML = `
-            <div class="cat-header" onclick="toggleSection(this.parentElement)">
-                <div class="cat-icon ${iconCls}"><i class="${cat.icon}"></i></div>
+            <div class="cat-header">
                 <h2>${cat.name}</h2>
-                <span class="badge badge--blue">${ativs.length} atividade${ativs.length>1?'s':''}</span>
-                <i class="fi fi-br-angle-down toggle-arrow"></i>
+                <span class="badge badge--blue">${cat.atividades.length} atividade${cat.atividades.length>1?'s':''}</span>
             </div>
             <div class="cat-grid">
-                ${ativs.map(a => renderActCard(a, cat.iconCls)).join('')}
+                ${renderModuleCard(cat)}
             </div>
         `;
         container.appendChild(section);
@@ -314,31 +336,31 @@ function renderAll() {
     }
 
     // Botões de detalhe
-    document.querySelectorAll('.btn-ver-atividade').forEach(btn => {
-        btn.addEventListener('click', () => abrirModal(btn.dataset.actid));
+    document.querySelectorAll('.btn-ver-detalhes').forEach((button) => {
+        button.addEventListener('click', () => abrirModal(button.dataset.moduleid, 'details'));
+    });
+    document.querySelectorAll('.btn-gerenciar-modulo').forEach((button) => {
+        button.addEventListener('click', () => abrirModal(button.dataset.moduleid, 'manage'));
     });
 }
 
-function renderActCard(a, iconCls) {
-    const unlocked = unlocks[a.id].size;
+function renderModuleCard(category) {
+    const key = moduleKey(category);
+    const unlocked = moduleUnlocks[key].size;
     const total    = studentsData.length;
-    const pctAc    = a.stats.mediaAcertos;
+    const stats = getModuleStats(category);
+    const pctAc = stats.averageAccuracy;
     const barCls   = pctAc>=70?'progress-bar--green':pctAc>=40?'progress-bar--blue':'progress-bar--red';
-    const difLbl   = a.dif==='facil'?'F\u00e1cil':a.dif==='medio'?'M\u00e9dio':'Dif\u00edcil';
 
     return `
-    <div class="act-card" id="actcard-${a.id}">
+    <div class="act-card module-card" data-module-key="${key}">
         <div class="act-card__top">
-            <div class="act-icon act-icon--${iconCls}"><i class="${a.icon}"></i></div>
             <div class="act-card__info">
-                <div class="act-card__name">${a.name}</div>
+                <div class="act-card__name">${category.name}</div>
                 <div class="act-card__meta-row">
-                    <span class="badge badge--blue u-pages-professor-atividades-018">${a.tipo}</span>
-                    <span class="u-pages-professor-atividades-019">
-                        <div class="diff-dot-wrap">${diffDots(a.dif)}</div>${difLbl}
-                    </span>
+                    <span class="badge badge--blue u-pages-professor-atividades-018">${category.atividades.length} atividade${category.atividades.length > 1 ? 's' : ''}</span>
                     <span class="u-pages-professor-atividades-020">
-                        <i class="fi fi-br-star"></i>${a.xp} XP
+                        ${MODULE_XP} XP por módulo
                     </span>
                 </div>
                 <div class="u-pages-professor-atividades-021">
@@ -353,26 +375,26 @@ function renderActCard(a, iconCls) {
         </div>
         <div class="act-card__stats">
             <div class="act-stat">
-                <div class="act-stat__val u-pages-professor-atividades-025">${a.stats.mediaAcertos}%</div>
+                <div class="act-stat__val u-pages-professor-atividades-025">${pctAc}%</div>
                 <div class="act-stat__lbl">Acertos</div>
             </div>
             <div class="act-stat">
-                <div class="act-stat__val u-pages-professor-atividades-026">${a.stats.mediaXP.toLocaleString('pt-BR')}</div>
+                <div class="act-stat__val u-pages-professor-atividades-026">${stats.totalXp.toLocaleString('pt-BR')}</div>
                 <div class="act-stat__lbl">XP total</div>
             </div>
             <div class="act-stat">
-                <div class="act-stat__val">${a.stats.completaram}/${total}</div>
+                <div class="act-stat__val">${stats.completedStudents}/${total}</div>
                 <div class="act-stat__lbl">Completaram</div>
             </div>
         </div>
         <div class="act-card__footer">
             <span class="unlock-count">
-                <i class="fi fi-br-unlock u-pages-professor-atividades-027"></i>
                 ${unlocked}/${total} alunos com acesso
             </span>
-            <button class="btn btn--primary btn--sm btn-ver-atividade" data-actid="${a.id}" id="btn-act-${a.id}">
-                <i class="fi fi-br-settings u-pages-professor-atividades-028"></i>Gerenciar
-            </button>
+            <div class="module-card__actions">
+                <button class="btn btn--ghost btn--sm btn-ver-detalhes" data-moduleid="${key}">Ver detalhes</button>
+                <button class="btn btn--primary btn--sm btn-gerenciar-modulo" data-moduleid="${key}">Gerenciar</button>
+            </div>
         </div>
     </div>`;
 }
@@ -380,38 +402,49 @@ function renderActCard(a, iconCls) {
 // ================================================================
 // MODAL
 // ================================================================
-function abrirModal(actId) {
-    currentActId = actId;
+function abrirModal(key, mode) {
+    currentModuleId = key;
     currentTab   = 'A';
 
-    const act = allCategories.flatMap(c=>c.atividades).find(a=>a.id===actId);
-    const cat = allCategories.find(c=>c.atividades.some(a=>a.id===actId));
+    const category = allCategories.find((item) => moduleKey(item) === key);
+    const stats = getModuleStats(category);
+    const isDetails = mode === 'details';
+    document.getElementById('mActNome').textContent = isDetails ? `Detalhes: ${category.name}` : `Gerenciar: ${category.name}`;
+    document.getElementById('mActMeta').textContent = `Módulo completo · 3 atividades · ${MODULE_XP} XP`;
 
-    // cabeçalho
-    const iconEl = document.getElementById('mActIcon');
-    iconEl.className = `act-icon act-icon--${cat.iconCls}`;
-    iconEl.innerHTML = `<i class="${act.icon}"></i>`;
-    document.getElementById('mActNome').textContent = act.name;
-    document.getElementById('mActMeta').textContent = `${act.tipo} \u00b7 ${act.dif==='facil'?'F\u00e1cil':act.dif==='medio'?'M\u00e9dio':'Dif\u00edcil'} \u00b7 ${act.xp} XP`;
-
-    // stats do modal
-    const totalAc = act.alunosPerf.reduce((s,p)=>s+p.acertos,0);
-    const totalEr = act.alunosPerf.reduce((s,p)=>s+p.erros,0);
-    const totalXP = act.alunosPerf.reduce((s,p)=>s+p.xp,0);
-    const concl   = act.alunosPerf.filter(p=>p.prog===100).length;
+    const totalAc = category.atividades.reduce((sum, activity) => sum + activity.alunosPerf.reduce((subtotal, performance) => subtotal + performance.acertos, 0), 0);
+    const totalEr = category.atividades.reduce((sum, activity) => sum + activity.alunosPerf.reduce((subtotal, performance) => subtotal + performance.erros, 0), 0);
     document.getElementById('mActStats').innerHTML = `
         <div class="mstat"><div class="mstat__val u-pages-professor-atividades-025">${totalAc}</div><div class="mstat__lbl">Acertos totais</div></div>
         <div class="mstat"><div class="mstat__val u-pages-professor-atividades-029">${totalEr}</div><div class="mstat__lbl">Erros totais</div></div>
-        <div class="mstat"><div class="mstat__val u-pages-professor-atividades-026">${totalXP.toLocaleString('pt-BR')}</div><div class="mstat__lbl">XP distribu\u00eddo</div></div>
-        <div class="mstat"><div class="mstat__val">${concl}/${studentsData.length}</div><div class="mstat__lbl">Conclu\u00edram</div></div>
+        <div class="mstat"><div class="mstat__val u-pages-professor-atividades-026">${stats.totalXp.toLocaleString('pt-BR')}</div><div class="mstat__lbl">XP distribu\u00eddo</div></div>
+        <div class="mstat"><div class="mstat__val">${stats.completedStudents}/${studentsData.length}</div><div class="mstat__lbl">Conclu\u00edram o módulo</div></div>
     `;
 
-    // Tabs
-    ['A','B','all'].forEach(t=>{
-        document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===currentTab||t==='A'&&currentTab==='A');
-    });
+    const tableRows = studentsData.map((student) => {
+        const cells = category.atividades.map((activity) => {
+            const performance = activity.alunosPerf.find((item) => item.id === student.id) || { acertos: 0, erros: 0 };
+            return `<td>${performance.acertos} acertos<br><small>${performance.erros} erros</small></td>`;
+        }).join('');
+        return `<tr><th scope="row">${student.name}</th>${cells}</tr>`;
+    }).join('');
+    document.getElementById('mModuleActivities').innerHTML = `
+        <table class="module-performance-table">
+            <thead><tr><th>Aluno</th>${MODULE_ACTIVITY_TYPES.map((activity) => `<th>${activity}</th>`).join('')}</tr></thead>
+            <tbody>${tableRows}</tbody>
+        </table>
+    `;
+    document.getElementById('mActStats').hidden = !isDetails;
+    document.getElementById('mActMeta').hidden = !isDetails;
+    document.getElementById('moduleDetails').hidden = !isDetails;
+    document.getElementById('moduleManagement').hidden = isDetails;
 
-    renderModalAlunos(act);
+    if (!isDetails) {
+        ['A','B','all'].forEach(t=>{
+            document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===currentTab||t==='A'&&currentTab==='A');
+        });
+        renderModalAlunos(category);
+    }
     document.getElementById('modalAtiv').classList.add('open');
 }
 
@@ -421,11 +454,11 @@ function switchTab(t) {
         document.getElementById('tab'+(id==='all'?'All':id)).classList.remove('active');
     });
     document.getElementById('tab'+(t==='all'?'All':t)).classList.add('active');
-    const act = allCategories.flatMap(c=>c.atividades).find(a=>a.id===currentActId);
-    renderModalAlunos(act);
+    const category = allCategories.find((item) => moduleKey(item) === currentModuleId);
+    renderModalAlunos(category);
 }
 
-function renderModalAlunos(act) {
+function renderModalAlunos(category) {
     const lista = currentTab==='all'
         ? studentsData
         : studentsData.filter(s=>s.turma===currentTab);
@@ -434,11 +467,7 @@ function renderModalAlunos(act) {
     container.innerHTML = '';
 
     lista.forEach(s => {
-        const perf    = act.alunosPerf.find(p=>p.id===s.id) || {acertos:0,erros:0,xp:0,prog:0};
-        const isUnlocked = unlocks[act.id].has(s.id);
-        const progBarCls = perf.prog===100?'#44F698':perf.prog>0?'var(--c-blue-mid)':'var(--c-border)';
-        const tot  = perf.acertos+perf.erros;
-        const taxa = tot>0?Math.round((perf.acertos/tot)*100):0;
+        const isUnlocked = moduleUnlocks[moduleKey(category)].has(s.id);
 
         const row = document.createElement('div');
         row.className = 'aluno-unlock-row';
@@ -446,24 +475,13 @@ function renderModalAlunos(act) {
             <div class="aluno-av" style="background:${s.avatarColor}">${s.name[0]}</div>
             <div class="aluno-info">
                 <div class="aluno-info__name">${s.name}</div>
-                <div class="aluno-info__meta">Turma ${s.turma} &middot; ${NIVEL_LABELS[s.nivel]}</div>
-                <div class="u-pages-professor-atividades-030">
-                    <div class="mini-prog"><div class="mini-prog-fill" style="width:${perf.prog}%;background:${progBarCls}"></div></div>
-                    <span class="u-pages-professor-atividades-031">${perf.prog}%</span>
-                </div>
-            </div>
-            <div class="aluno-perf">
-                <span class="perf-ac" title="Acertos"><i class="fi fi-br-check"></i> ${perf.acertos}</span>
-                <span class="perf-er" title="Erros"><i class="fi fi-br-cross-small"></i> ${perf.erros}</span>
-                <span class="perf-xp" title="XP"><i class="fi fi-br-star"></i> ${perf.xp}</span>
-                <span class="u-pages-professor-atividades-032">${taxa}%</span>
             </div>
             <div class="toggle-wrap">
                 <span class="toggle-lbl${isUnlocked?' on':''}">
                     ${isUnlocked?'Liberado':'Bloqueado'}
                 </span>
                 <label class="toggle-switch" title="${isUnlocked?'Bloquear':'Liberar'} para ${s.name}">
-                    <input type="checkbox" ${isUnlocked?'checked':''} onchange="toggleUnlock('${act.id}',${s.id},this)">
+                    <input type="checkbox" ${isUnlocked?'checked':''} onchange="toggleModuleUnlock('${moduleKey(category)}',${s.id},this)">
                     <span class="toggle-slider"></span>
                 </label>
             </div>
@@ -472,35 +490,35 @@ function renderModalAlunos(act) {
     });
 }
 
-function toggleUnlock(actId, alunoId, chk) {
+function toggleModuleUnlock(key, alunoId, chk) {
     if(chk.checked) {
-        unlocks[actId].add(alunoId);
+        moduleUnlocks[key].add(alunoId);
     } else {
-        unlocks[actId].delete(alunoId);
+        moduleUnlocks[key].delete(alunoId);
     }
     const aluno = studentsData.find(s=>s.id===alunoId);
     const lbl = chk.closest('.toggle-wrap').querySelector('.toggle-lbl');
     lbl.textContent = chk.checked ? 'Liberado' : 'Bloqueado';
     lbl.className = 'toggle-lbl'+(chk.checked?' on':'');
-    showToast(`${aluno.name}: atividade ${chk.checked?'liberada!':'bloqueada'}`, chk.checked?'success':'');
-    atualizarUnlockCount(actId);
+    showToast(`${aluno.name}: módulo ${chk.checked?'liberado!':'bloqueado'}`, chk.checked?'success':'');
+    atualizarUnlockCount(key);
 }
 
 function desbloquearTodos() {
-    const act = allCategories.flatMap(c=>c.atividades).find(a=>a.id===currentActId);
+    const category = allCategories.find((item) => moduleKey(item) === currentModuleId);
     const lista = currentTab==='all'
         ? studentsData
         : studentsData.filter(s=>s.turma===currentTab);
 
-    lista.forEach(s=>unlocks[currentActId].add(s.id));
-    renderModalAlunos(act);
-    showToast('Todos os alunos t\u00eam acesso!', 'success');
-    atualizarUnlockCount(currentActId);
+    lista.forEach(s=>moduleUnlocks[currentModuleId].add(s.id));
+    renderModalAlunos(category);
+    showToast('Módulo liberado para os alunos selecionados!', 'success');
+    atualizarUnlockCount(currentModuleId);
 }
 
-function atualizarUnlockCount(actId) {
-    const el = document.querySelector(`#actcard-${actId} .unlock-count`);
-    if(el) el.innerHTML = `<i class="fi fi-br-unlock u-pages-professor-atividades-027"></i> ${unlocks[actId].size}/${studentsData.length} alunos com acesso`;
+function atualizarUnlockCount(key) {
+    const el = document.querySelector(`[data-module-key="${key}"] .unlock-count`);
+    if(el) el.textContent = `${moduleUnlocks[key].size}/${studentsData.length} alunos com acesso`;
 }
 
 function fecharModal() {
