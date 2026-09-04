@@ -37,8 +37,8 @@ input {
 }
 
 .auth-card {
-    width: min(92vw, 1440px);
-    height: min(74vh, 600px);
+    width: min(85vw, 1440px);
+    height: min(65vh, 600px);
     min-height: 540px;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

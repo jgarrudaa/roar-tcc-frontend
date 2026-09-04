@@ -72,10 +72,10 @@ button {
     font-size: .82rem;
     font-weight: 600
 }
-.site-nav a,.text-link {
+.site-nav a,.text-link,.access-link {
     transition: color .2s
 }
-.site-nav a:hover,.text-link:hover,.inline-link:hover {
+.site-nav a:hover,.text-link:hover,.inline-link:hover,.access-link:hover {
     color: var(--blue)
 }
 .header-actions {
@@ -84,6 +84,36 @@ button {
     gap: 18px;
     font-size: .84rem;
     font-weight: 600
+}
+.access-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 18px;
+    border: 1px solid #44f698;
+    border-radius: 9px;
+    color: var(--navy);
+    background: #44f698;
+    transition: transform .2s,background .2s,box-shadow .2s
+}
+.access-link:hover,
+.header-actions .access-teacher:hover {
+    color: var(--navy);
+    background: #32df86;
+    transform: translateY(-1px)
+}
+.header-actions .access-teacher {
+    border-color: #44f698;
+    color: var(--navy);
+    background: #44f698
+}
+.hero__how-link {
+    display: inline-block;
+    margin-top: 14px;
+    color: var(--blue);
+    font-size: .84rem;
+    font-weight: 700
 }
 .button {
     display: inline-flex;
@@ -530,7 +560,10 @@ button {
         height: 72px;
         padding-inline: 24px
     }
-    .brand span,.header-actions .text-link {
+    .brand span {
+        display: none
+    }
+    .header-discover {
         display: none
     }
     .menu-toggle {
