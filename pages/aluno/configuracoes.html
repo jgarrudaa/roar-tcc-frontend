@@ -1,260 +1,280 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ROAR — Configurações</title>
     <meta name="description" content="Configurações do sistema ROAR.">
+    <script src="../../public/js/roar-theme.js"></script>
     <link rel="stylesheet" href="../../public/css/global.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
     <script src="../../public/js/roar-theme.js"></script>
     <link rel="stylesheet" href="../../public/css/pages/pages-aluno-configuracoes.css">
 </head>
-<body>
-<div class="app-shell">
-    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar__logo-wrap">
-            <img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
-            <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i class="fi fi-br-menu-burger"></i></button>
-        </div>
-        <nav class="sidebar__nav">
-            <a href="inicio.html"          class="sidebar__link"><i class="fi fi-br-home"></i><span>Início</span></a>
-            <a href="atividades.html"    class="sidebar__link"><i class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a>
-            <a href="desempenho.html"    class="sidebar__link"><i class="fi fi-br-chart-simple"></i><span>Desempenho</span></a>
-            <a href="perfil.html"        class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
-            <a href="configuracoes.html" class="sidebar__link active"><i class="fi fi-br-settings"></i><span>Configurações</span></a>
-        </nav>
-        <div class="sidebar__footer">
-            <a href="../auth/login-aluno.html" class="sidebar__link"><i class="fi fi-br-exit"></i><span>Sair</span></a>
-        </div>
-    </aside>
+<body data-auth-role="student">
+    <div class="app-shell">
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-    <!-- MAIN -->
-    <div class="main-content">
-        <header class="navbar">
-            <div class="u-pages-aluno-configuracoes-001">
-                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button>
-                <div class="navbar__page-title">
-                    <h1>Configurações</h1>
-                    <p>Personalize sua experiência no ROAR.</p>
-                </div>
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar__logo-wrap">
+                <img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo"
+                    onclick="window.location.href='inicio.html'">
+                <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i
+                        class="fi fi-br-menu-burger"></i></button>
             </div>
-            <div class="navbar__right">
-                <button class="btn btn--primary btn--sm" id="btnSave" aria-label="Salvar">
-                    <i class="fi fi-br-disk"></i> Salvar
-                </button>
-                <a href="perfil.html" class="navbar__avatar" title="Perfil" aria-label="Abrir perfil">L</a>
+            <nav class="sidebar__nav">
+                <a href="inicio.html" class="sidebar__link"><i class="fi fi-br-home"></i><span>Início</span></a>
+                <a href="atividades.html" class="sidebar__link"><i
+                        class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a>
+                <a href="desempenho.html" class="sidebar__link"><i
+                        class="fi fi-br-chart-simple"></i><span>Desempenho</span></a>
+                <a href="perfil.html" class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
+                <a href="configuracoes.html" class="sidebar__link active"><i
+                        class="fi fi-br-settings"></i><span>Configurações</span></a>
+            </nav>
+            <div class="sidebar__footer">
+                <a href="../auth/login-aluno.html" class="sidebar__link"><i
+                        class="fi fi-br-exit"></i><span>Sair</span></a>
             </div>
-        </header>
+        </aside>
 
-        <div class="page-body fade-in">
-            <div class="config-grid">
-
-                <!-- Coluna esquerda -->
-                <div>
-                    <!-- Conta -->
-                    <div class="config-section">
-                        <div class="config-section-title">
-                            <i class="fi fi-br-user"></i> Conta
-                        </div>
-                        <div class="card">
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">Foto do perfil</div>
-                                    <div class="config-row__desc">Escolha uma imagem de avatar</div>
-                                </div>
-                                <button class="btn btn--secondary btn--sm" id="btnFoto" aria-label="Alterar foto">
-                                    <i class="fi fi-br-camera"></i> Alterar
-                                </button>
-                            </div>
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">Nome</div>
-                                    <div class="config-row__desc">Como você aparece no sistema</div>
-                                </div>
-                                <input class="input u-pages-aluno-configuracoes-002" type="text" value="Leandro" id="cfgNome">
-                            </div>
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">E-mail</div>
-                                    <div class="config-row__desc">leandro@escola.br</div>
-                                </div>
-                                <button class="btn btn--ghost btn--sm" aria-label="Alterar e-mail">Alterar</button>
-                            </div>
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">Senha</div>
-                                    <div class="config-row__desc">Alterar senha de acesso</div>
-                                </div>
-                                <button class="btn btn--ghost btn--sm" aria-label="Alterar senha">Alterar</button>
-                            </div>
-                        </div>
+        <!-- MAIN -->
+        <div class="main-content">
+            <header class="navbar">
+                <div class="u-pages-aluno-configuracoes-001">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i
+                            class="fi fi-br-menu-burger"></i></button>
+                    <div class="navbar__page-title">
+                        <h1>Configurações</h1>
+                        <p>Personalize sua experiência no ROAR.</p>
                     </div>
+                </div>
+                <div class="navbar__right">
+                    <button class="btn btn--primary btn--sm" id="btnSave" aria-label="Salvar">
+                        <i class="fi fi-br-disk"></i> Salvar
+                    </button>
+                    <a href="perfil.html" class="navbar__avatar" title="Perfil" aria-label="Abrir perfil">L</a>
+                </div>
+            </header>
 
-                    <!-- Aplicativo -->
-                    <div class="config-section">
-                        <div class="config-section-title">
-                            <i class="fi fi-br-apps"></i> Aplicativo
-                        </div>
-                        <div class="card">
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">Tema</div>
-                                    <div class="config-row__desc">Aparência da interface</div>
-                                </div>
-                                <div class="theme-picker">
-                                    <button class="theme-option theme-option--light active" id="themeLight" data-tooltip="Claro" title="Tema claro" aria-label="Tema claro">
-                                        <i class="fi fi-br-sun u-pages-aluno-configuracoes-003"></i>
-                                    </button>
-                                    <button class="theme-option theme-option--dark" id="themeDark" data-tooltip="Escuro" title="Tema escuro" aria-label="Tema escuro">
-                                        <i class="fi fi-br-moon"></i>
+            <div class="page-body fade-in">
+                <div class="config-grid">
+
+                    <!-- Coluna esquerda -->
+                    <div>
+                        <!-- Conta -->
+                        <div class="config-section">
+                            <div class="config-section-title">
+                                <i class="fi fi-br-user"></i> Conta
+                            </div>
+                            <div class="card">
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">Foto do perfil</div>
+                                        <div class="config-row__desc">Escolha uma imagem de avatar</div>
+                                    </div>
+                                    <button class="btn btn--secondary btn--sm" id="btnFoto" aria-label="Alterar foto">
+                                        <i class="fi fi-br-camera"></i> Alterar
                                     </button>
                                 </div>
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">Nome</div>
+                                        <div class="config-row__desc">Como você aparece no sistema</div>
+                                    </div>
+                                    <input class="input u-pages-aluno-configuracoes-002" type="text" value="Leandro"
+                                        id="cfgNome">
+                                </div>
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">E-mail</div>
+                                        <div class="config-row__desc">leandro@escola.br</div>
+                                    </div>
+                                    <button class="btn btn--ghost btn--sm" aria-label="Alterar e-mail">Alterar</button>
+                                </div>
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">Senha</div>
+                                        <div class="config-row__desc">Alterar senha de acesso</div>
+                                    </div>
+                                    <button class="btn btn--ghost btn--sm" aria-label="Alterar senha">Alterar</button>
+                                </div>
                             </div>
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">Idioma</div>
-                                    <div class="config-row__desc">Idioma da interface</div>
-                                </div>
-                                <select class="select u-pages-aluno-configuracoes-004" id="cfgIdioma">
-                                    <option>Português</option>
-                                    <option>English</option>
-                                </select>
+                        </div>
+
+                        <!-- Aplicativo -->
+                        <div class="config-section">
+                            <div class="config-section-title">
+                                <i class="fi fi-br-apps"></i> Aplicativo
                             </div>
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">Volume</div>
-                                    <div class="config-row__desc">Volume dos sons do app</div>
+                            <div class="card">
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">Tema</div>
+                                        <div class="config-row__desc">Aparência da interface</div>
+                                    </div>
+                                    <div class="theme-picker">
+                                        <button class="theme-option theme-option--light active" id="themeLight"
+                                            data-tooltip="Claro" title="Tema claro" aria-label="Tema claro">
+                                            <i class="fi fi-br-sun u-pages-aluno-configuracoes-003"></i>
+                                        </button>
+                                        <button class="theme-option theme-option--dark" id="themeDark"
+                                            data-tooltip="Escuro" title="Tema escuro" aria-label="Tema escuro">
+                                            <i class="fi fi-br-moon"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="vol-wrap">
-                                    <i class="fi fi-br-volume-slash u-pages-aluno-configuracoes-005"></i>
-                                    <input type="range" id="cfgVolume" min="0" max="100" value="80" aria-label="Volume">
-                                    <i class="fi fi-br-volume u-pages-aluno-configuracoes-005"></i>
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">Idioma</div>
+                                        <div class="config-row__desc">Idioma da interface</div>
+                                    </div>
+                                    <select class="select u-pages-aluno-configuracoes-004" id="cfgIdioma">
+                                        <option>Português</option>
+                                        <option>English</option>
+                                    </select>
                                 </div>
-                            </div>
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">Notificações</div>
-                                    <div class="config-row__desc">Receber lembretes de estudo</div>
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">Volume</div>
+                                        <div class="config-row__desc">Volume dos sons do app</div>
+                                    </div>
+                                    <div class="vol-wrap">
+                                        <i class="fi fi-br-volume-slash u-pages-aluno-configuracoes-005"></i>
+                                        <input type="range" id="cfgVolume" min="0" max="100" value="80"
+                                            aria-label="Volume">
+                                        <i class="fi fi-br-volume u-pages-aluno-configuracoes-005"></i>
+                                    </div>
                                 </div>
-                                <label class="toggle" aria-label="Notificações">
-                                    <input type="checkbox" id="cfgNotif" checked>
-                                    <span class="toggle__slider"></span>
-                                </label>
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">Notificações</div>
+                                        <div class="config-row__desc">Receber lembretes de estudo</div>
+                                    </div>
+                                    <label class="toggle" aria-label="Notificações">
+                                        <input type="checkbox" id="cfgNotif" checked>
+                                        <span class="toggle__slider"></span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Coluna direita -->
+                    <div>
+                        <!-- Acessibilidade -->
+                        <div class="config-section">
+                            <div class="config-section-title">
+                                <i class="fi fi-br-eye"></i> Acessibilidade
+                            </div>
+                            <div class="card">
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">Tamanho da fonte</div>
+                                        <div class="config-row__desc">Ajuste o tamanho do texto</div>
+                                    </div>
+                                    <div class="font-size-picker">
+                                        <button class="fs-btn u-pages-aluno-configuracoes-006" data-fs="small"
+                                            aria-label="Fonte pequena">A</button>
+                                        <button class="fs-btn active u-pages-aluno-configuracoes-007" data-fs="medium"
+                                            aria-label="Fonte média">A</button>
+                                        <button class="fs-btn u-pages-aluno-configuracoes-008" data-fs="large"
+                                            aria-label="Fonte grande">A</button>
+                                    </div>
+                                </div>
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">Alto contraste</div>
+                                        <div class="config-row__desc">Melhora a leitura visual</div>
+                                    </div>
+                                    <label class="toggle" aria-label="Alto contraste">
+                                        <input type="checkbox" id="cfgContrast">
+                                        <span class="toggle__slider"></span>
+                                    </label>
+                                </div>
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">Suporte a sons</div>
+                                        <div class="config-row__desc">Sons de feedback nas atividades</div>
+                                    </div>
+                                    <label class="toggle" aria-label="Sons">
+                                        <input type="checkbox" id="cfgSons" checked>
+                                        <span class="toggle__slider"></span>
+                                    </label>
+                                </div>
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">Animações</div>
+                                        <div class="config-row__desc">Ativar animações de interface</div>
+                                    </div>
+                                    <label class="toggle" aria-label="Animações">
+                                        <input type="checkbox" id="cfgAnim" checked>
+                                        <span class="toggle__slider"></span>
+                                    </label>
+                                </div>
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">Redução de estímulos</div>
+                                        <div class="config-row__desc">Simplifica elementos visuais</div>
+                                    </div>
+                                    <label class="toggle" aria-label="Redução de estímulos">
+                                        <input type="checkbox" id="cfgEstimulos" checked>
+                                        <span class="toggle__slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Privacidade -->
+                        <div class="config-section">
+                            <div class="config-section-title">
+                                <i class="fi fi-br-lock"></i> Privacidade
+                            </div>
+                            <div class="card">
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label">Gerenciar dados</div>
+                                        <div class="config-row__desc">Exportar ou excluir seus dados</div>
+                                    </div>
+                                    <button class="btn btn--ghost btn--sm" id="btnDados"
+                                        aria-label="Gerenciar dados">Gerenciar</button>
+                                </div>
+                                <div class="config-row">
+                                    <div class="config-row__left">
+                                        <div class="config-row__label u-pages-aluno-configuracoes-009">Sair da conta
+                                        </div>
+                                        <div class="config-row__desc">Encerrar sessão atual</div>
+                                    </div>
+                                    <button class="btn btn--sm u-pages-aluno-configuracoes-010" id="btnLogout"
+                                        aria-label="Sair">
+                                        <i class="fi fi-br-exit"></i> Sair
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <!-- Coluna direita -->
-                <div>
-                    <!-- Acessibilidade -->
-                    <div class="config-section">
-                        <div class="config-section-title">
-                            <i class="fi fi-br-eye"></i> Acessibilidade
-                        </div>
-                        <div class="card">
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">Tamanho da fonte</div>
-                                    <div class="config-row__desc">Ajuste o tamanho do texto</div>
-                                </div>
-                                <div class="font-size-picker">
-                                    <button class="fs-btn u-pages-aluno-configuracoes-006" data-fs="small" aria-label="Fonte pequena">A</button>
-                                    <button class="fs-btn active u-pages-aluno-configuracoes-007" data-fs="medium" aria-label="Fonte média">A</button>
-                                    <button class="fs-btn u-pages-aluno-configuracoes-008" data-fs="large" aria-label="Fonte grande">A</button>
-                                </div>
-                            </div>
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">Alto contraste</div>
-                                    <div class="config-row__desc">Melhora a leitura visual</div>
-                                </div>
-                                <label class="toggle" aria-label="Alto contraste">
-                                    <input type="checkbox" id="cfgContrast">
-                                    <span class="toggle__slider"></span>
-                                </label>
-                            </div>
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">Suporte a sons</div>
-                                    <div class="config-row__desc">Sons de feedback nas atividades</div>
-                                </div>
-                                <label class="toggle" aria-label="Sons">
-                                    <input type="checkbox" id="cfgSons" checked>
-                                    <span class="toggle__slider"></span>
-                                </label>
-                            </div>
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">Animações</div>
-                                    <div class="config-row__desc">Ativar animações de interface</div>
-                                </div>
-                                <label class="toggle" aria-label="Animações">
-                                    <input type="checkbox" id="cfgAnim" checked>
-                                    <span class="toggle__slider"></span>
-                                </label>
-                            </div>
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">Redução de estímulos</div>
-                                    <div class="config-row__desc">Simplifica elementos visuais</div>
-                                </div>
-                                <label class="toggle" aria-label="Redução de estímulos">
-                                    <input type="checkbox" id="cfgEstimulos" checked>
-                                    <span class="toggle__slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Privacidade -->
-                    <div class="config-section">
-                        <div class="config-section-title">
-                            <i class="fi fi-br-lock"></i> Privacidade
-                        </div>
-                        <div class="card">
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label">Gerenciar dados</div>
-                                    <div class="config-row__desc">Exportar ou excluir seus dados</div>
-                                </div>
-                                <button class="btn btn--ghost btn--sm" id="btnDados" aria-label="Gerenciar dados">Gerenciar</button>
-                            </div>
-                            <div class="config-row">
-                                <div class="config-row__left">
-                                    <div class="config-row__label u-pages-aluno-configuracoes-009">Sair da conta</div>
-                                    <div class="config-row__desc">Encerrar sessão atual</div>
-                                </div>
-                                <button class="btn btn--sm u-pages-aluno-configuracoes-010" id="btnLogout" aria-label="Sair">
-                                    <i class="fi fi-br-exit"></i> Sair
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Botão salvar fixo -->
+                <div class="u-pages-aluno-configuracoes-011">
+                    <button class="btn btn--primary btn--lg" id="btnSave2" aria-label="Salvar configurações">
+                        <i class="fi fi-br-disk"></i> Salvar Configurações
+                    </button>
                 </div>
 
             </div>
-
-            <!-- Botão salvar fixo -->
-            <div class="u-pages-aluno-configuracoes-011">
-                <button class="btn btn--primary btn--lg" id="btnSave2" aria-label="Salvar configurações">
-                    <i class="fi fi-br-disk"></i> Salvar Configurações
-                </button>
-            </div>
-
         </div>
     </div>
-</div>
 
-<div id="toast-container"></div>
-
-<script src="../../public/js/roar-storage.js"></script>
-<script src="../../public/js/roar-page-transition.js"></script>
-<script src="../../public/js/roar-sidebar.js"></script>
-<script src="../../public/js/pages/aluno/pages-aluno-configuracoes-1.js"></script>
+    <div id="toast-container"></div>
+   <script type="module" src="../../public/js/pages/auth/route-guard.js"></script>
+    <script src="../../public/js/roar-page-transition.js"></script>
+    <script type="module" src="../../public/js/roar-sidebar.js"></script>
+    <script type="module" src="../../public/js/pages/aluno/pages-aluno-configuracoes-1.js"></script>
 </body>
+
 </html>

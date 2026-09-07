@@ -1,626 +1,1117 @@
-/* Comportamento extraído de relatorios.html. */
+import { showToast } from "../../components/toast.js";
+import { relatoriosService } from "../../services/relatorios-service.js";
+import { sessionService } from "../../services/session-service.js";
 
-// ================================================================
-// DADOS
-// ================================================================
-const AVATAR_COLORS = [
-    '#244D8C','#1a7c49','#7c3aed','#b07000',
-    '#1F6CE3','#0e7490','#be185d','#c2410c',
-];
-const NIVEL_INFO = {
-    1: { text: 'N\u00edvel 1 \u2014 Suporte Visual Puro', cls: 'tag-1', heroCls: 'hero-lvl1', color: '#1a7c49' },
-    2: { text: 'N\u00edvel 2 \u2014 Aprendiz Guiado', cls: 'tag-2', heroCls: 'hero-lvl2', color: '#1e5a9e' },
-    3: { text: 'N\u00edvel 3 \u2014 Autonomia Contextual', cls: 'tag-3', heroCls: 'hero-lvl3', color: '#7c3aed' },
+
+const AVATAR_COLORS = Object.freeze([
+    "#244D8C",
+    "#1A7C49",
+    "#7C3AED",
+    "#B07000",
+    "#1F6CE3",
+    "#0E7490",
+    "#BE185D",
+    "#C2410C",
+]);
+
+
+const elements = {
+    studentList: document.getElementById("studentList"),
+    mobileSelect: document.getElementById("mobileSel"),
+    dashboard: document.getElementById("dashboardArea"),
+    teacherAvatar: document.querySelector(".navbar__avatar"),
+    printButton: document.getElementById("printReportButton"),
 };
 
-const studentsData = [
-    {
-        id:1, name:'Leandro Matos',   turma:'A', nivel:1, xp:1240, prog:70,  last:'Hoje',
-        avatarColor: AVATAR_COLORS[0],
-        streakDias: 5, totalSessoes: 18, tempoMedio: 12,
-        historicoSemana: [60, 75, 55, 80, 70, 65, 70],
-        atividades: [
-            { nome:'Partes do Corpo', tipo:'Arraste',    acertos:8,  erros:2, xp:50,  status:'done', data:'08/08' },
-            { nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:6,  erros:4, xp:40,  status:'done', data:'09/08' },
-            { nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:5,  erros:3, xp:35,  status:'done', data:'10/08' },
-            { nome:'Animais',         tipo:'Input',      acertos:7,  erros:3, xp:40,  status:'done', data:'11/08' },
-            { nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:3,  erros:7, xp:15,  status:'prog', data:'12/08' },
-            { nome:'Frutas',          tipo:'Arraste',    acertos:0,  erros:0, xp:0,   status:'none', data:'\u2014'  },
-        ]
-    },
-    {
-        id:2, name:'Ana Clara Souza', turma:'A', nivel:3, xp:1850, prog:92,  last:'Hoje',
-        avatarColor: AVATAR_COLORS[1],
-        streakDias: 14, totalSessoes: 34, tempoMedio: 22,
-        historicoSemana: [85, 90, 88, 95, 92, 88, 92],
-        atividades: [
-            { nome:'Partes do Corpo', tipo:'Arraste',    acertos:10, erros:0, xp:50,  status:'done', data:'06/08' },
-            { nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:9,  erros:1, xp:40,  status:'done', data:'07/08' },
-            { nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:8,  erros:2, xp:38,  status:'done', data:'09/08' },
-            { nome:'Animais',         tipo:'Input',      acertos:10, erros:0, xp:45,  status:'done', data:'10/08' },
-            { nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:9,  erros:1, xp:48,  status:'done', data:'11/08' },
-            { nome:'Frutas',          tipo:'Arraste',    acertos:8,  erros:2, xp:40,  status:'done', data:'13/08' },
-        ]
-    },
-    {
-        id:3, name:'Bruno Ferreira',  turma:'A', nivel:2, xp:1620, prog:55,  last:'Ontem',
-        avatarColor: AVATAR_COLORS[2],
-        streakDias: 2, totalSessoes: 12, tempoMedio: 9,
-        historicoSemana: [50, 60, 45, 55, 40, 55, 55],
-        atividades: [
-            { nome:'Partes do Corpo', tipo:'Arraste',    acertos:7,  erros:3, xp:40,  status:'done', data:'07/08' },
-            { nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:4,  erros:6, xp:22,  status:'done', data:'08/08' },
-            { nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:5,  erros:5, xp:25,  status:'done', data:'10/08' },
-            { nome:'Animais',         tipo:'Input',      acertos:2,  erros:8, xp:10,  status:'prog', data:'11/08' },
-            { nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:0,  erros:0, xp:0,   status:'none', data:'\u2014'  },
-            { nome:'Frutas',          tipo:'Arraste',    acertos:0,  erros:0, xp:0,   status:'none', data:'\u2014'  },
-        ]
-    },
-    {
-        id:4, name:'Mariana Lima',    turma:'A', nivel:2, xp:980,  prog:80,  last:'Hoje',
-        avatarColor: AVATAR_COLORS[3],
-        streakDias: 7, totalSessoes: 20, tempoMedio: 15,
-        historicoSemana: [75, 80, 78, 82, 79, 80, 80],
-        atividades: [
-            { nome:'Partes do Corpo', tipo:'Arraste',    acertos:9,  erros:1, xp:50,  status:'done', data:'08/08' },
-            { nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:7,  erros:3, xp:38,  status:'done', data:'09/08' },
-            { nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:6,  erros:2, xp:36,  status:'done', data:'10/08' },
-            { nome:'Animais',         tipo:'Input',      acertos:8,  erros:2, xp:43,  status:'done', data:'11/08' },
-            { nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:4,  erros:3, xp:28,  status:'prog', data:'13/08' },
-            { nome:'Frutas',          tipo:'Arraste',    acertos:0,  erros:0, xp:0,   status:'none', data:'\u2014'  },
-        ]
-    },
-    {
-        id:5, name:'Gabriel Santos',  turma:'B', nivel:1, xp:760,  prog:42,  last:'h\u00e1 3 dias',
-        avatarColor: AVATAR_COLORS[4],
-        streakDias: 0, totalSessoes: 8, tempoMedio: 7,
-        historicoSemana: [35, 42, 38, 45, 40, 30, 42],
-        atividades: [
-            { nome:'Partes do Corpo', tipo:'Arraste',    acertos:4,  erros:6, xp:20,  status:'done', data:'05/08' },
-            { nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:5,  erros:5, xp:25,  status:'done', data:'07/08' },
-            { nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:2,  erros:8, xp:8,   status:'prog', data:'09/08' },
-            { nome:'Animais',         tipo:'Input',      acertos:0,  erros:0, xp:0,   status:'none', data:'\u2014'  },
-            { nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:0,  erros:0, xp:0,   status:'none', data:'\u2014'  },
-            { nome:'Frutas',          tipo:'Arraste',    acertos:0,  erros:0, xp:0,   status:'none', data:'\u2014'  },
-        ]
-    },
-    {
-        id:6, name:'Isabela Costa',   turma:'B', nivel:3, xp:2100, prog:95,  last:'Hoje',
-        avatarColor: AVATAR_COLORS[5],
-        streakDias: 21, totalSessoes: 40, tempoMedio: 25,
-        historicoSemana: [90, 95, 92, 97, 94, 95, 95],
-        atividades: [
-            { nome:'Partes do Corpo', tipo:'Arraste',    acertos:10, erros:0, xp:50,  status:'done', data:'04/08' },
-            { nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:10, erros:0, xp:40,  status:'done', data:'05/08' },
-            { nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:9,  erros:1, xp:40,  status:'done', data:'06/08' },
-            { nome:'Animais',         tipo:'Input',      acertos:9,  erros:1, xp:44,  status:'done', data:'08/08' },
-            { nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:10, erros:0, xp:48,  status:'done', data:'10/08' },
-            { nome:'Frutas',          tipo:'Arraste',    acertos:9,  erros:1, xp:40,  status:'done', data:'12/08' },
-        ]
-    },
-    {
-        id:7, name:'Rafael Mendes',   turma:'B', nivel:2, xp:1380, prog:64,  last:'Ontem',
-        avatarColor: AVATAR_COLORS[6],
-        streakDias: 3, totalSessoes: 15, tempoMedio: 11,
-        historicoSemana: [58, 65, 62, 68, 60, 64, 64],
-        atividades: [
-            { nome:'Partes do Corpo', tipo:'Arraste',    acertos:6,  erros:4, xp:35,  status:'done', data:'07/08' },
-            { nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:7,  erros:3, xp:36,  status:'done', data:'08/08' },
-            { nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:4,  erros:6, xp:20,  status:'done', data:'09/08' },
-            { nome:'Animais',         tipo:'Input',      acertos:5,  erros:5, xp:25,  status:'prog', data:'11/08' },
-            { nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:3,  erros:4, xp:15,  status:'prog', data:'12/08' },
-            { nome:'Frutas',          tipo:'Arraste',    acertos:0,  erros:0, xp:0,   status:'none', data:'\u2014'  },
-        ]
-    },
-    {
-        id:8, name:'Valentina Rocha', turma:'A', nivel:1, xp:540,  prog:28,  last:'h\u00e1 5 dias',
-        avatarColor: AVATAR_COLORS[7],
-        streakDias: 0, totalSessoes: 5, tempoMedio: 6,
-        historicoSemana: [20, 28, 25, 30, 22, 15, 28],
-        atividades: [
-            { nome:'Partes do Corpo', tipo:'Arraste',    acertos:3,  erros:7, xp:15,  status:'done', data:'06/08' },
-            { nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:2,  erros:5, xp:8,   status:'prog', data:'09/08' },
-            { nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:0,  erros:0, xp:0,   status:'none', data:'\u2014'  },
-            { nome:'Animais',         tipo:'Input',      acertos:0,  erros:0, xp:0,   status:'none', data:'\u2014'  },
-            { nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:0,  erros:0, xp:0,   status:'none', data:'\u2014'  },
-            { nome:'Frutas',          tipo:'Arraste',    acertos:0,  erros:0, xp:0,   status:'none', data:'\u2014'  },
-        ]
-    },
-];
 
-// ================================================================
-// ESTADO
-// ================================================================
-let selectedId = 1;
-const DIAS = ['Seg','Ter','Qua','Qui','Sex','S\u00e1b','Dom'];
+const state = {
+    teacherId: null,
+    teacherDashboard: null,
+    selectedStudentId: null,
+    reportCache: new Map(),
+    requestSequence: 0,
+};
 
-// ================================================================
-// SIDEBAR DE ALUNOS
-// ================================================================
-function renderStudentList() {
-    const list = document.getElementById('studentList');
-    const sel  = document.getElementById('mobileSel');
-    list.innerHTML = '';
-    sel.innerHTML  = '';
-    studentsData.forEach(s => {
-        const progCls = s.prog>=80?'#44F698':s.prog>=50?'var(--c-blue-mid)':'#ef4444';
-        const item = document.createElement('div');
-        item.className = 'student-item' + (s.id===selectedId?' active':'');
-        item.id = `si-${s.id}`;
-        item.innerHTML = `
-            <div class="si-av" style="background:${s.avatarColor}">${s.name[0]}</div>
-            <div>
-                <div class="si-name">${s.name}</div>
-                <div class="si-turma">Turma ${s.turma}</div>
-            </div>
-            <div class="si-prog" style="color:${progCls}">${s.prog}%</div>
-        `;
-        item.addEventListener('click', () => selecionarAluno(s.id));
-        list.appendChild(item);
 
-        const opt = document.createElement('option');
-        opt.value = s.id;
-        opt.textContent = s.name + ' (Turma ' + s.turma + ')';
-        if(s.id===selectedId) opt.selected = true;
-        sel.appendChild(opt);
+function createElement(
+    tagName,
+    className,
+    textContent,
+) {
+    const element =
+        document.createElement(tagName);
+
+    if (className) {
+        element.className = className;
+    }
+
+    if (
+        textContent !== undefined &&
+        textContent !== null
+    ) {
+        element.textContent =
+            String(textContent);
+    }
+
+    return element;
+}
+
+
+function requireTeacherId() {
+    const session = sessionService.get();
+
+    const teacherId = Number(
+        session?.user?.id ??
+        session?.user?.professor_id ??
+        session?.professor_id,
+    );
+
+    if (
+        !Number.isInteger(teacherId) ||
+        teacherId <= 0
+    ) {
+        throw new Error(
+            "Não foi possível identificar o professor autenticado.",
+        );
+    }
+
+    return teacherId;
+}
+
+
+function formatNumber(value) {
+    return (
+        Number(value) || 0
+    ).toLocaleString("pt-BR");
+}
+
+
+function formatSeconds(value) {
+    const totalSeconds = Math.max(
+        0,
+        Math.round(Number(value) || 0),
+    );
+
+    if (totalSeconds < 60) {
+        return `${totalSeconds}s`;
+    }
+
+    const minutes = Math.floor(
+        totalSeconds / 60,
+    );
+
+    const seconds =
+        totalSeconds % 60;
+
+    return seconds
+        ? `${minutes}min ${seconds}s`
+        : `${minutes}min`;
+}
+
+
+function formatDate(value) {
+    if (!(value instanceof Date)) {
+        return "Sem atividade registrada";
+    }
+
+    return new Intl.DateTimeFormat(
+        "pt-BR",
+        {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        },
+    ).format(value);
+}
+
+
+function getAvatarColor(studentId) {
+    const index =
+        Math.abs(Number(studentId) || 0) %
+        AVATAR_COLORS.length;
+
+    return AVATAR_COLORS[index];
+}
+
+
+function getLevelTagClass(levelNumber) {
+    if (levelNumber === 2) {
+        return "tag-2";
+    }
+
+    if (levelNumber === 3) {
+        return "tag-3";
+    }
+
+    return "tag-1";
+}
+
+
+function getProgressColor(percentage) {
+    if (percentage >= 80) {
+        return "#1A7C49";
+    }
+
+    if (percentage >= 50) {
+        return "var(--c-blue-dark)";
+    }
+
+    return "#B91C1C";
+}
+
+
+function setLoading(message) {
+    const loading =
+        createElement(
+            "div",
+            "simple-report-card",
+        );
+
+    const text =
+        createElement(
+            "p",
+            "simple-section-help",
+            message,
+        );
+
+    loading.append(text);
+
+    elements.dashboard.replaceChildren(
+        loading,
+    );
+}
+
+
+function setPageError(error) {
+    console.error(
+        "Erro ao carregar relatório:",
+        error,
+    );
+
+    const container =
+        createElement(
+            "section",
+            "simple-report-card",
+        );
+
+    const title =
+        createElement(
+            "h2",
+            null,
+            "Não foi possível carregar o relatório",
+        );
+
+    const message =
+        createElement(
+            "p",
+            "simple-section-help",
+            error?.message ||
+            "Tente novamente em alguns instantes.",
+        );
+
+    const retryButton =
+        createElement(
+            "button",
+            "btn btn--primary",
+            "Tentar novamente",
+        );
+
+    retryButton.type = "button";
+
+    retryButton.addEventListener(
+        "click",
+        initialize,
+        {
+            once: true,
+        },
+    );
+
+    container.append(
+        title,
+        message,
+        retryButton,
+    );
+
+    elements.dashboard.replaceChildren(
+        container,
+    );
+
+    showToast(
+        error?.message ||
+        "Não foi possível carregar o relatório.",
+        "error",
+    );
+}
+
+
+function createStudentListItem(student) {
+    const button =
+        createElement(
+            "button",
+            "student-item",
+        );
+
+    button.type = "button";
+    button.dataset.studentId =
+        String(student.id);
+
+    if (
+        student.id ===
+        state.selectedStudentId
+    ) {
+        button.classList.add("active");
+    }
+
+    const avatar =
+        createElement(
+            "span",
+            "si-av",
+            student.initial,
+        );
+
+    avatar.style.backgroundColor =
+        getAvatarColor(student.id);
+
+    const information =
+        createElement("span");
+
+    const name =
+        createElement(
+            "span",
+            "si-name",
+            student.name,
+        );
+
+    const schoolYear =
+        createElement(
+            "span",
+            "si-turma",
+            student.schoolYear,
+        );
+
+    information.append(
+        name,
+        schoolYear,
+    );
+
+    const progress =
+        createElement(
+            "span",
+            "si-prog",
+            `${student.completionRate}%`,
+        );
+
+    progress.style.color =
+        getProgressColor(
+            student.completionRate,
+        );
+
+    button.append(
+        avatar,
+        information,
+        progress,
+    );
+
+    button.addEventListener(
+        "click",
+        () => {
+            selectStudent(student.id);
+        },
+    );
+
+    return button;
+}
+
+
+function renderStudentSelectors(students) {
+    elements.studentList.replaceChildren();
+    elements.mobileSelect.replaceChildren();
+
+    /*
+     * Remove o onchange inline do HTML antigo.
+     * A seleção passa a ser controlada por este módulo.
+     */
+    elements.mobileSelect.removeAttribute(
+        "onchange",
+    );
+
+    if (!students.length) {
+        const message =
+            createElement(
+                "p",
+                "u-pages-professor-relatorios-040",
+                "Nenhum aluno está vinculado a este professor.",
+            );
+
+        elements.studentList.append(message);
+
+        const option =
+            createElement(
+                "option",
+                null,
+                "Nenhum aluno disponível",
+            );
+
+        option.value = "";
+        elements.mobileSelect.append(option);
+
+        return;
+    }
+
+    const listFragment =
+        document.createDocumentFragment();
+
+    const selectFragment =
+        document.createDocumentFragment();
+
+    students.forEach((student) => {
+        listFragment.append(
+            createStudentListItem(student),
+        );
+
+        const option =
+            createElement(
+                "option",
+                null,
+                `${student.name} — ${student.schoolYear}`,
+            );
+
+        option.value =
+            String(student.id);
+
+        option.selected =
+            student.id ===
+            state.selectedStudentId;
+
+        selectFragment.append(option);
     });
+
+    elements.studentList.append(
+        listFragment,
+    );
+
+    elements.mobileSelect.append(
+        selectFragment,
+    );
 }
 
-// ================================================================
-// SELECIONAR ALUNO â†’ GERAR DASHBOARD
-// ================================================================
-function selecionarAluno(id) {
-    selectedId = id;
-    document.querySelectorAll('.student-item').forEach(el => el.classList.remove('active'));
-    const si = document.getElementById(`si-${id}`);
-    if(si) si.classList.add('active');
-    renderDashboard();
+
+function updateSelectedStudent(studentId) {
+    elements.studentList
+        .querySelectorAll(".student-item")
+        .forEach((item) => {
+            item.classList.toggle(
+                "active",
+                Number(item.dataset.studentId) ===
+                studentId,
+            );
+        });
+
+    elements.mobileSelect.value =
+        String(studentId);
 }
 
-// ================================================================
-// RENDER DASHBOARD COMPLETO
-// ================================================================
-function renderDashboardLegacy() {
-    const s   = studentsData.find(x => x.id===selectedId);
-    const nv  = NIVEL_INFO[s.nivel];
-    const area = document.getElementById('dashboardArea');
 
-    // CÃ¡lculos gerais
-    const totalAc = s.atividades.reduce((a,t)=>a+t.acertos, 0);
-    const totalEr = s.atividades.reduce((a,t)=>a+t.erros,   0);
-    const totalXP = s.atividades.reduce((a,t)=>a+t.xp,      0);
-    const tot     = totalAc + totalEr;
-    const taxa    = tot>0 ? Math.round((totalAc/tot)*100) : 0;
-    const feitas  = s.atividades.filter(a=>a.status==='done').length;
-    const temasFortes = s.atividades.filter(a=>{
-        const t=a.acertos+a.erros; return t>0 && (a.acertos/t)>=0.7;
-    }).map(a=>a.nome);
-    const temasFracos = s.atividades.filter(a=>{
-        const t=a.acertos+a.erros; return t>0 && (a.acertos/t)<0.7;
-    }).map(a=>a.nome);
-    const maxHist = Math.max(...s.historicoSemana, 1);
+function createStudentHeader(report) {
+    const student = report.student;
 
-    area.innerHTML = `
+    const container =
+        createElement(
+            "section",
+            "simple-student-card",
+        );
 
-    <!-- 1. HERO CARD -->
-    <div class="aluno-hero ${nv.heroCls}">
-        <div class="aluno-hero__top">
-            <div class="hero-av" style="background:${s.avatarColor}">${s.name[0]}</div>
-            <div class="hero-info">
-                <div class="hero-info__name">${s.name}</div>
-                <div class="hero-info__meta">Turma ${s.turma} &middot; \u00daltimo acesso: ${s.last}</div>
-                <span class="nivel-tag ${nv.cls}"><i class="fi fi-br-brain"></i>${nv.text}</span>
-            </div>
-            <div class="u-pages-professor-relatorios-006">
-                <div class="u-pages-professor-relatorios-007">${s.prog}%</div>
-                <div class="u-pages-professor-relatorios-008">PROGRESSO GERAL</div>
-                <div class="progress-wrap u-pages-professor-relatorios-009">
-                    <div class="progress-bar ${s.prog>=80?'progress-bar--green':s.prog>=50?'progress-bar--blue':'progress-bar--red'}" style="width:${s.prog}%"></div>
-                </div>
-            </div>
-        </div>
-        <div class="hero-kpis">
-            <div class="kpi">
-                <div class="kpi__icon"><i class="fi fi-br-star u-pages-professor-relatorios-010"></i></div>
-                <div class="kpi__val">${s.xp.toLocaleString('pt-BR')}</div>
-                <div class="kpi__lbl">XP Total</div>
-            </div>
-            <div class="kpi">
-                <div class="kpi__icon"><i class="fi fi-br-check-circle u-pages-professor-relatorios-011"></i></div>
-                <div class="kpi__val">${taxa}%</div>
-                <div class="kpi__lbl">Taxa Acerto</div>
-            </div>
-            <div class="kpi">
-                <div class="kpi__icon"><i class="fi fi-br-puzzle-pieces u-pages-professor-relatorios-002"></i></div>
-                <div class="kpi__val">${feitas}/${s.atividades.length}</div>
-                <div class="kpi__lbl">Conclu\u00eddas</div>
-            </div>
-            <div class="kpi">
-                <div class="kpi__icon"><i class="fi fi-br-flame u-pages-professor-relatorios-012"></i></div>
-                <div class="kpi__val">${s.streakDias}</div>
-                <div class="kpi__lbl">Dias Streak</div>
-            </div>
-            <div class="kpi">
-                <div class="kpi__icon"><i class="fi fi-br-time-forward u-pages-professor-relatorios-013"></i></div>
-                <div class="kpi__val">${s.totalSessoes}</div>
-                <div class="kpi__lbl">Sess\u00f5es</div>
-            </div>
-            <div class="kpi">
-                <div class="kpi__icon"><i class="fi fi-br-hourglass-end u-pages-professor-relatorios-014"></i></div>
-                <div class="kpi__val">${s.tempoMedio}min</div>
-                <div class="kpi__lbl">T. M\u00e9dio</div>
-            </div>
-        </div>
-    </div>
+    const heading =
+        createElement(
+            "div",
+            "simple-student-heading",
+        );
 
-    <!-- 2. GRÃFICOS LADO A LADO -->
-    <div class="grid-2">
+    const avatar =
+        createElement(
+            "div",
+            "hero-av",
+            student.initial,
+        );
 
-        <!-- GrÃ¡fico barras: acertos x erros por atividade -->
-        <div class="chart-card">
-            <div class="chart-title"><i class="fi fi-br-chart-simple"></i>Acertos &times; Erros por Atividade</div>
-            <div class="bar-chart" id="barChart"></div>
-            <div class="chart-legend u-pages-professor-relatorios-015">
-                <span><span class="leg-dot u-pages-professor-relatorios-016"></span>Acertos</span>
-                <span><span class="leg-dot u-pages-professor-relatorios-017"></span>Erros</span>
-            </div>
-        </div>
+    avatar.style.backgroundColor =
+        getAvatarColor(student.id);
 
-        <!-- GrÃ¡fico donut: aproveitamento geral -->
-        <div class="chart-card">
-            <div class="chart-title"><i class="fi fi-br-chart-pie"></i>Aproveitamento Geral</div>
-            <div class="donut-wrap">
-                <div class="donut" id="donutChart">
-                    <div class="donut__center">
-                        <div class="donut__pct">${taxa}%</div>
-                        <div class="donut__sub">Acertos</div>
-                    </div>
-                </div>
-                <div class="donut-legend">
-                    <div class="dl-item">
-                        <div class="dl-dot u-pages-professor-relatorios-018"></div>
-                        <div class="dl-name">Acertos</div>
-                        <div class="dl-val">${totalAc}</div>
-                    </div>
-                    <div class="dl-item">
-                        <div class="dl-dot u-pages-professor-relatorios-019"></div>
-                        <div class="dl-name">Erros</div>
-                        <div class="dl-val">${totalEr}</div>
-                    </div>
-                    <div class="dl-item">
-                        <div class="dl-dot u-pages-professor-relatorios-020"></div>
-                        <div class="dl-name">XP Ganho</div>
-                        <div class="dl-val">${totalXP}</div>
-                    </div>
-                    <div class="dl-item">
-                        <div class="dl-dot u-pages-professor-relatorios-021"></div>
-                        <div class="dl-name">Conclu\u00eddas</div>
-                        <div class="dl-val">${feitas}/${s.atividades.length}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    const information =
+        createElement("div");
 
-    <!-- 3. HISTÃ“RICO DA SEMANA + BARRAS HORIZONTAIS -->
-    <div class="grid-2">
+    const name =
+        createElement(
+            "h2",
+            null,
+            student.name,
+        );
 
-        <!-- Hist. semana -->
-        <div class="chart-card">
-            <div class="chart-title"><i class="fi fi-br-calendar-lines"></i>Progresso nos \u00daltimos 7 Dias</div>
-            <div class="bar-chart u-pages-professor-relatorios-022" id="weekChart"></div>
-            <div class="chart-legend u-pages-professor-relatorios-015">
-                <span><span class="leg-dot u-pages-professor-relatorios-023"></span>% Desempenho di\u00e1rio</span>
-            </div>
-        </div>
+    const metadata =
+        createElement(
+            "p",
+            null,
+            `${student.schoolYear} · XP: ${formatNumber(student.xp)}`,
+        );
 
-        <!-- Barras horizontais: aproveitamento por atividade -->
-        <div class="chart-card">
-            <div class="chart-title"><i class="fi fi-br-poll-h"></i>Aproveitamento por Atividade</div>
-            <div class="hbar-list" id="hbarList"></div>
-        </div>
-    </div>
+    const level =
+        createElement(
+            "span",
+            `nivel-tag ${getLevelTagClass(
+                student.learningMode.number,
+            )}`,
+            student.learningMode.label,
+        );
 
-    <!-- 4. TABELA DETALHADA -->
-    <div class="chart-card">
-        <div class="chart-title"><i class="fi fi-br-table-list"></i>Detalhamento Completo por Atividade</div>
-        <div class="u-pages-professor-relatorios-024">
-        <table class="detail-table">
-            <thead>
-                <tr>
-                    <th>Atividade</th>
-                    <th>Tipo</th>
-                    <th class="u-pages-professor-relatorios-025">Acertos</th>
-                    <th class="u-pages-professor-relatorios-025">Erros</th>
-                    <th class="u-pages-professor-relatorios-025">XP</th>
-                    <th>Aproveit.</th>
-                    <th>Status</th>
-                    <th>Data</th>
-                </tr>
-            </thead>
-            <tbody id="detailTable"></tbody>
-        </table>
-        </div>
-    </div>
+    information.append(
+        name,
+        metadata,
+        level,
+    );
 
-    <!-- 5. PONTOS FORTES / FRACOS + TIMELINE -->
-    <div class="grid-2">
+    heading.append(
+        avatar,
+        information,
+    );
 
-        <!-- Insights pedagÃ³gicos -->
-        <div class="chart-card">
-            <div class="chart-title"><i class="fi fi-br-lightbulb"></i>An\u00e1lise Pedag\u00f3gica</div>
-            <div class="insight-grid">
-                <div class="insight-card insight-card--forte">
-                    <div class="insight-title"><i class="fi fi-br-check"></i> Pontos Fortes</div>
-                    <div id="fortesContainer"></div>
-                </div>
-                <div class="insight-card insight-card--fraco">
-                    <div class="insight-title"><i class="fi fi-br-exclamation"></i> Refor\u00e7o Necess\u00e1rio</div>
-                    <div id="fracosContainer"></div>
-                </div>
-            </div>
-            <div class="u-pages-professor-relatorios-026">
-                <div class="u-pages-professor-relatorios-027">RECOMENDA\u00c7\u00c3O DO SISTEMA</div>
-                <div id="recomContainer" class="u-pages-professor-relatorios-028"></div>
-            </div>
-        </div>
+    container.append(heading);
 
-        <!-- Timeline de atividades -->
-        <div class="chart-card">
-            <div class="chart-title"><i class="fi fi-br-time-forward"></i>Linha do Tempo de Atividades</div>
-            <div class="timeline" id="timelineList"></div>
-        </div>
-    </div>
-    `;
+    return container;
+}
 
-    // Preencher grÃ¡fico de barras (acertos x erros)
-    setTimeout(() => {
-        const barChart = document.getElementById('barChart');
-        const maxV = Math.max(...s.atividades.map(a=>a.acertos+a.erros), 1);
-        s.atividades.forEach(a => {
-            const hAc = Math.round((a.acertos/maxV)*140);
-            const hEr = Math.round((a.erros/maxV)*140);
-            const col = document.createElement('div');
-            col.className = 'bc-col';
-            col.innerHTML = `
-                <div class="bc-bars">
-                    <div class="bc-bar ac" style="height:${hAc}px" title="${a.acertos} acertos"></div>
-                    <div class="bc-bar er" style="height:${hEr}px" title="${a.erros} erros"></div>
-                </div>
-                <div class="bc-lbl">${a.nome.split(' ')[0]}</div>
-            `;
-            barChart.appendChild(col);
+
+function createSummaryItem(value, label) {
+    const container =
+        createElement("div");
+
+    const valueElement =
+        createElement(
+            "strong",
+            null,
+            value,
+        );
+
+    const labelElement =
+        createElement(
+            "span",
+            null,
+            label,
+        );
+
+    container.append(
+        valueElement,
+        labelElement,
+    );
+
+    return container;
+}
+
+
+function createSummarySection(report) {
+    const section =
+        createElement(
+            "section",
+            "simple-report-card",
+        );
+
+    const title =
+        createElement(
+            "h2",
+            null,
+            "Resumo do desempenho",
+        );
+
+    const grid =
+        createElement(
+            "div",
+            "simple-summary-grid",
+        );
+
+    grid.append(
+        createSummaryItem(
+            `${report.summary.completionRate}%`,
+            "Taxa de conclusão",
+        ),
+
+        createSummaryItem(
+            `${report.summary.completed}/${report.summary.attempted}`,
+            "Atividades concluídas",
+        ),
+
+        createSummaryItem(
+            report.summary.averageErrors,
+            "Média de erros",
+        ),
+
+        createSummaryItem(
+            formatSeconds(
+                report.summary.averageTimeSeconds,
+            ),
+            "Tempo médio",
+        ),
+    );
+
+    section.append(
+        title,
+        grid,
+    );
+
+    return section;
+}
+
+
+function createTableCell(
+    text,
+    className = null,
+) {
+    return createElement(
+        "td",
+        className,
+        text,
+    );
+}
+
+
+function createEmptyTableRow(
+    columnCount,
+    message,
+) {
+    const row =
+        document.createElement("tr");
+
+    const cell =
+        createElement(
+            "td",
+            null,
+            message,
+        );
+
+    cell.colSpan = columnCount;
+
+    row.append(cell);
+
+    return row;
+}
+
+
+function createModulesSection(report) {
+    const section =
+        createElement(
+            "section",
+            "simple-report-card",
+        );
+
+    const title =
+        createElement(
+            "h2",
+            null,
+            "Desempenho por módulo",
+        );
+
+    const description =
+        createElement(
+            "p",
+            "simple-section-help",
+            "Dados calculados a partir das atividades realizadas pelo aluno.",
+        );
+
+    const tableWrapper =
+        createElement(
+            "div",
+            "simple-table-wrap",
+        );
+
+    const table =
+        createElement(
+            "table",
+            "simple-report-table",
+        );
+
+    const head =
+        document.createElement("thead");
+
+    const headRow =
+        document.createElement("tr");
+
+    [
+        "Módulo",
+        "Conclusão",
+        "Tentativas",
+        "Média de erros",
+        "Tempo médio",
+    ].forEach((label) => {
+        headRow.append(
+            createElement(
+                "th",
+                null,
+                label,
+            ),
+        );
+    });
+
+    head.append(headRow);
+
+    const body =
+        document.createElement("tbody");
+
+    if (!report.modules.length) {
+        body.append(
+            createEmptyTableRow(
+                5,
+                "Este aluno ainda não realizou atividades.",
+            ),
+        );
+    } else {
+        report.modules.forEach((module) => {
+            const row =
+                document.createElement("tr");
+
+            const moduleCell =
+                createElement(
+                    "th",
+                    null,
+                    module.name,
+                );
+
+            moduleCell.scope = "row";
+
+            row.append(
+                moduleCell,
+
+                createTableCell(
+                    `${module.completionRate}%`,
+                ),
+
+                createTableCell(
+                    String(module.totalAttempts),
+                ),
+
+                createTableCell(
+                    String(module.averageErrors),
+                ),
+
+                createTableCell(
+                    formatSeconds(
+                        module.averageTimeSeconds,
+                    ),
+                ),
+            );
+
+            body.append(row);
         });
+    }
 
-        // Donut (conic-gradient)
-        const pctAc = taxa;
-        const pctEr = 100 - taxa;
-        document.getElementById('donutChart').style.background =
-            `conic-gradient(#44F698 0% ${pctAc}%, #ef4444 ${pctAc}% 100%)`;
+    table.append(
+        head,
+        body,
+    );
 
-        // GrÃ¡fico semana
-        const weekChart = document.getElementById('weekChart');
-        const maxW = Math.max(...s.historicoSemana, 1);
-        s.historicoSemana.forEach((v, i) => {
-            const h = Math.round((v/maxW)*100);
-            const col = document.createElement('div');
-            col.className = 'bc-col';
-            col.style.gap = '4px';
-            col.innerHTML = `
-                <div class="u-pages-professor-relatorios-029">
-                    <div style="width:100%;height:${h}px;border-radius:5px 5px 0 0;background:var(--c-blue-mid);opacity:0.75;transition:height 0.8s cubic-bezier(0.34,1.56,0.64,1)" title="${v}%"></div>
-                </div>
-                <div class="bc-lbl">${DIAS[i]}</div>
-            `;
-            weekChart.appendChild(col);
+    tableWrapper.append(table);
+
+    section.append(
+        title,
+        description,
+        tableWrapper,
+    );
+
+    return section;
+}
+
+
+function createHistorySection(report) {
+    const section =
+        createElement(
+            "section",
+            "simple-report-card",
+        );
+
+    const title =
+        createElement(
+            "h2",
+            null,
+            "Histórico recente",
+        );
+
+    const tableWrapper =
+        createElement(
+            "div",
+            "simple-table-wrap",
+        );
+
+    const table =
+        createElement(
+            "table",
+            "simple-report-table",
+        );
+
+    const head =
+        document.createElement("thead");
+
+    const headRow =
+        document.createElement("tr");
+
+    [
+        "Data",
+        "Módulo",
+        "Atividade",
+        "Erros",
+        "Tempo",
+        "Situação",
+    ].forEach((label) => {
+        headRow.append(
+            createElement(
+                "th",
+                null,
+                label,
+            ),
+        );
+    });
+
+    head.append(headRow);
+
+    const body =
+        document.createElement("tbody");
+
+    const recentHistory =
+        report.history.slice(0, 10);
+
+    if (!recentHistory.length) {
+        body.append(
+            createEmptyTableRow(
+                6,
+                "Nenhuma tentativa registrada.",
+            ),
+        );
+    } else {
+        recentHistory.forEach((record) => {
+            const row =
+                document.createElement("tr");
+
+            const status =
+                createElement(
+                    "span",
+                    record.completed
+                        ? "simple-status simple-status--done"
+                        : "simple-status simple-status--prog",
+
+                    record.completed
+                        ? "Concluída"
+                        : "Não concluída",
+                );
+
+            const statusCell =
+                document.createElement("td");
+
+            statusCell.append(status);
+
+            row.append(
+                createTableCell(
+                    formatDate(record.dateTime),
+                ),
+
+                createTableCell(
+                    record.moduleName,
+                ),
+
+                createTableCell(
+                    record.activityName,
+                ),
+
+                createTableCell(
+                    String(record.errors),
+                ),
+
+                createTableCell(
+                    formatSeconds(
+                        record.timeSeconds,
+                    ),
+                ),
+
+                statusCell,
+            );
+
+            body.append(row);
         });
+    }
 
-        // Barras horizontais
-        const hbarList = document.getElementById('hbarList');
-        s.atividades.forEach(a => {
-            const t = a.acertos + a.erros;
-            const pct = t>0 ? Math.round((a.acertos/t)*100) : 0;
-            const barCls = pct>=70?'pct-g':pct>=40?'pct-y':'pct-r';
-            const item = document.createElement('div');
-            item.className = 'hbar-item';
-            item.innerHTML = `
-                <div class="hbar-lbl" title="${a.nome}">${a.nome}</div>
-                <div class="hbar-track">
-                    <div class="hbar-fill ${barCls}" style="width:${pct}%"></div>
-                </div>
-                <div class="hbar-val">${pct}%</div>
-            `;
-            hbarList.appendChild(item);
-        });
+    table.append(
+        head,
+        body,
+    );
 
-        // Tabela detalhada
-        const tbody = document.getElementById('detailTable');
-        s.atividades.forEach(a => {
-            const t = a.acertos + a.erros;
-            const pct = t>0 ? Math.round((a.acertos/t)*100) : 0;
-            const bCls = pct>=70?'pct-g':pct>=40?'pct-y':'pct-r';
-            const statusMap = {
-                done: `<span class="pill pill-done"><i class="fi fi-br-check"></i> Conclu\u00edda</span>`,
-                prog: `<span class="pill pill-prog"><i class="fi fi-br-time-forward"></i> Em andamento</span>`,
-                none: `<span class="pill pill-none"><i class="fi fi-br-minus"></i> N\u00e3o iniciada</span>`,
-            };
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="u-pages-professor-relatorios-030">${a.nome}</td>
-                <td class="u-pages-professor-relatorios-031">${a.tipo}</td>
-                <td class="u-pages-professor-relatorios-032">${a.acertos}</td>
-                <td class="u-pages-professor-relatorios-033">${a.erros}</td>
-                <td class="u-pages-professor-relatorios-034">${a.xp}</td>
-                <td>
-                    <div class="u-pages-professor-relatorios-035">
-                        <div class="pct-mini-wrap"><div class="pct-mini ${bCls}" style="width:${pct}%"></div></div>
-                        <span class="u-pages-professor-relatorios-036">${pct}%</span>
-                    </div>
-                </td>
-                <td>${statusMap[a.status]}</td>
-                <td class="u-pages-professor-relatorios-031">${a.data}</td>
-            `;
-            const tableLabels = ['Atividade', 'Tipo', 'Acertos', 'Erros', 'XP', 'Aproveitamento', 'Status', 'Data'];
-            tr.querySelectorAll('td').forEach((cell, index) => cell.dataset.label = tableLabels[index]);
-            tbody.appendChild(tr);
-        });
+    tableWrapper.append(table);
 
-        // Pontos fortes / fracos
-        const fortesEl = document.getElementById('fortesContainer');
-        const fracosEl = document.getElementById('fracosContainer');
-        if(temasFortes.length > 0) {
-            temasFortes.forEach(t => {
-                fortesEl.innerHTML += `<div class="insight-item"><i class="fi fi-br-check u-pages-professor-relatorios-011"></i>${t}</div>`;
-            });
-        } else {
-            fortesEl.innerHTML = `<div class="u-pages-professor-relatorios-037">Nenhum tema com &ge;70% ainda.</div>`;
+    section.append(
+        title,
+        tableWrapper,
+    );
+
+    return section;
+}
+
+
+function createGuidanceSection(report) {
+    const section =
+        createElement(
+            "section",
+            "simple-report-card simple-guidance",
+        );
+
+    const title =
+        createElement(
+            "h2",
+            null,
+            "Orientação para a próxima aula",
+        );
+
+    const paragraph =
+        createElement("p");
+
+    const modulesNeedingSupport =
+        report.modules.filter(
+            (module) =>
+                module.totalAttempts > 0 &&
+                (
+                    module.averageErrors >= 2 ||
+                    module.completionRate < 70
+                ),
+        );
+
+    if (!report.history.length) {
+        paragraph.textContent =
+            "O aluno ainda não possui histórico suficiente para gerar uma orientação.";
+    } else if (
+        modulesNeedingSupport.length
+    ) {
+        paragraph.textContent =
+            "Considere reforçar os módulos: " +
+            modulesNeedingSupport
+                .map((module) => module.name)
+                .join(", ") +
+            ".";
+    } else {
+        paragraph.textContent =
+            "O aluno apresenta uma boa taxa de conclusão nos módulos realizados.";
+    }
+
+    section.append(
+        title,
+        paragraph,
+    );
+
+    return section;
+}
+
+
+function renderStudentReport(report) {
+    elements.dashboard.replaceChildren(
+        createStudentHeader(report),
+        createSummarySection(report),
+        createModulesSection(report),
+        createHistorySection(report),
+        createGuidanceSection(report),
+    );
+}
+
+
+async function getStudentReport(studentId) {
+    if (
+        state.reportCache.has(studentId)
+    ) {
+        return state.reportCache.get(
+            studentId,
+        );
+    }
+
+    const report =
+        await relatoriosService.getStudentReport(
+            studentId,
+        );
+
+    state.reportCache.set(
+        studentId,
+        report,
+    );
+
+    return report;
+}
+
+
+async function selectStudent(studentId) {
+    const numericStudentId =
+        Number(studentId);
+
+    if (
+        !Number.isInteger(numericStudentId) ||
+        numericStudentId <= 0
+    ) {
+        return;
+    }
+
+    const currentRequest =
+        ++state.requestSequence;
+
+    state.selectedStudentId =
+        numericStudentId;
+
+    updateSelectedStudent(
+        numericStudentId,
+    );
+
+    setLoading(
+        "Carregando relatório do aluno...",
+    );
+
+    try {
+        const report =
+            await getStudentReport(
+                numericStudentId,
+            );
+
+        if (
+            currentRequest !==
+            state.requestSequence
+        ) {
+            return;
         }
-        if(temasFracos.length > 0) {
-            temasFracos.forEach(t => {
-                fracosEl.innerHTML += `<div class="insight-item"><i class="fi fi-br-exclamation u-pages-professor-relatorios-038"></i>${t}</div>`;
-            });
-        } else {
-            fracosEl.innerHTML = `<div class="u-pages-professor-relatorios-037">Todos os temas com desempenho satisfat\u00f3rio!</div>`;
+
+        renderStudentReport(report);
+    } catch (error) {
+        if (
+            currentRequest !==
+            state.requestSequence
+        ) {
+            return;
         }
 
-        // RecomendaÃ§Ã£o
-        const recomMap = {
-            1: `Priorizar est\u00edmulos <strong>visuais puros</strong> com hitboxes ampliadas e \u00e1udio autom\u00e1tico. Manter instru\u00e7\u00f5es com palavra isolada em caixa alta.`,
-            2: `Utilizar <strong>frases curtas</strong> e diretas (S+V+O). \u00c1udio sob demanda para autonomia parcial. Hitboxes de tamanho padr\u00e3o.`,
-            3: `Inserir <strong>contextos e di\u00e1logos</strong> curtos. Instru\u00e7\u00f5es textuais sem \u00e1udio obrigat\u00f3rio. Hitboxes reduzidas para desafio motor.`,
-        };
-        document.getElementById('recomContainer').innerHTML = recomMap[s.nivel];
+        setPageError(error);
+    }
+}
 
-        // Timeline
-        const tlEl = document.getElementById('timelineList');
-        const realizadas = s.atividades.filter(a=>a.status!=='none').reverse();
-        realizadas.forEach(a => {
-            const dotColor = a.status==='done'?'#44F698':a.status==='prog'?'#f59e0b':'var(--c-border)';
-            const t = a.acertos+a.erros;
-            const pct = t>0?Math.round((a.acertos/t)*100):0;
-            const item = document.createElement('div');
-            item.className = 'tl-item';
-            item.innerHTML = `
-                <div class="tl-dot-col"><div class="tl-dot" style="background:${dotColor}"></div></div>
-                <div class="tl-content">
-                    <div class="tl-act">${a.nome} <span class="u-pages-professor-relatorios-039">&mdash; ${a.data}</span></div>
-                    <div class="tl-sub">${a.tipo} &middot; ${a.acertos} acertos, ${a.erros} erros &middot; ${pct}% &middot; ${a.xp} XP</div>
-                </div>
-            `;
-            tlEl.appendChild(item);
-        });
-        if(realizadas.length===0) {
-            tlEl.innerHTML = `<div class="u-pages-professor-relatorios-040">Nenhuma atividade realizada ainda.</div>`;
+
+function bindMobileSelect() {
+    elements.mobileSelect.removeAttribute(
+        "onchange",
+    );
+
+    elements.mobileSelect.addEventListener(
+        "change",
+        (event) => {
+            selectStudent(
+                Number(event.target.value),
+            );
+        },
+    );
+}
+
+
+function bindPrintButton() {
+    elements.printButton.addEventListener(
+        "click",
+        () => {
+            window.print();
+        },
+    );
+}
+
+
+function validateElements() {
+    const missingElements = Object.entries(
+        elements,
+    )
+        .filter(([, element]) => !element)
+        .map(([name]) => name);
+
+    if (missingElements.length) {
+        throw new Error(
+            `Elementos ausentes na página: ${missingElements.join(", ")}.`,
+        );
+    }
+}
+
+
+async function initialize() {
+    try {
+        validateElements();
+
+        setLoading(
+            "Carregando alunos...",
+        );
+
+        state.teacherId =
+            requireTeacherId();
+
+        const dashboard =
+            await relatoriosService.getTeacherDashboard(
+                state.teacherId,
+            );
+
+        state.teacherDashboard =
+            dashboard;
+
+        const teacherSession =
+            sessionService.get();
+
+        const teacherName =
+            teacherSession?.user?.name ??
+            teacherSession?.user?.nome ??
+            "Professor";
+
+        elements.teacherAvatar.textContent =
+            String(teacherName)
+                .trim()
+                .charAt(0)
+                .toLocaleUpperCase("pt-BR") ||
+            "P";
+
+        if (!dashboard.students.length) {
+            renderStudentSelectors([]);
+
+            const emptyState =
+                createElement(
+                    "section",
+                    "simple-report-card",
+                );
+
+            emptyState.append(
+                createElement(
+                    "h2",
+                    null,
+                    "Nenhum aluno encontrado",
+                ),
+
+                createElement(
+                    "p",
+                    "simple-section-help",
+                    "Cadastre ou vincule um aluno para visualizar relatórios.",
+                ),
+            );
+
+            elements.dashboard.replaceChildren(
+                emptyState,
+            );
+
+            return;
         }
-    }, 50);
+
+        state.selectedStudentId =
+            dashboard.students[0].id;
+
+        renderStudentSelectors(
+            dashboard.students,
+        );
+
+        await selectStudent(
+            state.selectedStudentId,
+        );
+    } catch (error) {
+        setPageError(error);
+    }
 }
 
-// ================================================================
-// RELATÓRIO SIMPLIFICADO
-// ================================================================
-function renderDashboard() {
-    const student = studentsData.find((item) => item.id === selectedId);
-    const level = NIVEL_INFO[student.nivel];
-    const totalCorrect = student.atividades.reduce((sum, activity) => sum + activity.acertos, 0);
-    const totalErrors = student.atividades.reduce((sum, activity) => sum + activity.erros, 0);
-    const totalAnswers = totalCorrect + totalErrors;
-    const accuracy = totalAnswers ? Math.round((totalCorrect / totalAnswers) * 100) : 0;
-    const completed = student.atividades.filter((activity) => activity.status === 'done').length;
-    const strongModules = student.atividades.filter((activity) => {
-        const answers = activity.acertos + activity.erros;
-        return answers && activity.acertos / answers >= 0.7;
-    }).map((activity) => activity.nome);
-    const supportModules = student.atividades.filter((activity) => {
-        const answers = activity.acertos + activity.erros;
-        return answers && activity.acertos / answers < 0.7;
-    }).map((activity) => activity.nome);
-    const recommendation = supportModules.length
-        ? `Reforce os módulos ${supportModules.join(', ')} nas próximas aulas.`
-        : 'O aluno apresenta bom aproveitamento nos módulos realizados.';
 
-    const rows = student.atividades.map((activity) => {
-        const answers = activity.acertos + activity.erros;
-        const activityAccuracy = answers ? Math.round((activity.acertos / answers) * 100) : 0;
-        const status = activity.status === 'done'
-            ? 'Concluído'
-            : activity.status === 'prog' ? 'Em andamento' : 'Não iniciado';
-        return `
-            <tr>
-                <th scope="row">${activity.nome}</th>
-                <td><span class="simple-status simple-status--${activity.status}">${status}</span></td>
-                <td>${activity.acertos}</td>
-                <td>${activity.erros}</td>
-                <td><strong>${activityAccuracy}%</strong></td>
-            </tr>
-        `;
-    }).join('');
-
-    document.getElementById('dashboardArea').innerHTML = `
-        <section class="simple-student-card">
-            <div class="simple-student-heading">
-                <div class="hero-av" style="background:${student.avatarColor}">${student.name[0]}</div>
-                <div>
-                    <h2>${student.name}</h2>
-                    <p>Turma ${student.turma} · Último acesso: ${student.last}</p>
-                    <span class="nivel-tag ${level.cls}">${level.text}</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="simple-report-card" aria-labelledby="summary-title">
-            <h2 id="summary-title">Resumo</h2>
-            <div class="simple-summary-grid">
-                <div><strong>${student.prog}%</strong><span>Progresso geral</span></div>
-                <div><strong>${accuracy}%</strong><span>Aproveitamento</span></div>
-                <div><strong>${completed}/${student.atividades.length}</strong><span>Módulos concluídos</span></div>
-                <div><strong>${student.xp.toLocaleString('pt-BR')}</strong><span>XP total</span></div>
-            </div>
-        </section>
-
-        <section class="simple-report-card" aria-labelledby="modules-title">
-            <h2 id="modules-title">Desempenho por módulo</h2>
-            <p class="simple-section-help">Confira onde o aluno está indo bem e onde precisa de apoio.</p>
-            <div class="simple-table-wrap">
-                <table class="simple-report-table">
-                    <thead><tr><th>Módulo</th><th>Situação</th><th>Acertos</th><th>Erros</th><th>Aproveitamento</th></tr></thead>
-                    <tbody>${rows}</tbody>
-                </table>
-            </div>
-        </section>
-
-        <section class="simple-report-card simple-guidance" aria-labelledby="guidance-title">
-            <h2 id="guidance-title">Orientação para a próxima aula</h2>
-            ${strongModules.length ? `<p><strong>Bom desempenho:</strong> ${strongModules.join(', ')}.</p>` : ''}
-            <p><strong>Sugestão:</strong> ${recommendation}</p>
-        </section>
-    `;
-}
-
-// ================================================================
-// SIDEBAR + MOBILE
-// ================================================================
-const sidebar   = document.getElementById('sidebar');
-const toggle    = document.getElementById('sidebarToggle');
-const backdrop  = document.getElementById('sidebarBackdrop');
-const mobileBtn = document.getElementById('mobileMenuBtn');
-toggle.addEventListener('click',  () => sidebar.classList.toggle('sidebar--collapsed'));
-mobileBtn.addEventListener('click',() => { sidebar.classList.add('open'); backdrop.classList.add('open'); });
-backdrop.addEventListener('click', () => { sidebar.classList.remove('open'); backdrop.classList.remove('open'); });
-
-// ================================================================
-// TOAST
-// ================================================================
-function showToast(msg, type='') {
-    const c = document.getElementById('toast-container');
-    const t = document.createElement('div');
-    t.className = `toast${type?' toast--'+type:''}`;
-    t.innerHTML = `<i class="fi fi-br-bell"></i> ${msg}`;
-    c.appendChild(t);
-    setTimeout(() => t.remove(), 3500);
-}
-
-// ================================================================
-// INIT
-// ================================================================
-renderStudentList();
-renderDashboard();
+bindMobileSelect();
+bindPrintButton();
+initialize();

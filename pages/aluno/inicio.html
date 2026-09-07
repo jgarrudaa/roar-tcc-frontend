@@ -1,216 +1,227 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ROAR — Início</title>
     <meta name="description" content="Página inicial do aluno no sistema ROAR de aprendizado de inglês.">
+    <script src="../../public/js/roar-theme.js"></script>
     <link rel="stylesheet" href="../../public/css/global.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
     <script src="../../public/js/roar-theme.js"></script>
     <link rel="stylesheet" href="../../public/css/pages/pages-aluno-inicio.css">
 </head>
-<body>
-<div class="app-shell">
 
-    <!-- ============================================================
+<body data-auth-role="student">
+    <div class="app-shell">
+
+        <!-- ============================================================
          Overlay backdrop para mobile
          ============================================================ -->
-    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-    <!-- ============================================================
+        <!-- ============================================================
          SIDEBAR
          ============================================================ -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar__logo-wrap">
-            <img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
-            <button class="sidebar__toggle" id="sidebarToggle" title="Minimizar menu" aria-label="Minimizar menu">
-                <i class="fi fi-br-menu-burger"></i>
-            </button>
-        </div>
-
-        <nav class="sidebar__nav">
-            <a href="inicio.html" class="sidebar__link active" id="nav-inicio">
-                <i class="fi fi-br-home"></i>
-                <span>Início</span>
-            </a>
-            <a href="atividades.html" class="sidebar__link" id="nav-atividades">
-                <i class="fi fi-br-puzzle-pieces"></i>
-                <span>Atividades</span>
-            </a>
-            <a href="desempenho.html" class="sidebar__link" id="nav-desempenho">
-                <i class="fi fi-br-chart-simple"></i>
-                <span>Desempenho</span>
-            </a>
-            <a href="perfil.html" class="sidebar__link" id="nav-perfil">
-                <i class="fi fi-br-user"></i>
-                <span>Perfil</span>
-            </a>
-            <a href="configuracoes.html" class="sidebar__link" id="nav-config">
-                <i class="fi fi-br-settings"></i>
-                <span>Configurações</span>
-            </a>
-        </nav>
-
-        <div class="sidebar__footer">
-            <a href="../auth/login-aluno.html" class="sidebar__link" id="nav-logout">
-                <i class="fi fi-br-exit"></i>
-                <span>Sair</span>
-            </a>
-        </div>
-    </aside>
-
-    <!-- ============================================================
-         CONTEÚDO PRINCIPAL
-         ============================================================ -->
-    <div class="main-content">
-
-        <!-- Navbar -->
-        <header class="navbar">
-            <div class="u-pages-aluno-inicio-001">
-                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar__logo-wrap">
+                <img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo"
+                    onclick="window.location.href='inicio.html'">
+                <button class="sidebar__toggle" id="sidebarToggle" title="Minimizar menu" aria-label="Minimizar menu">
                     <i class="fi fi-br-menu-burger"></i>
                 </button>
-                <div class="navbar__page-title">
-                    <h1>Olá, <span id="userName" class="u-pages-aluno-inicio-002">Leandro</span>
-                    <p>Vamos aprender inglês hoje?</p>
+            </div>
+
+            <nav class="sidebar__nav">
+                <a href="inicio.html" class="sidebar__link active" id="nav-inicio">
+                    <i class="fi fi-br-home"></i>
+                    <span>Início</span>
+                </a>
+                <a href="atividades.html" class="sidebar__link" id="nav-atividades">
+                    <i class="fi fi-br-puzzle-pieces"></i>
+                    <span>Atividades</span>
+                </a>
+                <a href="desempenho.html" class="sidebar__link" id="nav-desempenho">
+                    <i class="fi fi-br-chart-simple"></i>
+                    <span>Desempenho</span>
+                </a>
+                <a href="perfil.html" class="sidebar__link" id="nav-perfil">
+                    <i class="fi fi-br-user"></i>
+                    <span>Perfil</span>
+                </a>
+                <a href="configuracoes.html" class="sidebar__link" id="nav-config">
+                    <i class="fi fi-br-settings"></i>
+                    <span>Configurações</span>
+                </a>
+            </nav>
+
+            <div class="sidebar__footer">
+                <a id="nav-logout" class="sidebar__link" href="../auth/login-aluno.html" data-action="logout">
+                    <i class="fi fi-br-exit" aria-hidden="true"></i>
+                    <span>Sair</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- ============================================================
+         CONTEÚDO PRINCIPAL
+         ============================================================ -->
+        <div class="main-content">
+
+            <!-- Navbar -->
+            <header class="navbar">
+                <div class="u-pages-aluno-inicio-001">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu">
+                        <i class="fi fi-br-menu-burger"></i>
+                    </button>
+                    <div class="navbar__page-title">
+                        <h1>Olá, <span id="userName" class="u-pages-aluno-inicio-002">Aluno</span></h1>
+                        <p>Vamos aprender inglês hoje?</p>
+                    </div>
                 </div>
-            </div>
-            <div class="navbar__right">
-                <button class="navbar__icon-btn" data-tooltip="Notificações" id="btnNotif" aria-label="Notificações">
-                    <i class="fi fi-br-bell"></i>
-                </button>
-                <a href="perfil.html" class="navbar__avatar" id="navAvatar" title="Perfil" aria-label="Abrir perfil">L</a>
-            </div>
-        </header>
+                <div class="navbar__right">
+                    <button class="navbar__icon-btn" data-tooltip="Notificações" id="btnNotif"
+                        aria-label="Notificações">
+                        <i class="fi fi-br-bell"></i>
+                    </button>
+                    <a href="perfil.html" class="navbar__avatar" id="navAvatar" title="Perfil"
+                        aria-label="Abrir perfil">L</a>
+                </div>
+            </header>
 
-        <!-- Corpo da página -->
-        <div class="page-body fade-in">
+            <!-- Corpo da página -->
+            <div class="page-body fade-in">
 
-            <!-- Hero: atividade em andamento + mascote -->
-            <div class="hero-section">
-                <div>
-                    <p class="u-pages-aluno-inicio-003">
-                        Escolha uma atividade para continuar sua jornada.
-                    </p>
-                    <div class="hero-card u-pages-aluno-inicio-004" id="heroCard" onclick="window.location.href='atividade.html?modulo=corpo-humano&etapa=1'">
-                        <div class="hero-card__img-wrap">
-                            <i class="fi fi-br-user"></i>
-                        </div>
-                        <div class="hero-card__content">
-                            <p class="hero-card__label">Continue de onde parou</p>
-                            <p class="hero-card__title">Corpo Humano</p>
-                            <div class="progress-wrap progress-wrap--lg u-pages-aluno-inicio-005">
-                                <div class="progress-bar u-pages-aluno-inicio-006" id="heroProgress"></div>
+                <!-- Hero: atividade em andamento + mascote -->
+                <div class="hero-section">
+                    <div>
+                        <p class="u-pages-aluno-inicio-003">
+                            Escolha uma atividade para continuar sua jornada.
+                        </p>
+                        <div class="hero-card u-pages-aluno-inicio-004" id="heroCard" role="button" tabindex="0">
+                            <div class="hero-card__img-wrap">
+                                <i class="fi fi-br-user"></i>
                             </div>
-                            <div class="u-pages-aluno-inicio-007">
-                                <span class="hero-card__meta" id="heroPercent">70% concluído</span>
-                                <button class="btn btn--primary btn--sm" onclick="event.stopPropagation();window.location.href='atividade.html?modulo=corpo-humano&etapa=1'">
-                                    Continuar
-                                </button>
+                            <div class="hero-card__content">
+                                <p class="hero-card__label" id="heroLabel">Próximo módulo</p>
+                                <p class="hero-card__title" id="heroTitle">Carregando módulos...</p>
+                                <div class="progress-wrap progress-wrap--lg u-pages-aluno-inicio-005">
+                                    <div class="progress-bar u-pages-aluno-inicio-006" id="heroProgress"></div>
+                                </div>
+                                <div class="u-pages-aluno-inicio-007">
+                                    <span class="hero-card__meta" id="heroPercent">Aguarde um instante</span>
+                                    <button class="btn btn--primary btn--sm" id="heroAction" type="button" disabled>
+                                        Começar
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Mascote com balão -->
-                <div class="hero-mascot">
-                    <div class="hero-mascot__bubble" id="mascotBubble">Você está indo<br>muito bem!</div>
-                    <img src="../../public/assets/imagens/dinooriginal.png" alt="Mascote Dino" id="mascotImg" onclick="changeMascotMsg()" class="u-pages-aluno-inicio-004">
-                </div>
-            </div>
-
-            <!-- Stats Bar: XP, Sequência, Progresso -->
-            <div class="stats-bar">
-                <div class="stat-card">
-                    <div class="stat-card__icon stat-card__icon--xp">
-                        <i class="fi fi-br-star"></i>
-                    </div>
-                    <div>
-                        <div class="stat-card__label">XP Total</div>
-                        <div class="stat-card__value" id="xpTotal">1.240</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card__icon stat-card__icon--streak">
-                        <i class="fi fi-br-flame"></i>
-                    </div>
-                    <div>
-                        <div class="stat-card__label">Sequência</div>
-                        <div class="stat-card__value" id="streakDays">7 dias</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card__icon stat-card__icon--star">
-                        <i class="fi fi-br-trophy"></i>
-                    </div>
-                    <div>
-                        <div class="stat-card__label">Progresso Geral</div>
-                        <div class="stat-card__value" id="progressoGeral">40%</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Categorias -->
-            <div class="section-header">
-                <h2>Categorias</h2>
-                <a href="atividades.html" class="btn btn--secondary btn--sm">Ver todas</a>
-            </div>
-
-            <div class="grid-categories" id="categoriasGrid">
-                <!-- Populado via JS -->
-            </div>
-
-            <!-- Bottom: Recentes + Atalhos -->
-            <div class="bottom-grid">
-
-                <!-- Atividades recentes -->
-                <div class="card">
-                    <div class="section-header mb-md">
-                        <h2>Atividades Recentes</h2>
-                    </div>
-                    <div id="recentList">
-                        <!-- Populado via JS -->
+                    <!-- Mascote com balão -->
+                    <div class="hero-mascot">
+                        <div class="hero-mascot__bubble" id="mascotBubble">Você está indo<br>muito bem!</div>
+                        <img src="../../public/assets/imagens/dinooriginal.png" alt="Mascote Dino" id="mascotImg"
+                            class="u-pages-aluno-inicio-004">
                     </div>
                 </div>
 
-                <!-- Atalhos rápidos -->
-                <div class="card">
-                    <div class="section-header mb-md">
-                        <h2>Atalhos Rápidos</h2>
+                <!-- Stats Bar: XP, Sequência, Progresso -->
+                <div class="stats-bar">
+                    <div class="stat-card">
+                        <div class="stat-card__icon stat-card__icon--xp">
+                            <i class="fi fi-br-star"></i>
+                        </div>
+                        <div>
+                            <div class="stat-card__label">XP Total</div>
+                            <div class="stat-card__value" id="xpTotal">0</div>
+                        </div>
                     </div>
-                    <div class="u-pages-aluno-inicio-009">
-                        <button class="shortcut-btn" onclick="window.location.href='atividades.html'">
-                            <i class="fi fi-br-puzzle-pieces"></i>
-                            Nova Atividade
-                        </button>
-                        <button class="shortcut-btn" onclick="window.location.href='desempenho.html'">
-                            <i class="fi fi-br-chart-simple"></i>
-                            Ver Desempenho
-                        </button>
-                        <button class="shortcut-btn" onclick="window.location.href='conquistas.html'">
+                    <div class="stat-card">
+                        <div class="stat-card__icon stat-card__icon--streak">
+                            <i class="fi fi-br-flame"></i>
+                        </div>
+                        <div>
+                            <div class="stat-card__label">Modo de aprendizagem</div>
+                            <div class="stat-card__value" id="learningMode">—</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__icon stat-card__icon--star">
                             <i class="fi fi-br-trophy"></i>
-                            Minhas Conquistas
-                        </button>
-
-                        <button class="shortcut-btn" onclick="window.location.href='missoes.html'">
-                            <i class="fi fi-br-target"></i>
-                            Missões do Dia
-                        </button>
+                        </div>
+                        <div>
+                            <div class="stat-card__label">Módulos disponíveis</div>
+                            <div class="stat-card__value" id="availableModules">0</div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-        </div><!-- /page-body -->
-    </div><!-- /main-content -->
-</div><!-- /app-shell -->
+                <!-- Categorias -->
+                <div class="section-header">
+                    <h2>Categorias</h2>
+                    <a href="atividades.html" class="btn btn--secondary btn--sm">Ver todas</a>
+                </div>
 
-<!-- Toast Container -->
-<div id="toast-container"></div>
+                <div class="grid-categories" id="categoriasGrid">
+                    <!-- Populado via JS -->
+                </div>
 
-<script src="../../public/js/roar-storage.js"></script>
-<script src="../../public/js/roar-page-transition.js"></script>
-<script src="../../public/js/roar-sidebar.js"></script>
-<script src="../../public/js/pages/aluno/pages-aluno-inicio-1.js"></script>
+                <!-- Bottom: Recentes + Atalhos -->
+                <div class="bottom-grid">
+
+                    <!-- Atividades recentes -->
+                    <div class="card">
+                        <div class="section-header mb-md">
+                            <h2>Atividades Recentes</h2>
+                        </div>
+                        <div id="recentList">
+                            <!-- Populado via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Atalhos rápidos -->
+                    <div class="card">
+                        <div class="section-header mb-md">
+                            <h2>Atalhos Rápidos</h2>
+                        </div>
+                        <div class="u-pages-aluno-inicio-009">
+                            <button class="shortcut-btn" onclick="window.location.href='atividades.html'">
+                                <i class="fi fi-br-puzzle-pieces"></i>
+                                Nova Atividade
+                            </button>
+                            <button class="shortcut-btn" onclick="window.location.href='desempenho.html'">
+                                <i class="fi fi-br-chart-simple"></i>
+                                Ver Desempenho
+                            </button>
+                            <button class="shortcut-btn" onclick="window.location.href='conquistas.html'">
+                                <i class="fi fi-br-trophy"></i>
+                                Minhas Conquistas
+                            </button>
+
+                            <button class="shortcut-btn" onclick="window.location.href='missoes.html'">
+                                <i class="fi fi-br-target"></i>
+                                Missões do Dia
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /page-body -->
+        </div><!-- /main-content -->
+    </div><!-- /app-shell -->
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script src="../../public/js/roar-page-transition.js"></script>
+
+    <script type="module" src="../../public/js/pages/auth/route-guard.js"></script>
+
+    <script type="module" src="../../public/js/roar-sidebar.js"></script>
+
+    <script type="module" src="../../public/js/pages/aluno/pages-aluno-inicio-1.js"></script>
 </body>
+
 </html>

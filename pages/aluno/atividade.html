@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Atividade adaptativa da plataforma ROAR.">
     <title>ROAR | Atividade</title>
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
+    <script src="../../public/js/roar-theme.js"></script>
     <link rel="stylesheet" href="../../public/css/base/variables.css">
     <link rel="stylesheet" href="../../public/css/base/reset.css">
     <link rel="stylesheet" href="../../public/css/base/typography.css">
@@ -13,7 +15,8 @@
     <link rel="stylesheet" href="../../public/css/components/feedback.css">
     <link rel="stylesheet" href="../../public/css/layouts/activity.css">
 </head>
-<body class="activity-page">
+
+<body class="activity-page" data-auth-role="student">
     <header class="activity-header">
         <a class="activity-back" href="atividades.html" aria-label="Voltar para atividades">
             <i class="fi fi-br-arrow-left"></i>
@@ -41,11 +44,14 @@
             <span id="progress-label">0 de 0</span>
             <progress id="activity-progress" value="0" max="1"></progress>
         </div>
-        <button class="next-button" id="next-button" type="button" disabled>Próximo <i class="fi fi-br-arrow-right" aria-hidden="true"></i></button>
+        <button class="next-button" id="next-button" type="button" disabled>Próximo <i class="fi fi-br-arrow-right"
+                aria-hidden="true"></i></button>
     </footer>
 
     <div id="toast-container" class="toast-container"></div>
+    <script type="module" src="../../public/js/pages/auth/route-guard.js"></script>
     <script src="../../public/js/roar-page-transition.js"></script>
     <script type="module" src="../../public/js/pages/aluno/atividade.js"></script>
 </body>
+
 </html>

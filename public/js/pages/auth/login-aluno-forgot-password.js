@@ -1,21 +1,26 @@
 import { showToast } from "../../components/toast.js";
 
-const forgotButton = document.querySelector("#forgot-student-password");
-let isRequesting = false;
+const FORGOT_ACCESS_SELECTOR = "#forgot-student-password";
 
-forgotButton?.addEventListener("click", (event) => {
+function handleForgotAccess(event) {
     event.preventDefault();
 
-    if (isRequesting) {
-        showToast("Uma solicitação de redefinição de senha já foi enviada ao professor responsável.", "info");
-        return;
-    }
+    showToast(
+        "Solicite um novo PIN ao professor responsável.",
+        "info",
+        5000,
+    );
+}
 
-    isRequesting = true;
-    showToast("Uma nova redefinição de senha foi enviada ao professor responsável.", "success");
+function initializeForgotAccess() {
+    const forgotAccessButton = document.querySelector(
+        FORGOT_ACCESS_SELECTOR,
+    );
 
-    setTimeout(() => {
-        isRequesting = false;
-    }, 4000);
-});
+    forgotAccessButton?.addEventListener(
+        "click",
+        handleForgotAccess,
+    );
+}
 
+initializeForgotAccess();

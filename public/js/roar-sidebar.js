@@ -1,40 +1,249 @@
 /* ============================================================
    ROAR — roar-sidebar.js
-   Lógica de Sidebar e Toast compartilhada entre páginas
+   Sidebar, logout e toast compartilhados entre páginas
    ============================================================ */
 
 function initSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const toggle = document.getElementById('sidebarToggle');
-    const backdrop = document.getElementById('sidebarBackdrop');
-    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const sidebar =
+        document.getElementById("sidebar");
+
+    const toggle =
+        document.getElementById("sidebarToggle");
+
+    const backdrop =
+        document.getElementById("sidebarBackdrop");
+
+    const mobileButton =
+        document.getElementById("mobileMenuBtn");
 
     if (toggle && sidebar) {
-        toggle.addEventListener('click', () => sidebar.classList.toggle('sidebar--collapsed'));
-    }
-    if (mobileBtn && sidebar && backdrop) {
-        mobileBtn.addEventListener('click', () => {
-            sidebar.classList.add('open');
-            backdrop.classList.add('open');
+        toggle.addEventListener("click", () => {
+            sidebar.classList.toggle(
+                "sidebar--collapsed",
+            );
         });
     }
+
+    if (
+        mobileButton &&
+        sidebar &&
+        backdrop
+    ) {
+        mobileButton.addEventListener(
+            "click",
+            () => {
+                sidebar.classList.add("open");
+                backdrop.classList.add("open");
+            },
+        );
+    }
+
     if (backdrop && sidebar) {
-        backdrop.addEventListener('click', () => {
-            sidebar.classList.remove('open');
-            backdrop.classList.remove('open');
-        });
+        backdrop.addEventListener(
+            "click",
+            () => {
+                sidebar.classList.remove("open");
+                backdrop.classList.remove("open");
+            },
+        );
+    }
+
+    initLogout();
+}
+
+function getCurrentSession() {
+    try {
+        const rawSession =
+            localStorage.getItem(
+                "roarSession",
+            );
+
+        return rawSession
+            ? JSON.parse(rawSession)
+            : null;
+    } catch (error) {
+        console.warn(
+            "Não foi possível ler a sessão atual.",
+            error,
+        );
+
+        return null;
     }
 }
 
-function showToast(msg, type) {
-    const container = document.getElementById('toast-container');
-    if (!container) return;
-    const toast = document.createElement('div');
-    toast.className = 'toast' + (type ? ' toast--' + type : '');
-    toast.innerHTML = '<i class="fi fi-br-info"></i> ' + msg;
-    container.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+function getLoginUrl(
+    session,
+    logoutLink,
+) {
+    /*
+     * Se o próprio link já aponta para uma
+     * página de login, utiliza esse endereço.
+     */
+    const declaredUrl =
+        logoutLink.getAttribute("href");
+
+    if (
+        declaredUrl &&
+        declaredUrl.includes("login-")
+    ) {
+        return declaredUrl;
+    }
+
+    const pageRole =
+        document.body.dataset.authRole;
+
+    const sessionRole = String(
+        session?.role ??
+        session?.tipo ??
+        "",
+    ).toLocaleLowerCase("pt-BR");
+
+    const isTeacher =
+        pageRole === "teacher" ||
+        pageRole === "professor" ||
+        sessionRole === "teacher" ||
+        sessionRole === "professor";
+
+    return isTeacher
+        ? "../auth/login-professor.html"
+        : "../auth/login-aluno.html";
 }
 
-/* Auto-init ao carregar */
-document.addEventListener('DOMContentLoaded', initSidebar);
+function initLogout() {
+    /*
+     * Reconhece as diferentes identificações de
+     * logout que já existem nas páginas do projeto.
+     */
+    const logoutLinks =
+        document.querySelectorAll(
+            [
+                '[data-action="logout"]',
+                "#logoutButton",
+                "#nav-logout",
+            ].join(", "),
+        );
+
+    logoutLinks.forEach((logoutLink) => {
+        /*
+         * Impede o registro duplicado do evento
+         * caso a sidebar seja inicializada novamente.
+         */
+        if (
+            logoutLink.dataset.logoutReady ===
+            "true"
+        ) {
+            return;
+        }
+
+        logoutLink.dataset.logoutReady = "true";
+
+        logoutLink.addEventListener(
+            "click",
+            (event) => {
+                /*
+                 * Impede que o href leve primeiro
+                 * para a home ou para outra página.
+                 */
+                event.preventDefault();
+                event.stopPropagation();
+
+                const session =
+                    getCurrentSession();
+
+                const loginUrl =
+                    getLoginUrl(
+                        session,
+                        logoutLink,
+                    );
+
+                /*
+                 * Encerra efetivamente a sessão.
+                 */
+                localStorage.removeItem(
+                    "roarSession",
+                );
+
+                /*
+                 * replace evita que o botão Voltar
+                 * restaure a página protegida.
+                 */
+                window.location.replace(
+                    loginUrl,
+                );
+            },
+        );
+    });
+}
+
+function showToast(
+    message,
+    type,
+) {
+    const container =
+        document.getElementById(
+            "toast-container",
+        );
+
+    if (!container) {
+        return;
+    }
+
+    const toast =
+        document.createElement("div");
+
+    toast.className =
+        "toast" +
+        (type ? ` toast--${type}` : "");
+
+    const icon =
+        document.createElement("i");
+
+    icon.className =
+        "fi fi-br-info";
+
+    icon.setAttribute(
+        "aria-hidden",
+        "true",
+    );
+
+    const text =
+        document.createElement("span");
+
+    text.textContent =
+        String(message ?? "");
+
+    toast.append(
+        icon,
+        document.createTextNode(" "),
+        text,
+    );
+
+    container.appendChild(toast);
+
+    window.setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+/*
+ * Inicializa mesmo se o arquivo for carregado
+ * depois do evento DOMContentLoaded.
+ */
+if (
+    document.readyState === "loading"
+) {
+    document.addEventListener(
+        "DOMContentLoaded",
+        initSidebar,
+        { once: true },
+    );
+} else {
+    initSidebar();
+}
+
+/*
+ * Mantém compatibilidade com páginas antigas
+ * que utilizem window.showToast.
+ */
+window.showToast =
+    window.showToast || showToast;

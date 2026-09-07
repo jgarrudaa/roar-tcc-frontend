@@ -3,56 +3,407 @@ import { createAssociateActivity } from "./associar.js";
 import { createRecognizeActivity } from "./reconhecer.js";
 import { createValidateActivity } from "./validar.js";
 
-const FACTORIES = Object.freeze({
+const ACTIVITY_FACTORIES = Object.freeze({
     recognize: createRecognizeActivity,
     associate: createAssociateActivity,
     validate: createValidateActivity,
 });
 
-export async function createActivityController({ moduleId, stage, elements }) {
-    const context = await atividadeService.getContext(moduleId, stage);
-    const { activity, module, student } = context;
-    elements.title.textContent = module.title;
-    elements.levelBadge.textContent = student.supportMode;
+function navigateTo(url) {
+    if (
+        typeof window.roarNavigate ===
+        "function"
+    ) {
+        window.roarNavigate(url);
+        return;
+    }
+
+    window.location.assign(url);
+}
+
+function createBlockedMessage(elements) {
+    const container =
+        document.createElement("div");
+
+    const title =
+        document.createElement("h2");
+
+    const description =
+        document.createElement("p");
+
+    container.className =
+        "activity-blocked";
+
+    title.textContent =
+        "Atividade bloqueada";
+
+    description.textContent =
+        "Sua professora ainda não liberou esta atividade.";
+
+    container.append(
+        title,
+        description,
+    );
+
+    elements.stage.replaceChildren(
+        container,
+    );
+}
+
+function findCurrentActivityIndex(
+    module,
+    activity,
+) {
+    return module.activities.findIndex(
+        (moduleActivity) =>
+            moduleActivity.activityId ===
+            activity.id,
+    );
+}
+
+function buildNextUrl(
+    moduleId,
+    nextActivity,
+) {
+    const parameters =
+        new URLSearchParams({
+            modulo: String(moduleId),
+            etapa: String(
+                nextActivity.order,
+            ),
+        });
+
+    return `atividade.html?${parameters.toString()}`;
+}
+
+function calculateElapsedSeconds(
+    startedAt,
+) {
+    if (!startedAt) {
+        return 0;
+    }
+
+    const elapsedMilliseconds =
+        performance.now() - startedAt;
+
+    return Math.max(
+        1,
+        Math.ceil(
+            elapsedMilliseconds / 1000,
+        ),
+    );
+}
+
+function setControlsDisabled(
+    elements,
+    disabled,
+) {
+    elements.nextButton.disabled =
+        disabled;
+
+    elements.repeatButton.disabled =
+        disabled;
+}
+
+export async function createActivityController({
+    moduleId,
+    stage,
+    elements,
+}) {
+    const context =
+        await atividadeService.getContext(
+            moduleId,
+            stage,
+        );
+
+    const {
+        activity,
+        module,
+        student,
+    } = context;
+
+    elements.title.textContent =
+        module.title;
+
+    elements.levelBadge.textContent =
+        student.supportMode;
+
+    elements.setInstruction(
+        activity.instruction,
+    );
 
     if (activity.status !== "active") {
-        elements.stage.innerHTML = '<div class="activity-blocked"><h2>Atividade bloqueada</h2><p>Seu professor ainda não liberou esta atividade.</p></div>';
-        elements.setInstruction("Escolha outra atividade disponível.");
-        elements.setMessage("Quando ela for liberada, você poderá continuar daqui.");
+        createBlockedMessage(elements);
+
+        elements.setInstruction(
+            "Escolha outra atividade disponível.",
+        );
+
+        elements.setMessage(
+            "Quando ela for liberada, você poderá continuar.",
+        );
+
+        setControlsDisabled(
+            elements,
+            true,
+        );
+
         return null;
     }
 
-    const stats = { correct: 0, wrong: 0 };
-    const factory = FACTORIES[activity.type];
-    if (!factory) throw new Error("Tipo de atividade não suportado.");
+    const factory =
+        ACTIVITY_FACTORIES[
+            activity.type
+        ];
+
+    if (!factory) {
+        throw new Error(
+            `Motor não encontrado para o tipo '${activity.type}'.`,
+        );
+    }
+
+    const statistics = {
+        correct: 0,
+        wrong: 0,
+    };
+
+    /*
+     * Evita contabilizar o mesmo item
+     * como correto mais de uma vez.
+     */
+    const correctItems = new Set();
+
+    let startedAt = null;
+    let completionPromise = null;
+    let navigationStarted = false;
+    let activityStarted = false;
+
+    function registerCorrect(item) {
+        const itemId =
+            item?.itemId ??
+            item?.id ??
+            activity.id;
+
+        const itemKey =
+            String(itemId);
+
+        if (
+            correctItems.has(itemKey)
+        ) {
+            return;
+        }
+
+        correctItems.add(itemKey);
+        statistics.correct += 1;
+    }
+
+    function registerWrong() {
+        statistics.wrong += 1;
+    }
+
     const engine = factory({
         ...context,
         elements,
-        onCorrect: async (item) => {
-            stats.correct += 1;
-            await atividadeService.registerAttempt(activity.id, { itemId: item.id, correct: true });
+
+        onCorrect(item) {
+            registerCorrect(item);
         },
-        onWrong: async (item) => {
-            stats.wrong += 1;
-            await atividadeService.registerAttempt(activity.id, { itemId: item.id, correct: false });
+
+        onWrong() {
+            registerWrong();
         },
     });
 
-    return {
-        start: engine.start,
-        repeatInstruction: engine.repeatInstruction,
-        async next() {
-            const completed = engine.next();
-            if (!completed) return;
-            await atividadeService.complete(activity.id, stats);
-            const nextUrl = stage < 3
-                ? `atividade.html?modulo=${encodeURIComponent(moduleId)}&etapa=${stage + 1}`
-                : "atividades.html";
-            if (window.roarNavigate) {
-                window.roarNavigate(nextUrl);
-            } else {
-                window.location.href = nextUrl;
+    if (
+        !engine ||
+        typeof engine.start !==
+            "function" ||
+        typeof engine.next !==
+            "function"
+    ) {
+        throw new Error(
+            "O motor da atividade possui uma interface inválida.",
+        );
+    }
+
+    function getNextDestination() {
+        const currentIndex =
+            findCurrentActivityIndex(
+                module,
+                activity,
+            );
+
+        if (currentIndex < 0) {
+            throw new Error(
+                "A atividade atual não foi encontrada no módulo.",
+            );
+        }
+
+        const nextActivity =
+            module.activities[
+                currentIndex + 1
+            ];
+
+        if (!nextActivity) {
+            return "atividades.html";
+        }
+
+        return buildNextUrl(
+            module.id,
+            nextActivity,
+        );
+    }
+
+    async function finishActivity() {
+        const timeSeconds =
+            calculateElapsedSeconds(
+                startedAt,
+            );
+
+        elements.setMessage(
+            "Salvando seu progresso...",
+        );
+
+        setControlsDisabled(
+            elements,
+            true,
+        );
+
+        try {
+            const result =
+                await atividadeService.complete(
+                    activity.id,
+                    {
+                        correct:
+                            statistics.correct,
+
+                        wrong:
+                            statistics.wrong,
+
+                        timeSeconds,
+                    },
+                );
+
+            const earnedXp =
+                Number(
+                    result?.data?.xp_ganho ??
+                    result?.xp_ganho,
+                ) || 0;
+
+            elements.setMessage(
+                earnedXp > 0
+                    ? `Atividade concluída! Você ganhou ${earnedXp} XP.`
+                    : "Atividade concluída! Seu progresso foi salvo.",
+            );
+
+            if (navigationStarted) {
+                return true;
+            }
+
+            navigationStarted = true;
+
+            const destination =
+                getNextDestination();
+
+            window.setTimeout(() => {
+                navigateTo(destination);
+            }, 700);
+
+            return true;
+        } catch (error) {
+            console.error(
+                "Não foi possível registrar a conclusão:",
+                error,
+            );
+
+            completionPromise = null;
+
+            elements.setMessage(
+                error?.message ||
+                "Não foi possível salvar seu progresso. Tente novamente.",
+            );
+
+            elements.nextButton.disabled =
+                false;
+
+            elements.repeatButton.disabled =
+                false;
+
+            return false;
+        }
+    }
+
+    return Object.freeze({
+        start() {
+            if (activityStarted) {
+                return;
+            }
+
+            activityStarted = true;
+
+            startedAt =
+                performance.now();
+
+            engine.start();
+        },
+
+        repeatInstruction() {
+            if (
+                navigationStarted ||
+                completionPromise
+            ) {
+                return;
+            }
+
+            if (
+                typeof
+                    engine.repeatInstruction ===
+                "function"
+            ) {
+                engine.repeatInstruction();
             }
         },
-    };
+
+        next() {
+            if (navigationStarted) {
+                return completionPromise;
+            }
+
+            /*
+             * Enquanto o progresso estiver
+             * sendo enviado, cliques adicionais
+             * reutilizam a mesma Promise.
+             */
+            if (completionPromise) {
+                return completionPromise;
+            }
+
+            const completed =
+                engine.next();
+
+            if (!completed) {
+                return Promise.resolve(false);
+            }
+
+            completionPromise =
+                finishActivity();
+
+            return completionPromise;
+        },
+
+        getStatistics() {
+            return Object.freeze({
+                correct:
+                    statistics.correct,
+
+                wrong:
+                    statistics.wrong,
+
+                timeSeconds:
+                    calculateElapsedSeconds(
+                        startedAt,
+                    ),
+            });
+        },
+    });
 }

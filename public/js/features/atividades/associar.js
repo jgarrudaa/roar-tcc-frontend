@@ -1,159 +1,238 @@
 import { audioService } from "../../services/audio-service.js";
-import { createButton, createImage, shuffle } from "./activity-helpers.js";
+import {
+    createButton,
+    createImage,
+    shuffle,
+} from "./activity-helpers.js";
 
-function guidedAssociation(context) {
-    const { module, student, elements, onCorrect, onWrong } = context;
-    let imageSelection = null;
-    let wordSelection = null;
-    const completed = new Set();
 
-    function checkPair() {
-        if (!imageSelection || !wordSelection) return;
-        const isCorrect = imageSelection.dataset.id === wordSelection.dataset.id;
-        if (isCorrect) {
-            imageSelection.classList.add("is-correct");
-            wordSelection.classList.add("is-correct");
-            imageSelection.disabled = true;
-            wordSelection.disabled = true;
-            completed.add(imageSelection.dataset.id);
-            elements.setMessage("Muito bem! Você encontrou a associação correta.");
-            onCorrect({ id: imageSelection.dataset.id });
-            elements.setProgress(completed.size, module.items.length);
-            if (completed.size === module.items.length) elements.nextButton.disabled = false;
-        } else {
-            imageSelection.classList.add("is-wrong");
-            wordSelection.classList.add("is-wrong");
-            const item = module.items.find((entry) => entry.id === imageSelection.dataset.id);
-            elements.setMessage(`Você errou. Tente novamente. Encontre a palavra de ${item.pt}.`);
-            audioService.speak(`Você errou. Tente novamente. Encontre a palavra de ${item.pt}.`);
-            onWrong(item);
-            window.setTimeout(() => {
-                imageSelection?.classList.remove("is-wrong", "is-selected");
-                wordSelection?.classList.remove("is-wrong", "is-selected");
-                imageSelection = null;
-                wordSelection = null;
-            }, 650);
-            return;
+const AUTO_ADVANCE_DELAY = 1200;
+const MAXIMUM_OPTIONS = 4;
+
+
+function normalizeAnswer(value) {
+    return String(value ?? "")
+        .trim()
+        .toLocaleUpperCase("en-US");
+}
+
+
+function createOptions(currentItem, moduleItems) {
+    const correctAnswer = normalizeAnswer(
+        currentItem.en,
+    );
+
+    const uniqueOptions = new Map();
+
+    uniqueOptions.set(
+        correctAnswer,
+        currentItem,
+    );
+
+    moduleItems.forEach((item) => {
+        const answer = normalizeAnswer(item.en);
+
+        if (
+            answer &&
+            answer !== correctAnswer &&
+            !uniqueOptions.has(answer)
+        ) {
+            uniqueOptions.set(answer, item);
         }
-        imageSelection = null;
-        wordSelection = null;
-    }
+    });
 
-    function render() {
-        elements.stage.replaceChildren();
-        const content = document.createElement("div");
-        content.className = "activity-content";
-        const images = document.createElement("div");
-        const words = document.createElement("div");
-        images.className = "choice-grid association-grid";
-        words.className = "choice-grid association-grid";
-
-        shuffle(module.items).forEach((item) => {
-            const button = document.createElement("button");
-            button.type = "button";
-            button.className = "choice-card";
-            button.dataset.id = item.id;
-            button.setAttribute("aria-label", `Selecionar imagem de ${item.pt}`);
-            button.append(createImage(item, student.supportLevel));
-            button.addEventListener("click", () => {
-                imageSelection?.classList.remove("is-selected");
-                imageSelection = button;
-                button.classList.add("is-selected");
-                audioService.speak(item.pt);
-                checkPair();
-            });
-            images.append(button);
-        });
-
-        shuffle(module.items).forEach((item) => {
-            const button = createButton(item.en);
-            button.dataset.id = item.id;
-            button.addEventListener("click", () => {
-                wordSelection?.classList.remove("is-selected");
-                wordSelection = button;
-                button.classList.add("is-selected");
-                checkPair();
-            });
-            words.append(button);
-        });
-        content.append(images, words);
-        elements.stage.append(content);
-        elements.setInstruction("Selecione uma imagem e depois a palavra correspondente.");
-        elements.setProgress(0, module.items.length);
-    }
-
-    return { start: render, repeatInstruction: () => audioService.speak("Selecione uma imagem e depois a palavra correspondente."), next: () => true };
+    return shuffle(
+        Array.from(uniqueOptions.values())
+            .slice(0, MAXIMUM_OPTIONS),
+    );
 }
 
-function contextualSentence(context) {
-    const { module, elements, onCorrect, onWrong } = context;
-    let index = 0;
-    let selected = [];
-    let autoAdvanceTimer = null;
-
-    function render() {
-        const item = module.items[index];
-        selected = [];
-        elements.stage.replaceChildren();
-        const content = document.createElement("div");
-        content.className = "activity-content";
-        const builder = document.createElement("div");
-        builder.className = "sentence-builder";
-        const target = document.createElement("div");
-        target.className = "sentence-target";
-        target.textContent = "Monte a frase";
-        const bank = document.createElement("div");
-        bank.className = "word-bank";
-        const expected = ["THIS", "IS", "MY", item.en];
-        shuffle(expected).forEach((word) => {
-            const button = createButton(word, "word-token");
-            button.addEventListener("click", () => {
-                selected.push(word);
-                button.disabled = true;
-                target.textContent = selected.join(" ");
-                if (selected.length !== expected.length) return;
-                if (selected.join(" ") === expected.join(" ")) {
-                    elements.setMessage("Muito bem! A frase está correta.");
-                    onCorrect(item);
-                    elements.setProgress(index + 1, module.items.length);
-                    elements.nextButton.disabled = false;
-                    // Auto-avanço após acertar a frase
-                    clearTimeout(autoAdvanceTimer);
-                    autoAdvanceTimer = window.setTimeout(() => {
-                        elements.nextButton.click();
-                    }, 1200);
-                } else {
-                    elements.setMessage("Você errou. Tente novamente e observe a ordem da frase.");
-                    audioService.speak("Você errou. Tente novamente.");
-                    onWrong(item);
-                    window.setTimeout(render, 700);
-                }
-            });
-            bank.append(button);
-        });
-        builder.append(target, bank);
-        content.append(createImage(item, 3), builder);
-        elements.stage.append(content);
-        elements.setInstruction(`Organize as palavras para formar uma frase sobre ${item.pt}.`);
-        elements.setProgress(index, module.items.length);
-    }
-
-    return {
-        start: render,
-        repeatInstruction: () => audioService.speak("Organize as palavras para formar uma frase."),
-        next() {
-            clearTimeout(autoAdvanceTimer);
-            if (index < module.items.length - 1) {
-                index += 1;
-                elements.nextButton.disabled = true;
-                render();
-                return false;
-            }
-            return true;
-        },
-    };
-}
 
 export function createAssociateActivity(context) {
-    return context.student.supportLevel === 3 ? contextualSentence(context) : guidedAssociation(context);
+    const {
+        activity,
+        module,
+        student,
+        elements,
+        onCorrect,
+        onWrong,
+    } = context;
+
+    const item = activity.item;
+
+    let resolved = false;
+    let autoAdvanceTimer = null;
+
+
+    function getInstruction() {
+        return (
+            activity.instruction ||
+            "Associe a imagem à palavra correspondente."
+        );
+    }
+
+
+    function clearAutoAdvance() {
+        if (!autoAdvanceTimer) {
+            return;
+        }
+
+        window.clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = null;
+    }
+
+
+    function scheduleAutoAdvance() {
+        clearAutoAdvance();
+
+        autoAdvanceTimer = window.setTimeout(() => {
+            elements.nextButton.click();
+        }, AUTO_ADVANCE_DELAY);
+    }
+
+
+    function disableOptions(optionsContainer) {
+        optionsContainer
+            .querySelectorAll("button")
+            .forEach((button) => {
+                button.disabled = true;
+            });
+    }
+
+
+    function handleOption(
+        option,
+        button,
+        optionsContainer,
+    ) {
+        if (resolved) {
+            return;
+        }
+
+        const selectedAnswer =
+            normalizeAnswer(option.en);
+
+        const correctAnswer =
+            normalizeAnswer(item.en);
+
+        if (selectedAnswer === correctAnswer) {
+            resolved = true;
+
+            button.classList.add("is-correct");
+
+            disableOptions(optionsContainer);
+
+            elements.setMessage(
+                "Muito bem! Você encontrou a associação correta.",
+            );
+
+            elements.setProgress(1, 1);
+            elements.nextButton.disabled = false;
+
+            audioService.speak(
+                item.en,
+                "en-US",
+            );
+
+            onCorrect(item);
+            scheduleAutoAdvance();
+
+            return;
+        }
+
+        button.classList.add("is-wrong");
+
+        elements.setMessage(
+            "Essa associação não está correta. Tente novamente.",
+        );
+
+        audioService.speak(
+            "Tente novamente.",
+        );
+
+        onWrong(item);
+
+        window.setTimeout(() => {
+            button.classList.remove("is-wrong");
+        }, 650);
+    }
+
+
+    function render() {
+        resolved = false;
+        clearAutoAdvance();
+
+        elements.stage.replaceChildren();
+        elements.nextButton.disabled = true;
+
+        const content = document.createElement("div");
+        const promptContainer =
+            document.createElement("div");
+
+        const optionsContainer =
+            document.createElement("div");
+
+        content.className = "activity-content";
+        promptContainer.className =
+            "association-prompt";
+
+        optionsContainer.className =
+            "choice-grid association-grid";
+
+        const promptImage = createImage(
+            item,
+            student.supportLevel,
+        );
+
+        promptContainer.append(promptImage);
+
+        const options = createOptions(
+            item,
+            module.items,
+        );
+
+        options.forEach((option) => {
+            const button = createButton(
+                option.en,
+            );
+
+            button.addEventListener("click", () => {
+                handleOption(
+                    option,
+                    button,
+                    optionsContainer,
+                );
+            });
+
+            optionsContainer.append(button);
+        });
+
+        content.append(
+            promptContainer,
+            optionsContainer,
+        );
+
+        elements.stage.append(content);
+        elements.setInstruction(getInstruction());
+        elements.setProgress(0, 1);
+
+        if (student.supportLevel === 1) {
+            audioService.speak(getInstruction());
+        }
+    }
+
+
+    return Object.freeze({
+        start: render,
+
+        repeatInstruction() {
+            audioService.speak(getInstruction());
+        },
+
+        next() {
+            clearAutoAdvance();
+
+            return resolved;
+        },
+    });
 }

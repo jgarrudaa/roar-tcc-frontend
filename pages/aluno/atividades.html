@@ -1,68 +1,79 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ROAR — Atividades</title>
     <meta name="description" content="Explore todas as atividades e categorias de aprendizado no ROAR.">
+    <script src="../../public/js/roar-theme.js"></script> 
     <link rel="stylesheet" href="../../public/css/global.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
     <script src="../../public/js/roar-theme.js"></script>
     <link rel="stylesheet" href="../../public/css/pages/pages-aluno-atividades.css">
 </head>
-<body>
-<div class="app-shell">
 
-    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+<body data-auth-role="student">
+    <div class="app-shell">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar__logo-wrap">
-            <img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
-            <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu">
-                <i class="fi fi-br-menu-burger"></i>
-            </button>
-        </div>
-        <nav class="sidebar__nav">
-            <a href="inicio.html"          class="sidebar__link"><i class="fi fi-br-home"></i><span>Início</span></a>
-            <a href="atividades.html"    class="sidebar__link active"><i class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a>
-            <a href="desempenho.html"    class="sidebar__link"><i class="fi fi-br-chart-simple"></i><span>Desempenho</span></a>
-            <a href="perfil.html"        class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
-            <a href="configuracoes.html" class="sidebar__link"><i class="fi fi-br-settings"></i><span>Configurações</span></a>
-        </nav>
-        <div class="sidebar__footer">
-            <a href="../auth/login-aluno.html" class="sidebar__link"><i class="fi fi-br-exit"></i><span>Sair</span></a>
-        </div>
-    </aside>
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-    <!-- MAIN -->
-    <div class="main-content">
-        <header class="navbar">
-            <div class="u-pages-aluno-atividades-001">
-                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button>
-                <div class="navbar__page-title">
-                    <h1>Atividades</h1>
-                    <p>Escolha um módulo para começar a aprender.</p>
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar__logo-wrap">
+                <img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo"
+                    onclick="window.location.href='inicio.html'">
+                <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu">
+                    <i class="fi fi-br-menu-burger"></i>
+                </button>
+            </div>
+            <nav class="sidebar__nav">
+                <a href="inicio.html" class="sidebar__link"><i class="fi fi-br-home"></i><span>Início</span></a>
+                <a href="atividades.html" class="sidebar__link active"><i
+                        class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a>
+                <a href="desempenho.html" class="sidebar__link"><i
+                        class="fi fi-br-chart-simple"></i><span>Desempenho</span></a>
+                <a href="perfil.html" class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
+                <a href="configuracoes.html" class="sidebar__link"><i
+                        class="fi fi-br-settings"></i><span>Configurações</span></a>
+            </nav>
+            <div class="sidebar__footer">
+                <a href="../auth/login-aluno.html" class="sidebar__link"><i
+                        class="fi fi-br-exit"></i><span>Sair</span></a>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main-content">
+            <header class="navbar">
+                <div class="u-pages-aluno-atividades-001">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i
+                            class="fi fi-br-menu-burger"></i></button>
+                    <div class="navbar__page-title">
+                        <h1>Atividades</h1>
+                        <p>Escolha um módulo para começar a aprender.</p>
+                    </div>
                 </div>
+                <div class="navbar__right">
+                    <a href="perfil.html" class="navbar__avatar" title="Perfil" aria-label="Abrir perfil">L</a>
+                </div>
+            </header>
+
+            <div class="page-body fade-in">
+
+                <div id="modulosContent" class="modules-grid" aria-live="polite"></div>
+
             </div>
-            <div class="navbar__right">
-                <a href="perfil.html" class="navbar__avatar" title="Perfil" aria-label="Abrir perfil">L</a>
-            </div>
-        </header>
-
-        <div class="page-body fade-in">
-
-            <div id="modulosContent" class="modules-grid" aria-live="polite"></div>
-
         </div>
     </div>
-</div>
 
-<div id="toast-container"></div>
+    <div id="toast-container"></div>
 
-<script src="../../public/js/roar-storage.js"></script>
-<script src="../../public/js/roar-page-transition.js"></script>
-<script src="../../public/js/roar-sidebar.js"></script>
-<script type="module" src="../../public/js/pages/aluno/pages-aluno-atividades-1.js"></script>
+    <script type="module" src="../../public/js/pages/auth/route-guard.js"></script>
+    <script src="../../public/js/roar-storage.js"></script>
+    <script src="../../public/js/roar-page-transition.js"></script>
+    <script src="../../public/js/roar-sidebar.js"></script>
+    <script type="module" src="../../public/js/pages/aluno/pages-aluno-atividades-1.js"></script>
 </body>
+
 </html>

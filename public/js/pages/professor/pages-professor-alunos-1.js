@@ -1,309 +1,489 @@
-/* Comportamento extraído de alunos.html. */
+import { relatoriosService } from "../../services/relatorios-service.js";
+import { sessionService } from "../../services/session-service.js";
+import { showToast } from "../../components/toast.js";
 
-const NIVEL_LABELS = {
-    1: { text: 'N\u00edvel 1 \u2014 Suporte Visual Puro', cls: 'tag-1', cardCls: 'nivel-1' },
-    2: { text: 'N\u00edvel 2 \u2014 Aprendiz Guiado', cls: 'tag-2', cardCls: 'nivel-2' },
-    3: { text: 'N\u00edvel 3 \u2014 Autonomia Contextual', cls: 'tag-3', cardCls: 'nivel-3' },
+const LEVEL_STYLES = Object.freeze({
+    0: { text: "Modo não informado", tagClass: "tag-1", cardClass: "nivel-1" },
+    1: { text: "Nível 1 — Suporte Visual Puro", tagClass: "tag-1", cardClass: "nivel-1" },
+    2: { text: "Nível 2 — Aprendiz Guiado", tagClass: "tag-2", cardClass: "nivel-2" },
+    3: { text: "Nível 3 — Autonomia Contextual", tagClass: "tag-3", cardClass: "nivel-3" },
+});
+
+const AVATAR_COLORS = Object.freeze([
+    "#244d8c", "#1a7c49", "#7c3aed", "#b07000",
+    "#1f6ce3", "#0e7490", "#be185d", "#c2410c",
+]);
+
+const elements = {
+    statistics: document.getElementById("turmaStats"),
+    studentsGrid: document.getElementById("studentsGrid"),
+    search: document.getElementById("searchInput"),
+    levelFilter: document.getElementById("filterNivel"),
+    schoolYearFilter: document.getElementById("filterTurma"),
+    orderFilter: document.getElementById("filterOrdem"),
+    modal: document.getElementById("modalAluno"),
+    modalAvatar: document.getElementById("modalAvatar"),
+    modalName: document.getElementById("modalNome"),
+    modalMeta: document.getElementById("modalMeta"),
+    modalLevel: document.getElementById("modalNivelTag"),
+    modalStatistics: document.getElementById("modalStats"),
+    modalChart: document.getElementById("modalChart"),
+    modalTable: document.getElementById("modalTable"),
+    reportButton: document.getElementById("btnRelatorio"),
+    notificationButton: document.getElementById("btnNotif"),
+    profileAvatar: document.querySelector(".navbar__avatar"),
+    closeButtons: document.querySelectorAll(
+        "#modalAluno .modal-close, #modalAluno .btn--secondary",
+    ),
 };
 
-const AVATAR_COLORS = [
-    '#244D8C','#1a7c49','#7c3aed','#b07000',
-    '#1F6CE3','#0e7490','#be185d','#c2410c',
-];
+const state = {
+    dashboard: null,
+    students: [],
+    visibleStudents: [],
+    selectedStudent: null,
+    report: null,
+    loadingReport: false,
+};
 
-const studentsData = [
-    {
-        id:1, name:'Leandro Matos',   turma:'A', nivel:1, xp:1240, prog:70,  last:'Hoje',      avatarColor:AVATAR_COLORS[0],
-        atividades:[
-            {nome:'Partes do Corpo', tipo:'Arraste',    acertos:8,  erros:2, status:'done'},
-            {nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:6,  erros:4, status:'done'},
-            {nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:5,  erros:3, status:'done'},
-            {nome:'Animais',         tipo:'Input',      acertos:7,  erros:3, status:'done'},
-            {nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:3,  erros:7, status:'prog'},
-            {nome:'Frutas',          tipo:'Arraste',    acertos:0,  erros:0, status:'none'},
-        ]
-    },
-    {
-        id:2, name:'Ana Clara Souza', turma:'A', nivel:3, xp:1850, prog:92,  last:'Hoje',      avatarColor:AVATAR_COLORS[1],
-        atividades:[
-            {nome:'Partes do Corpo', tipo:'Arraste',    acertos:10, erros:0, status:'done'},
-            {nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:9,  erros:1, status:'done'},
-            {nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:8,  erros:2, status:'done'},
-            {nome:'Animais',         tipo:'Input',      acertos:10, erros:0, status:'done'},
-            {nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:9,  erros:1, status:'done'},
-            {nome:'Frutas',          tipo:'Arraste',    acertos:8,  erros:2, status:'done'},
-        ]
-    },
-    {
-        id:3, name:'Bruno Ferreira',  turma:'A', nivel:2, xp:1620, prog:55,  last:'Ontem',     avatarColor:AVATAR_COLORS[2],
-        atividades:[
-            {nome:'Partes do Corpo', tipo:'Arraste',    acertos:7,  erros:3, status:'done'},
-            {nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:4,  erros:6, status:'done'},
-            {nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:5,  erros:5, status:'done'},
-            {nome:'Animais',         tipo:'Input',      acertos:2,  erros:8, status:'prog'},
-            {nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:0,  erros:0, status:'none'},
-            {nome:'Frutas',          tipo:'Arraste',    acertos:0,  erros:0, status:'none'},
-        ]
-    },
-    {
-        id:4, name:'Mariana Lima',    turma:'A', nivel:2, xp:980,  prog:80,  last:'Hoje',      avatarColor:AVATAR_COLORS[3],
-        atividades:[
-            {nome:'Partes do Corpo', tipo:'Arraste',    acertos:9,  erros:1, status:'done'},
-            {nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:7,  erros:3, status:'done'},
-            {nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:6,  erros:2, status:'done'},
-            {nome:'Animais',         tipo:'Input',      acertos:8,  erros:2, status:'done'},
-            {nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:4,  erros:3, status:'prog'},
-            {nome:'Frutas',          tipo:'Arraste',    acertos:0,  erros:0, status:'none'},
-        ]
-    },
-    {
-        id:5, name:'Gabriel Santos',  turma:'B', nivel:1, xp:760,  prog:42,  last:'h\u00e1 3 dias', avatarColor:AVATAR_COLORS[4],
-        atividades:[
-            {nome:'Partes do Corpo', tipo:'Arraste',    acertos:4,  erros:6, status:'done'},
-            {nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:5,  erros:5, status:'done'},
-            {nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:2,  erros:8, status:'prog'},
-            {nome:'Animais',         tipo:'Input',      acertos:0,  erros:0, status:'none'},
-            {nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:0,  erros:0, status:'none'},
-            {nome:'Frutas',          tipo:'Arraste',    acertos:0,  erros:0, status:'none'},
-        ]
-    },
-    {
-        id:6, name:'Isabela Costa',   turma:'B', nivel:3, xp:2100, prog:95,  last:'Hoje',      avatarColor:AVATAR_COLORS[5],
-        atividades:[
-            {nome:'Partes do Corpo', tipo:'Arraste',    acertos:10, erros:0, status:'done'},
-            {nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:10, erros:0, status:'done'},
-            {nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:9,  erros:1, status:'done'},
-            {nome:'Animais',         tipo:'Input',      acertos:9,  erros:1, status:'done'},
-            {nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:10, erros:0, status:'done'},
-            {nome:'Frutas',          tipo:'Arraste',    acertos:9,  erros:1, status:'done'},
-        ]
-    },
-    {
-        id:7, name:'Rafael Mendes',   turma:'B', nivel:2, xp:1380, prog:64,  last:'Ontem',     avatarColor:AVATAR_COLORS[6],
-        atividades:[
-            {nome:'Partes do Corpo', tipo:'Arraste',    acertos:6,  erros:4, status:'done'},
-            {nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:7,  erros:3, status:'done'},
-            {nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:4,  erros:6, status:'done'},
-            {nome:'Animais',         tipo:'Input',      acertos:5,  erros:5, status:'prog'},
-            {nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:3,  erros:4, status:'prog'},
-            {nome:'Frutas',          tipo:'Arraste',    acertos:0,  erros:0, status:'none'},
-        ]
-    },
-    {
-        id:8, name:'Valentina Rocha', turma:'A', nivel:1, xp:540,  prog:28,  last:'h\u00e1 5 dias', avatarColor:AVATAR_COLORS[7],
-        atividades:[
-            {nome:'Partes do Corpo', tipo:'Arraste',    acertos:3,  erros:7, status:'done'},
-            {nome:'Cores B\u00e1sicas',   tipo:'Sele\u00e7\u00e3o',    acertos:2,  erros:5, status:'prog'},
-            {nome:'Emo\u00e7\u00f5es',         tipo:'Associa\u00e7\u00e3o', acertos:0,  erros:0, status:'none'},
-            {nome:'Animais',         tipo:'Input',      acertos:0,  erros:0, status:'none'},
-            {nome:'N\u00fameros 1-10',    tipo:'Sequ\u00eancia',  acertos:0,  erros:0, status:'none'},
-            {nome:'Frutas',          tipo:'Arraste',    acertos:0,  erros:0, status:'none'},
-        ]
-    },
-];
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
 
-// ── RENDER: STAT CARDS ──────────────────────────────────────────
-function renderTurmaStats() {
-    const total     = studentsData.length;
-    const mediaXP   = Math.round(studentsData.reduce((a,s)=>a+s.xp,0)/total);
-    const mediaProg = Math.round(studentsData.reduce((a,s)=>a+s.prog,0)/total);
-    const ativos    = studentsData.filter(s=>s.last==='Hoje').length;
-    const stats = [
-        {icon:'fi fi-br-users',      bg:'rgba(133,199,242,0.30)',color:'var(--c-blue-dark)',label:'Total de Alunos',   val:total},
-        {icon:'fi fi-br-bolt',       bg:'rgba(68,246,152,0.25)', color:'#1a7c49',           label:'Ativos Hoje',       val:ativos},
-        {icon:'fi fi-br-star',       bg:'rgba(245,158,11,0.20)', color:'#b07000',           label:'M\u00e9dia Progresso', val:mediaProg+'%'},
-        {icon:'fi fi-br-trophy',     bg:'rgba(168,85,247,0.15)', color:'#7c3aed',           label:'M\u00e9dia de XP',     val:mediaXP.toLocaleString('pt-BR')},
+function clampPercentage(value) {
+    const number = Number(value);
+    return Number.isFinite(number)
+        ? Math.max(0, Math.min(100, Math.round(number)))
+        : 0;
+}
+
+function formatInteger(value) {
+    return Math.max(0, Number(value) || 0).toLocaleString("pt-BR");
+}
+
+function formatLastAccess(date) {
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+        return "Sem atividade registrada";
+    }
+
+    const today = new Date();
+    const currentDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const accessDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const difference = Math.round((currentDay - accessDay) / 86400000);
+
+    if (difference <= 0) return "Hoje";
+    if (difference === 1) return "Ontem";
+    return `há ${difference} dias`;
+}
+
+function calculateAccuracy(completions, errors) {
+    const validCompletions = Math.max(0, Number(completions) || 0);
+    const validErrors = Math.max(0, Number(errors) || 0);
+    const interactions = validCompletions + validErrors;
+    return interactions
+        ? clampPercentage((validCompletions / interactions) * 100)
+        : 0;
+}
+
+function calculateProgress(student) {
+    const totalActivities = state.dashboard?.totalActivities ?? 0;
+    return totalActivities
+        ? clampPercentage((student.completed / totalActivities) * 100)
+        : 0;
+}
+
+function getLevelStyle(student) {
+    return LEVEL_STYLES[student.level?.number] ?? LEVEL_STYLES[0];
+}
+
+function getProgressClass(progress) {
+    if (progress >= 80) return "progress-bar--green";
+    if (progress >= 50) return "progress-bar--blue";
+    return "progress-bar--red";
+}
+
+function getAvatarColor(studentId) {
+    return AVATAR_COLORS[Math.abs(Number(studentId) || 0) % AVATAR_COLORS.length];
+}
+
+function setProfileAvatar() {
+    const name = String(sessionService.get()?.user?.name ?? "Professor").trim();
+    elements.profileAvatar.textContent =
+        name.charAt(0).toLocaleUpperCase("pt-BR") || "P";
+}
+
+function renderLoading() {
+    elements.statistics.innerHTML = Array.from({ length: 4 }, () => `
+        <div class="stat-card" aria-hidden="true">
+            <div class="stat-card__icon"><i class="fi fi-br-spinner"></i></div>
+            <div>
+                <div class="stat-card__label">Carregando</div>
+                <div class="stat-card__value">—</div>
+            </div>
+        </div>
+    `).join("");
+
+    elements.studentsGrid.innerHTML = `
+        <div class="u-pages-professor-alunos-019" role="status">
+            <i class="fi fi-br-spinner"></i> Carregando alunos...
+        </div>
+    `;
+}
+
+function renderStatistics() {
+    const total = state.students.length;
+    const activeToday = state.students.filter(
+        (student) => formatLastAccess(student.lastAccess) === "Hoje",
+    ).length;
+    const averageProgress = total
+        ? Math.round(
+            state.students.reduce(
+                (sum, student) => sum + calculateProgress(student),
+                0,
+            ) / total,
+        )
+        : 0;
+    const averageXp = total
+        ? Math.round(
+            state.students.reduce((sum, student) => sum + student.xp, 0) / total,
+        )
+        : 0;
+
+    const statistics = [
+        ["fi fi-br-users", "rgba(133,199,242,.30)", "var(--c-blue-dark)", "Total de alunos", total],
+        ["fi fi-br-bolt", "rgba(68,246,152,.25)", "#1a7c49", "Ativos hoje", activeToday],
+        ["fi fi-br-star", "rgba(245,158,11,.20)", "#b07000", "Média de progresso", `${averageProgress}%`],
+        ["fi fi-br-trophy", "rgba(168,85,247,.15)", "#7c3aed", "Média de XP", formatInteger(averageXp)],
     ];
-    const c = document.getElementById('turmaStats');
-    stats.forEach(s=>{
-        c.innerHTML+=`<div class="stat-card">
-            <div class="stat-card__icon" style="background:${s.bg};color:${s.color}"><i class="${s.icon}"></i></div>
-            <div><div class="stat-card__label">${s.label}</div><div class="stat-card__value">${s.val}</div></div>
-        </div>`;
-    });
+
+    elements.statistics.innerHTML = statistics.map(
+        ([icon, background, color, label, value]) => `
+            <div class="stat-card">
+                <div class="stat-card__icon" style="background:${background};color:${color}">
+                    <i class="${icon}" aria-hidden="true"></i>
+                </div>
+                <div>
+                    <div class="stat-card__label">${label}</div>
+                    <div class="stat-card__value">${value}</div>
+                </div>
+            </div>
+        `,
+    ).join("");
 }
 
-// ── UTILITARIO ─────────────────────────────────────────────────
-function calcTaxa(aluno) {
-    const tot = aluno.atividades.reduce((a,t)=>a+t.acertos+t.erros,0);
-    const ac  = aluno.atividades.reduce((a,t)=>a+t.acertos,0);
-    return tot>0?Math.round((ac/tot)*100):0;
+function renderSchoolYearOptions() {
+    const years = [...new Set(
+        state.students
+            .map((student) => student.schoolYear)
+            .filter((year) => year !== "Não informado"),
+    )].sort((a, b) => a.localeCompare(b, "pt-BR", { numeric: true }));
+
+    elements.schoolYearFilter.innerHTML = [
+        '<option value="">Todos os anos</option>',
+        ...years.map(
+            (year) => `<option value="${escapeHtml(year)}">${escapeHtml(year)}</option>`,
+        ),
+    ].join("");
 }
 
-// ── RENDER: CARDS ──────────────────────────────────────────────
-function renderCards(lista) {
-    const grid = document.getElementById('studentsGrid');
-    grid.innerHTML='';
-    if(lista.length===0){
-        grid.innerHTML=`<div class="u-pages-professor-alunos-019">
-            <i class="fi fi-br-search u-pages-professor-alunos-020"></i>
-            Nenhum aluno encontrado.
-        </div>`;
+function renderStudentCards() {
+    if (!state.visibleStudents.length) {
+        elements.studentsGrid.innerHTML = `
+            <div class="u-pages-professor-alunos-019">
+                <i class="fi fi-br-search u-pages-professor-alunos-020"></i>
+                Nenhum aluno encontrado.
+            </div>
+        `;
         return;
     }
-    lista.forEach(s=>{
-        const nv    = NIVEL_LABELS[s.nivel];
-        const taxa  = calcTaxa(s);
-        const feitas= s.atividades.filter(a=>a.status==='done').length;
-        const progBarColor = s.prog>=80?'progress-bar--green':s.prog>=50?'progress-bar--blue':'progress-bar--red';
-        const card  = document.createElement('div');
-        card.className=`student-card ${nv.cardCls}`;
-        card.setAttribute('role','button');
-        card.setAttribute('tabindex','0');
-        card.setAttribute('aria-label',`Ver desempenho de ${s.name}`);
-        card.id=`card-aluno-${s.id}`;
-        card.innerHTML=`
+
+    elements.studentsGrid.innerHTML = "";
+    const fragment = document.createDocumentFragment();
+
+    state.visibleStudents.forEach((student) => {
+        const level = getLevelStyle(student);
+        const progress = calculateProgress(student);
+        const accuracy = calculateAccuracy(
+            student.totalAttempts,
+            student.totalErrors,
+        );
+        const card = document.createElement("article");
+
+        card.className = `student-card ${level.cardClass}`;
+        card.tabIndex = 0;
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-label", `Ver desempenho de ${student.name}`);
+        card.innerHTML = `
             <div class="student-card__header">
-                <div class="student-avatar" style="background:${s.avatarColor}">${s.name[0]}</div>
+                <div class="student-avatar" style="background:${getAvatarColor(student.id)}">
+                    ${escapeHtml(student.initial)}
+                </div>
                 <div>
-                    <div class="student-card__name">${s.name}</div>
-                    <div class="student-card__turma">Turma ${s.turma} &middot; \u00faltimo acesso: ${s.last}</div>
+                    <div class="student-card__name">${escapeHtml(student.name)}</div>
+                    <div class="student-card__turma">
+                        ${escapeHtml(student.schoolYear)} · último acesso:
+                        ${escapeHtml(formatLastAccess(student.lastAccess))}
+                    </div>
                 </div>
             </div>
             <div class="student-card__stats">
-                <div class="mini-stat"><div class="mini-stat__val">${s.xp.toLocaleString('pt-BR')}</div><div class="mini-stat__lbl">XP</div></div>
-                <div class="mini-stat"><div class="mini-stat__val">${taxa}%</div><div class="mini-stat__lbl">Acertos</div></div>
-                <div class="mini-stat"><div class="mini-stat__val">${feitas}/${s.atividades.length}</div><div class="mini-stat__lbl">Conclu\u00eddas</div></div>
+                <div class="mini-stat">
+                    <div class="mini-stat__val">${formatInteger(student.xp)}</div>
+                    <div class="mini-stat__lbl">XP</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat__val">${accuracy}%</div>
+                    <div class="mini-stat__lbl">Aproveit.</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat__val">${formatInteger(student.completed)}/${formatInteger(state.dashboard.totalActivities)}</div>
+                    <div class="mini-stat__lbl">Concluídas</div>
+                </div>
             </div>
-            <div class="progress-label"><span>Progresso geral</span><span>${s.prog}%</span></div>
+            <div class="progress-label">
+                <span>Progresso geral</span><span>${progress}%</span>
+            </div>
             <div class="progress-wrap u-pages-professor-alunos-021">
-                <div class="progress-bar ${progBarColor}" style="width:${s.prog}%"></div>
+                <div class="progress-bar ${getProgressClass(progress)}" style="width:${progress}%"></div>
             </div>
-            <span class="nivel-tag ${nv.cls}"><i class="fi fi-br-brain"></i>${nv.text}</span>
+            <span class="nivel-tag ${level.tagClass}">
+                <i class="fi fi-br-brain"></i>${escapeHtml(level.text)}
+            </span>
         `;
-        card.addEventListener('click',()=>abrirModal(s.id));
-        card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')abrirModal(s.id);});
-        grid.appendChild(card);
+
+        const open = () => openStudentModal(student.id);
+        card.addEventListener("click", open);
+        card.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                open();
+            }
+        });
+        fragment.appendChild(card);
     });
+
+    elements.studentsGrid.appendChild(fragment);
 }
 
-// ── FILTROS ────────────────────────────────────────────────────
-function filtrarAlunos(){
-    const q    = document.getElementById('searchInput').value.toLowerCase();
-    const nivel= document.getElementById('filterNivel').value;
-    const turma= document.getElementById('filterTurma').value;
-    const ordem= document.getElementById('filterOrdem').value;
-    let lista  = studentsData.filter(s=>{
-        return s.name.toLowerCase().includes(q)
-            && (nivel===''||String(s.nivel)===nivel)
-            && (turma===''||s.turma===turma);
+function applyFilters() {
+    const query = elements.search.value.trim().toLocaleLowerCase("pt-BR");
+    const level = elements.levelFilter.value;
+    const year = elements.schoolYearFilter.value;
+    const order = elements.orderFilter.value;
+
+    state.visibleStudents = state.students.filter((student) =>
+        student.name.toLocaleLowerCase("pt-BR").includes(query) &&
+        (!level || String(student.level.number) === level) &&
+        (!year || student.schoolYear === year),
+    );
+
+    state.visibleStudents.sort((a, b) => {
+        if (order === "xp") return b.xp - a.xp;
+        if (order === "prog") return calculateProgress(b) - calculateProgress(a);
+        return a.name.localeCompare(b.name, "pt-BR");
     });
-    if(ordem==='xp')   lista=lista.slice().sort((a,b)=>b.xp-a.xp);
-    if(ordem==='prog') lista=lista.slice().sort((a,b)=>b.prog-a.prog);
-    if(ordem==='nome') lista=lista.slice().sort((a,b)=>a.name.localeCompare(b.name,'pt'));
-    renderCards(lista);
+
+    renderStudentCards();
 }
 
-// ── MODAL ──────────────────────────────────────────────────────
-function abrirModal(id){
-    const s  = studentsData.find(x=>x.id===id);
-    const nv = NIVEL_LABELS[s.nivel];
+function prepareModal(student) {
+    const level = getLevelStyle(student);
+    elements.modalAvatar.textContent = student.initial;
+    elements.modalAvatar.style.background = getAvatarColor(student.id);
+    elements.modalName.textContent = student.name;
+    elements.modalMeta.textContent =
+        `${student.schoolYear} · ${formatInteger(student.xp)} XP · último acesso: ${formatLastAccess(student.lastAccess)}`;
+    elements.modalLevel.className = `nivel-tag ${level.tagClass}`;
+    elements.modalLevel.innerHTML =
+        `<i class="fi fi-br-brain"></i>${escapeHtml(level.text)}`;
+    elements.modalStatistics.innerHTML =
+        '<div class="mstat"><div class="mstat__val">—</div><div class="mstat__lbl">Carregando relatório...</div></div>';
+    elements.modalChart.innerHTML = "";
+    elements.modalTable.innerHTML = "";
+}
 
-    const av = document.getElementById('modalAvatar');
-    av.textContent=s.name[0];
-    av.style.background=s.avatarColor;
-    document.getElementById('modalNome').textContent=s.name;
-    document.getElementById('modalMeta').textContent=`Turma ${s.turma} \u00b7 ${s.xp.toLocaleString('pt-BR')} XP \u00b7 \u00daltimo acesso: ${s.last}`;
-    const ntag=document.getElementById('modalNivelTag');
-    ntag.className=`nivel-tag ${nv.cls}`;
-    ntag.innerHTML=`<i class="fi fi-br-brain"></i>${nv.text}`;
+function renderModalReport(report) {
+    const { summary, history } = report;
+    const accuracy = calculateAccuracy(
+        summary.totalAttempts,
+        summary.totalErrors,
+    );
 
-    const totalAc=s.atividades.reduce((a,t)=>a+t.acertos,0);
-    const totalEr=s.atividades.reduce((a,t)=>a+t.erros,0);
-    const total=totalAc+totalEr;
-    const taxa=total>0?Math.round((totalAc/total)*100):0;
-    const feitas=s.atividades.filter(a=>a.status==='done').length;
-
-    document.getElementById('modalStats').innerHTML=`
-        <div class="mstat"><div class="mstat__val">${taxa}%</div><div class="mstat__lbl">Taxa de Acerto</div></div>
-        <div class="mstat"><div class="mstat__val">${totalAc}</div><div class="mstat__lbl">Total Acertos</div></div>
-        <div class="mstat"><div class="mstat__val">${totalEr}</div><div class="mstat__lbl">Total Erros</div></div>
-        <div class="mstat"><div class="mstat__val">${feitas}/${s.atividades.length}</div><div class="mstat__lbl">Conclu\u00eddas</div></div>
+    elements.modalStatistics.innerHTML = `
+        <div class="mstat"><div class="mstat__val">${accuracy}%</div><div class="mstat__lbl">Aproveitamento</div></div>
+        <div class="mstat"><div class="mstat__val">${formatInteger(summary.totalAttempts)}</div><div class="mstat__lbl">Conclusões</div></div>
+        <div class="mstat"><div class="mstat__val">${formatInteger(summary.totalErrors)}</div><div class="mstat__lbl">Total de erros</div></div>
+        <div class="mstat"><div class="mstat__val">${formatInteger(summary.completed)}/${formatInteger(state.dashboard.totalActivities)}</div><div class="mstat__lbl">Atividades concluídas</div></div>
     `;
 
-    // Gráfico
-    const chart=document.getElementById('modalChart');
-    chart.innerHTML='';
-    const maxVal=Math.max(...s.atividades.map(a=>a.acertos+a.erros),1);
-    s.atividades.forEach(a=>{
-        const hAc=Math.round((a.acertos/maxVal)*110);
-        const hEr=Math.round((a.erros/maxVal)*110);
-        const col=document.createElement('div');
-        col.className='act-col';
-        col.innerHTML=`
-            <div class="act-bar-wrap">
-                <div class="act-bar acertos" style="height:${hAc}px" title="${a.acertos} acertos"></div>
-                <div class="act-bar erros"   style="height:${hEr}px" title="${a.erros} erros"></div>
-            </div>
-            <div class="act-lbl">${a.nome.split(' ')[0]}</div>
-        `;
-        chart.appendChild(col);
-    });
+    const chartRecords = history.slice(0, 8).reverse();
+    const maximum = Math.max(
+        ...chartRecords.map((record) => (record.completed ? 1 : 0) + record.errors),
+        1,
+    );
 
-    // Tabela
-    const tbody=document.getElementById('modalTable');
-    tbody.innerHTML='';
-    s.atividades.forEach(a=>{
-        const tot=a.acertos+a.erros;
-        const pct=tot>0?Math.round((a.acertos/tot)*100):0;
-        const barCls=pct>=70?'pct-green':pct>=40?'pct-yellow':'pct-red';
-        const statusMap={
-            done:'<span class="status-pill pill-done"><i class="fi fi-br-check"></i> Conclu\u00edda</span>',
-            prog:'<span class="status-pill pill-prog"><i class="fi fi-br-time-forward"></i> Em progresso</span>',
-            none:'<span class="status-pill pill-none"><i class="fi fi-br-minus"></i> N\u00e3o iniciada</span>',
-        };
-        const tr=document.createElement('tr');
-        tr.innerHTML=`
-            <td class="u-pages-professor-alunos-022">${a.nome}</td>
-            <td class="u-pages-professor-alunos-023">${a.tipo}</td>
-            <td class="u-pages-professor-alunos-024">${a.acertos}</td>
-            <td class="u-pages-professor-alunos-025">${a.erros}</td>
-            <td>
-                <div class="u-pages-professor-alunos-026">
-                    <div class="pct-bar-wrap"><div class="pct-bar ${barCls}" style="width:${pct}%"></div></div>
-                    <span class="u-pages-professor-alunos-027">${pct}%</span>
+    elements.modalChart.innerHTML = chartRecords.length
+        ? chartRecords.map((record) => `
+            <div class="act-col">
+                <div class="act-bar-wrap">
+                    <div class="act-bar acertos" style="height:${record.completed ? Math.max(10, Math.round(110 / maximum)) : 0}px" title="${record.completed ? 1 : 0} conclusão"></div>
+                    <div class="act-bar erros" style="height:${Math.round((record.errors / maximum) * 110)}px" title="${record.errors} erros"></div>
                 </div>
-            </td>
-            <td>${statusMap[a.status]}</td>
-        `;
-        tbody.appendChild(tr);
+                <div class="act-lbl">${escapeHtml(record.activityName.split(" ")[0])}</div>
+            </div>
+        `).join("")
+        : "<p>Nenhuma atividade realizada.</p>";
+
+    elements.modalTable.innerHTML = history.length
+        ? history.map((record) => {
+            const percentage = calculateAccuracy(
+                record.completed ? 1 : 0,
+                record.errors,
+            );
+            const percentageClass =
+                percentage >= 70 ? "pct-green" :
+                    percentage >= 40 ? "pct-yellow" : "pct-red";
+            const status = record.completed
+                ? '<span class="status-pill pill-done"><i class="fi fi-br-check"></i> Concluída</span>'
+                : '<span class="status-pill pill-prog"><i class="fi fi-br-time-forward"></i> Não concluída</span>';
+
+            return `
+                <tr>
+                    <td class="u-pages-professor-alunos-022">${escapeHtml(record.activityName)}</td>
+                    <td class="u-pages-professor-alunos-023">${escapeHtml(record.moduleName)}</td>
+                    <td class="u-pages-professor-alunos-024">${record.completed ? 1 : 0}</td>
+                    <td class="u-pages-professor-alunos-025">${formatInteger(record.errors)}</td>
+                    <td>
+                        <div class="u-pages-professor-alunos-026">
+                            <div class="pct-bar-wrap"><div class="pct-bar ${percentageClass}" style="width:${percentage}%"></div></div>
+                            <span class="u-pages-professor-alunos-027">${percentage}%</span>
+                        </div>
+                    </td>
+                    <td>${status}</td>
+                </tr>
+            `;
+        }).join("")
+        : '<tr><td colspan="6">Nenhuma atividade realizada.</td></tr>';
+}
+
+async function openStudentModal(studentId) {
+    if (state.loadingReport) return;
+
+    const student = state.students.find((item) => item.id === studentId);
+    if (!student) return;
+
+    state.selectedStudent = student;
+    state.report = null;
+    state.loadingReport = true;
+    prepareModal(student);
+    elements.modal.classList.add("open");
+    elements.modal.setAttribute("aria-hidden", "false");
+
+    try {
+        state.report = await relatoriosService.getStudentReport(studentId);
+        renderModalReport(state.report);
+    } catch (error) {
+        elements.modalStatistics.innerHTML =
+            '<div class="mstat"><div class="mstat__val">!</div><div class="mstat__lbl">Relatório indisponível</div></div>';
+        showToast(
+            error?.message ?? "Não foi possível carregar o relatório do aluno.",
+            "error",
+        );
+    } finally {
+        state.loadingReport = false;
+    }
+}
+
+function closeStudentModal() {
+    elements.modal.classList.remove("open");
+    elements.modal.setAttribute("aria-hidden", "true");
+    state.selectedStudent = null;
+    state.report = null;
+}
+
+function showReportSummary() {
+    if (!state.report) {
+        showToast("Aguarde o carregamento do relatório.", "info");
+        return;
+    }
+
+    const accuracy = calculateAccuracy(
+        state.report.summary.totalAttempts,
+        state.report.summary.totalErrors,
+    );
+    showToast(
+        `${state.report.student.name}: ${accuracy}% de aproveitamento geral.`,
+        "success",
+    );
+}
+
+function validateElements() {
+    const missing = Object.entries(elements)
+        .filter(([name, value]) => name !== "closeButtons" && !value)
+        .map(([name]) => name);
+
+    if (missing.length) {
+        throw new Error(`Elementos ausentes na página: ${missing.join(", ")}.`);
+    }
+}
+
+function bindEvents() {
+    elements.search.addEventListener("input", applyFilters);
+    elements.levelFilter.addEventListener("change", applyFilters);
+    elements.schoolYearFilter.addEventListener("change", applyFilters);
+    elements.orderFilter.addEventListener("change", applyFilters);
+    elements.reportButton.addEventListener("click", showReportSummary);
+    elements.notificationButton.addEventListener("click", () => {
+        showToast("Você não possui novas notificações.", "info");
     });
-
-    document.getElementById('btnRelatorio').onclick=()=>{
-        const t=calcTaxa(s);
-        showToast(`Relat\u00f3rio de ${s.name}: ${t}% de aproveitamento geral`,'success');
-    };
-
-    document.getElementById('modalAluno').classList.add('open');
+    elements.closeButtons.forEach((button) =>
+        button.addEventListener("click", closeStudentModal),
+    );
+    elements.modal.addEventListener("click", (event) => {
+        if (event.target === elements.modal) closeStudentModal();
+    });
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeStudentModal();
+    });
 }
 
-function fecharModal(){
-    document.getElementById('modalAluno').classList.remove('open');
+async function loadStudents() {
+    const teacherId = Number(sessionService.get()?.user?.id);
+    if (!Number.isInteger(teacherId) || teacherId <= 0) {
+        throw new Error("Não foi possível identificar o professor autenticado.");
+    }
+
+    renderLoading();
+    state.dashboard = await relatoriosService.getTeacherDashboard(teacherId);
+    state.students = [...state.dashboard.students];
+    renderStatistics();
+    renderSchoolYearOptions();
+    applyFilters();
 }
 
-document.getElementById('modalAluno').addEventListener('click',function(e){if(e.target===this)fecharModal();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')fecharModal();});
-
-// ── SIDEBAR ────────────────────────────────────────────────────
-const sidebar  =document.getElementById('sidebar');
-const toggle   =document.getElementById('sidebarToggle');
-const backdrop =document.getElementById('sidebarBackdrop');
-const mobileBtn=document.getElementById('mobileMenuBtn');
-toggle.addEventListener('click',  ()=>sidebar.classList.toggle('sidebar--collapsed'));
-mobileBtn.addEventListener('click',()=>{sidebar.classList.add('open');backdrop.classList.add('open');});
-backdrop.addEventListener('click', ()=>{sidebar.classList.remove('open');backdrop.classList.remove('open');});
-document.getElementById('btnNotif').addEventListener('click',()=>showToast('3 novas notifica\u00e7\u00f5es','info'));
-
-// ── TOAST ──────────────────────────────────────────────────────
-function showToast(msg,type=''){
-    const c=document.getElementById('toast-container');
-    const t=document.createElement('div');
-    t.className=`toast${type?' toast--'+type:''}`;
-    t.innerHTML=`<i class="fi fi-br-bell"></i> ${msg}`;
-    c.appendChild(t);
-    setTimeout(()=>t.remove(),3500);
+async function initialize() {
+    try {
+        validateElements();
+        setProfileAvatar();
+        bindEvents();
+        await loadStudents();
+    } catch (error) {
+        console.error("Erro ao carregar a página de alunos:", error);
+        if (elements.studentsGrid) {
+            elements.studentsGrid.innerHTML = `
+                <div class="u-pages-professor-alunos-019" role="alert">
+                    <i class="fi fi-br-exclamation"></i>
+                    Não foi possível carregar os alunos.
+                </div>
+            `;
+        }
+        showToast(error?.message ?? "Não foi possível carregar os alunos.", "error");
+    }
 }
 
-// ── INIT ───────────────────────────────────────────────────────
-renderTurmaStats();
-filtrarAlunos();
+initialize();

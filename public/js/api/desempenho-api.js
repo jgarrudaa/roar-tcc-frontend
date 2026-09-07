@@ -1,5 +1,6 @@
 import { apiClient } from "./api-client.js";
 
+
 function requirePositiveInteger(value, fieldName) {
     const parsedValue = Number(value);
 
@@ -12,31 +13,16 @@ function requirePositiveInteger(value, fieldName) {
     return parsedValue;
 }
 
-export const modulosApi = Object.freeze({
-    list() {
-        return apiClient.get("/atividades/modulos");
-    },
 
-    getActivities(moduleId, studentId) {
-        const validModuleId = requirePositiveInteger(
-            moduleId,
-            "moduleId",
-        );
-
+export const desempenhoApi = Object.freeze({
+    getStudentReport(studentId) {
         const validStudentId = requirePositiveInteger(
             studentId,
             "studentId",
         );
 
         return apiClient.get(
-            `/atividades/modulo/${validModuleId}/aluno/${validStudentId}`,
-        );
-    },
-
-    saveProgress(progressData) {
-        return apiClient.post(
-            "/atividades/progresso",
-            progressData,
+            `/relatorios/aluno/${validStudentId}`,
         );
     },
 });

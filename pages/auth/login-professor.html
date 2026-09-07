@@ -1,56 +1,123 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>ROAR — Login Professor</title>
+
     <meta name="description" content="Login do professor no sistema ROAR.">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
+
     <link rel="stylesheet" href="../../public/css/components/feedback.css">
+
     <link rel="stylesheet" href="../../public/css/pages/auth.css?v=3">
+
     <link rel="stylesheet" href="../../public/css/pages/pages-auth-login-professor.css?v=3">
 </head>
+
 <body class="auth-page auth-page--teacher-login">
     <main class="auth-card">
         <section class="auth-visual" aria-labelledby="teacher-greeting">
             <img src="../../public/assets/imagens/logo.svg" alt="ROAR" class="auth-logo">
+
             <div class="auth-copy">
-                <h1 id="teacher-greeting" class="auth-greeting">Olá, Professor</h1>
-                <p><strong class="auth-highlight auth-highlight--green">Gerencie seus alunos</strong> com facilidade.<br>Acompanhe o progresso de cada um<br>e personalize o aprendizado.</p>
+                <h1 id="teacher-greeting" class="auth-greeting">
+                    Olá, Professor
+                </h1>
+
+                <p>
+                    <strong class="auth-highlight auth-highlight--green">
+                        Gerencie seus alunos
+                    </strong>
+                    com facilidade.
+                    <br>
+                    Acompanhe o progresso de cada um
+                    <br>
+                    e personalize o aprendizado.
+                </p>
             </div>
+
             <div class="auth-mascot-stage" aria-hidden="true">
-                <img src="../../public/assets/imagens/dino2.png" alt="" class="auth-dino" id="dinoImg"
-                     data-dino-neutral="../../public/assets/imagens/dino2.png"
-                     data-dino-hiding="../../public/assets/imagens/dinosenha2-sem-colar.png"
-                     data-dino-peeking="../../public/assets/imagens/dino espiando2.png">
+                <img id="dinoImg" class="auth-dino" src="../../public/assets/imagens/dino2.png" alt=""
+                    data-dino-neutral="../../public/assets/imagens/dino2.png"
+                    data-dino-hiding="../../public/assets/imagens/dinosenha2-sem-colar.png"
+                    data-dino-peeking="../../public/assets/imagens/dino espiando2.png">
             </div>
         </section>
-        <section class="auth-form-panel">
+
+        <section class="auth-form-panel" aria-labelledby="teacher-login-title">
             <form id="teacher-login-form" class="auth-form">
                 <header class="auth-form-header">
-                    <h2>Bem-vindo de volta!</h2>
-                    <p class="auth-form-label">Login</p>
+                    <h2 id="teacher-login-title">
+                        Bem-vindo de volta!
+                    </h2>
+
+                    <p class="auth-form-label">
+                        Login
+                    </p>
                 </header>
+
                 <div class="auth-fields">
-                    <label class="sr-only" for="emailInput">E-mail</label>
-                    <input id="emailInput" class="auth-input" type="email" placeholder="E-mail" autocomplete="email" required>
+                    <label class="sr-only" for="emailInput">
+                        E-mail
+                    </label>
+
+                    <input id="emailInput" class="auth-input" name="email" type="email" placeholder="E-mail"
+                        autocomplete="email" required>
+
                     <div class="auth-password-field">
-                        <label class="sr-only" for="senha">Senha</label>
-                        <input id="senha" class="auth-input" type="password" placeholder="Senha" autocomplete="current-password" required>
-                        <button id="toggleSenhaIcon" class="auth-password-toggle" type="button" aria-label="Mostrar senha" aria-pressed="false"><i class="fi fi-br-eye" aria-hidden="true"></i></button>
+                        <label class="sr-only" for="senha">
+                            Senha
+                        </label>
+
+                        <input id="senha" class="auth-input" name="password" type="password" placeholder="Senha"
+                            autocomplete="current-password" data-auth-secret-input data-secret-label="senha" required>
+
+                        <button id="toggleSenhaIcon" class="auth-password-toggle" type="button" data-auth-secret-toggle
+                            aria-label="Mostrar senha" aria-pressed="false">
+                            <i class="fi fi-br-eye" aria-hidden="true"></i>
+                        </button>
                     </div>
                 </div>
-                <button class="buttoncadastro" type="submit">Entrar</button>
-                <p class="auth-switch">Não tem uma conta? <a href="cadastro-professor.html" class="auth-link auth-link--strong">Cadastre-se</a></p>
-                <a href="recuperar-senha-professor.html" class="auth-link auth-link--small">Esqueci minha senha</a>
+
+                <button class="buttoncadastro" type="submit">
+                    Entrar
+                </button>
+
+                <p class="auth-switch">
+                    Não tem uma conta?
+
+                    <a href="cadastro-professor.html" class="auth-link auth-link--strong">
+                        Cadastre-se
+                    </a>
+                </p>
+
+                <a href="recuperar-senha-professor.html" class="auth-link auth-link--small">
+                    Esqueci minha senha
+                </a>
+                <a href="/index.html" class="auth-link auth-link--small">
+                    voltar página inicial
+                </a>
             </form>
         </section>
     </main>
+
     <script src="../../public/js/roar-page-transition.js"></script>
-    <script src="../../public/js/pages/auth/auth-interactions.js?v=2"></script>
+
+    <script src="../../public/js/pages/auth/auth-interactions.js?v=3"></script>
+
     <script type="module" src="../../public/js/pages/auth/login-professor.js"></script>
 </body>
+
 </html>

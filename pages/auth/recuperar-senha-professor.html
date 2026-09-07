@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,32 +8,77 @@
     <meta name="description" content="Recupere o acesso do professor à plataforma ROAR.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
     <link rel="stylesheet" href="../../public/css/components/feedback.css">
-    <link rel="stylesheet" href="../../public/css/pages/auth.css?v=3">
-    <link rel="stylesheet" href="../../public/css/pages/pages-auth-login-professor.css?v=3">
+    <link rel="stylesheet" href="../../public/css/pages/auth.css?v=4">
+    <link rel="stylesheet" href="../../public/css/pages/pages-auth-login-professor.css?v=4">
 </head>
+
 <body class="auth-page auth-page--teacher-login auth-page--teacher-recovery">
     <main class="auth-card">
-        <section class="auth-visual" aria-labelledby="recovery-greeting">
+        <section class="auth-visual" aria-labelledby="recoveryGreeting">
             <img src="../../public/assets/imagens/logo.svg" alt="ROAR" class="auth-logo">
             <div class="auth-copy">
-                <h1 id="recovery-greeting" class="auth-greeting">Recupere sua senha</h1>
-                <p><strong class="auth-highlight auth-highlight--green">Estamos aqui para ajudar.</strong><br>Informe seu e-mail para receber<br>as instruções de acesso.</p>
+                <h1 id="recoveryGreeting" class="auth-greeting">Recupere sua senha</h1>
+                <p><strong class="auth-highlight auth-highlight--green">Estamos aqui para ajudar.</strong><br>Confirme
+                    seu e-mail e crie<br>uma nova senha com segurança.</p>
             </div>
-            <div class="auth-mascot-stage" aria-hidden="true"><img src="../../public/assets/imagens/dino2.png" alt="" class="auth-dino"></div>
+            <div class="auth-mascot-stage" aria-hidden="true">
+                <img src="../../public/assets/imagens/dino2.png" alt="" class="auth-dino">
+            </div>
         </section>
+
         <section class="auth-form-panel">
-            <form id="teacher-recovery-form" class="auth-form">
-                <header class="auth-form-header"><h2>Esqueci minha senha</h2><p class="auth-form-label">Recuperação de acesso</p></header>
-                <div class="auth-fields"><label class="sr-only" for="emailInput">E-mail</label><input id="emailInput" class="auth-input" type="email" placeholder="E-mail do professor" autocomplete="email" required></div>
-                <button class="buttoncadastro" type="submit">Enviar instruções</button>
+            <div class="auth-form" id="recoveryFlow">
+                <header class="auth-form-header">
+                    <h2 id="stepTitle">Esqueci minha senha</h2>
+                    <p class="auth-form-label" id="stepDescription">Informe o e-mail da conta do professor.</p>
+                </header>
+
+                <form id="emailStep" novalidate>
+                    <div class="auth-fields">
+                        <label class="sr-only" for="emailInput">E-mail</label>
+                        <input id="emailInput" class="auth-input" type="email" placeholder="E-mail do professor"
+                            autocomplete="email" required>
+                    </div>
+                    <button class="buttoncadastro" id="sendCodeButton" type="submit">Enviar código</button>
+                </form>
+
+                <form id="codeStep" hidden novalidate>
+                    <div class="auth-fields">
+                        <label class="sr-only" for="codeInput">Código de recuperação</label>
+                        <input id="codeInput" class="auth-input" type="text" inputmode="numeric"
+                            autocomplete="one-time-code" maxlength="6" placeholder="Código de 6 números" required>
+                    </div>
+                    <button class="buttoncadastro" id="validateCodeButton" type="submit">Validar código</button>
+                    <button class="auth-link auth-link--small" id="resendCodeButton" type="button" disabled>Reenviar em
+                        60s</button>
+                    <button class="auth-link auth-link--small" id="changeEmailButton" type="button">Usar outro
+                        e-mail</button>
+                </form>
+
+                <form id="passwordStep" hidden novalidate>
+                    <div class="auth-fields">
+                        <label class="sr-only" for="passwordInput">Nova senha</label>
+                        <input id="passwordInput" class="auth-input" type="password" autocomplete="new-password"
+                            placeholder="Nova senha" required>
+                        <label class="sr-only" for="confirmationInput">Confirmar nova senha</label>
+                        <input id="confirmationInput" class="auth-input" type="password" autocomplete="new-password"
+                            placeholder="Confirme a nova senha" required>
+                    </div>
+                    <p class="auth-form-label">Use 8 caracteres, incluindo maiúscula, minúscula e número.</p>
+                    <button class="buttoncadastro" id="resetPasswordButton" type="submit">Redefinir senha</button>
+                </form>
+
                 <a href="login-professor.html" class="auth-link auth-link--small">Voltar para o login</a>
-            </form>
+            </div>
         </section>
     </main>
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
     <script src="../../public/js/roar-page-transition.js"></script>
     <script type="module" src="../../public/js/pages/auth/recuperar-senha-professor.js"></script>
 </body>
+
 </html>

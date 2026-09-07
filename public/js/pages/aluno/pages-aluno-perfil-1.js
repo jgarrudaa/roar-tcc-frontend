@@ -1,58 +1,238 @@
-/* Comportamento extraído de perfil.html. */
+import { showToast } from "../../components/toast.js";
+import { perfilAlunoService } from "../../services/perfil-aluno-service.js";
+import { sessionService } from "../../services/session-service.js";
 
-// Conquistas mini
-const conquistas = [
-    { name: 'Primeira Aula', icon: 'fi fi-br-star',  color: '#ffd700', bg: 'rgba(255,215,0,0.2)'  },
-    { name: '7 Dias',        icon: 'fi fi-br-flame',  color: '#f97316', bg: 'rgba(249,115,22,0.2)' },
-    { name: '100% Acertos',  icon: 'fi fi-br-check',  color: '#22c55e', bg: 'rgba(34,197,94,0.2)'  },
-    { name: '10 Atividades', icon: 'fi fi-br-trophy', color: '#a855f7', bg: 'rgba(168,85,247,0.2)' },
-];
 
-const row = document.getElementById('conquRow');
-conquistas.forEach(c => {
-    const div = document.createElement('div');
-    div.className = 'conq-mini';
-    div.innerHTML = `
-        <div class="conq-mini__icon" style="background:${c.bg}">
-            <i class="${c.icon}" style="color:${c.color}"></i>
-        </div>
-        <div class="conq-mini__name">${c.name}</div>
-    `;
-    row.appendChild(div);
-});
+const elements = {
+    navbarAvatar:
+        document.getElementById("navbarAvatar"),
 
-// Modal editar
-const editBtn   = document.getElementById('btnEditProfile');
-const editModal = document.getElementById('editModal');
-const closeBtn  = document.getElementById('closeEditModal');
-const saveBtn   = document.getElementById('saveProfile');
+    profileAvatar:
+        document.getElementById("profileAvatar"),
 
-editBtn.addEventListener('click',  () => editModal.classList.add('open'));
-closeBtn.addEventListener('click', () => editModal.classList.remove('open'));
-editModal.addEventListener('click', e => { if(e.target===editModal) editModal.classList.remove('open'); });
-saveBtn.addEventListener('click', () => {
-    editModal.classList.remove('open');
-    showToast('Perfil salvo com sucesso!', 'success');
-});
+    studentName:
+        document.getElementById("studentName"),
 
-// Sidebar
-const sidebar  = document.getElementById('sidebar');
-const toggle   = document.getElementById('sidebarToggle');
-const backdrop = document.getElementById('sidebarBackdrop');
-const mobileBtn= document.getElementById('mobileMenuBtn');
-toggle.addEventListener('click', () => sidebar.classList.toggle('sidebar--collapsed'));
-mobileBtn.addEventListener('click', () => { sidebar.classList.add('open'); backdrop.classList.add('open'); });
-backdrop.addEventListener('click', () => { sidebar.classList.remove('open'); backdrop.classList.remove('open'); });
+    studentSchoolYear:
+        document.getElementById("studentSchoolYear"),
 
-function showToast(msg, type = '') {
-    const c = document.getElementById('toast-container');
-    const t = document.createElement('div');
-    t.className = `toast ${type ? 'toast--'+type : ''}`;
-    t.innerHTML = `<i class="fi fi-br-check"></i> ${msg}`;
-    c.appendChild(t);
-    setTimeout(() => t.remove(), 3000);
+    studentEmail:
+        document.getElementById("studentEmail"),
+
+    studentLearningMode:
+        document.getElementById("studentLearningMode"),
+
+    studentXp:
+        document.getElementById("studentXp"),
+
+    studentId:
+        document.getElementById("studentId"),
+
+    studentEmailDetail:
+        document.getElementById("studentEmailDetail"),
+
+    studentSchoolYearDetail:
+        document.getElementById(
+            "studentSchoolYearDetail",
+        ),
+
+    studentLevel:
+        document.getElementById("studentLevel"),
+
+    studentLearningModeDetail:
+        document.getElementById(
+            "studentLearningModeDetail",
+        ),
+
+    studentXpDetail:
+        document.getElementById("studentXpDetail"),
+
+    profileStatus:
+        document.getElementById("profileStatus"),
+};
+
+
+function validateElements() {
+    const missingElements =
+        Object.entries(elements)
+            .filter(([, element]) => !element)
+            .map(([name]) => name);
+
+    if (missingElements.length) {
+        throw new Error(
+            `Elementos ausentes no perfil: ${missingElements.join(", ")}.`,
+        );
+    }
 }
 
-// Adicionar classe filter-chip para usar no perfil
-document.head.insertAdjacentHTML('beforeend', `
-`);
+
+function formatNumber(value) {
+    return Number(value ?? 0)
+        .toLocaleString("pt-BR");
+}
+
+
+function setLoading() {
+    elements.studentName.textContent =
+        "Carregando perfil...";
+
+    elements.studentSchoolYear.textContent =
+        "Ano escolar: —";
+
+    elements.studentEmail.textContent =
+        "E-mail: —";
+
+    elements.studentLearningMode.textContent =
+        "Carregando...";
+
+    elements.profileStatus.textContent =
+        "Carregando suas informações...";
+}
+
+
+function renderProfile(profile) {
+    elements.navbarAvatar.textContent =
+        profile.initials;
+
+    elements.navbarAvatar.title =
+        profile.name;
+
+    elements.profileAvatar.textContent =
+        profile.initials;
+
+    elements.studentName.textContent =
+        profile.name;
+
+    elements.studentSchoolYear.textContent =
+        `Ano escolar: ${profile.schoolYear}`;
+
+    elements.studentEmail.textContent =
+        `E-mail: ${profile.email}`;
+
+    elements.studentLearningMode.textContent =
+        profile.learningMode.label;
+
+    elements.studentXp.textContent =
+        formatNumber(profile.xp);
+
+    elements.studentId.textContent =
+        String(profile.id);
+
+    elements.studentEmailDetail.textContent =
+        profile.email;
+
+    elements.studentSchoolYearDetail.textContent =
+        profile.schoolYear;
+
+    elements.studentLevel.textContent =
+        `Nível ${profile.learningMode.number}`;
+
+    elements.studentLearningModeDetail.textContent =
+        profile.learningMode.name;
+
+    elements.studentXpDetail.textContent =
+        `${formatNumber(profile.xp)} XP`;
+
+    elements.profileStatus.textContent =
+        "Suas informações estão atualizadas.";
+}
+
+
+function updateSession(profile) {
+    const currentSession =
+        sessionService.get();
+
+    if (!currentSession) {
+        return;
+    }
+
+    const currentUser =
+        currentSession.user ?? {};
+
+    sessionService.start({
+        ...currentSession,
+
+        user: {
+            ...currentUser,
+
+            id:
+                currentUser.id ??
+                profile.id,
+
+            name: profile.name,
+            nome: profile.name,
+            email: profile.email,
+
+            schoolYear:
+                profile.schoolYear,
+
+            supportLevel:
+                profile.learningMode.label,
+
+            xpTotal:
+                profile.xp,
+        },
+    });
+}
+
+
+function renderError(error) {
+    console.error(
+        "Erro ao carregar perfil do aluno:",
+        error,
+    );
+
+    elements.studentName.textContent =
+        "Perfil indisponível";
+
+    elements.studentLearningMode.textContent =
+        "Não foi possível carregar";
+
+    elements.profileStatus.textContent =
+        error?.message ??
+        "Não foi possível carregar suas informações.";
+
+    showToast(
+        error?.message ??
+        "Não foi possível carregar o perfil.",
+        "error",
+    );
+}
+
+
+async function loadProfile() {
+    setLoading();
+
+    try {
+        const profile =
+            await perfilAlunoService
+                .getCurrentStudent();
+
+        renderProfile(profile);
+        updateSession(profile);
+    } catch (error) {
+        renderError(error);
+    }
+}
+
+
+async function initialize() {
+    try {
+        validateElements();
+        await loadProfile();
+    } catch (error) {
+        console.error(
+            "Erro ao inicializar perfil:",
+            error,
+        );
+
+        showToast(
+            error?.message ??
+            "Não foi possível inicializar o perfil.",
+            "error",
+        );
+    }
+}
+
+
+initialize();

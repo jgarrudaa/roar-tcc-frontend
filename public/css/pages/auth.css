@@ -68,6 +68,7 @@ input {
     height: 100%;
 }
 
+
 .auth-logo {
     width: 200px;
     height: 80px;
@@ -241,6 +242,7 @@ input {
     font-size: 20px;
     line-height: 1;
 }
+
 .buttonlogin,
 .auth-submit {
     width: 100%;
@@ -378,6 +380,68 @@ input {
 .auth-page--teacher-register .auth-link:hover,
 .auth-page--teacher-recovery .auth-link:hover {
     color: var(--auth-green);
+}
+
+/* Fluxo de recuperação em múltiplas etapas */
+.auth-page--teacher-recovery #recoveryFlow {
+    gap: 26px;
+}
+
+.auth-page--teacher-recovery #emailStep,
+.auth-page--teacher-recovery #codeStep,
+.auth-page--teacher-recovery #passwordStep {
+    display: grid;
+    gap: 18px;
+    width: 100%;
+}
+
+.auth-page--teacher-recovery #emailStep[hidden],
+.auth-page--teacher-recovery #codeStep[hidden],
+.auth-page--teacher-recovery #passwordStep[hidden] {
+    display: none;
+}
+
+.auth-page--teacher-recovery .auth-fields {
+    gap: 14px;
+}
+
+.auth-page--teacher-recovery #codeInput {
+    text-align: center;
+    letter-spacing: .35em;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.auth-page--teacher-recovery #passwordStep>.auth-form-label {
+    width: 100%;
+    margin: -4px 0 2px;
+    padding: 0;
+    border: 0;
+    color: var(--auth-muted);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.auth-page--teacher-recovery #resendCodeButton,
+.auth-page--teacher-recovery #changeEmailButton {
+    width: 100%;
+    min-height: 34px;
+    margin: 0;
+    padding: 4px 8px;
+    border: 0;
+    background: transparent;
+    text-align: center;
+    cursor: pointer;
+}
+
+.auth-page--teacher-recovery #resendCodeButton:disabled {
+    color: var(--auth-muted);
+    cursor: not-allowed;
+    opacity: .75;
+}
+
+.auth-page--teacher-recovery #recoveryFlow>.auth-link {
+    margin-top: 2px;
 }
 
 

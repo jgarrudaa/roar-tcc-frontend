@@ -1,39 +1,57 @@
 import { modulosApi } from "../api/modulos-api.js";
-import { APP_CONFIG } from "../config/app-config.js";
-import { storage } from "../utils/storage.js";
 
-async function readMockModules() {
-    const response = await fetch("/public/mocks/modulos.json");
-    if (!response.ok) throw new Error("Não foi possível carregar os módulos.");
-    const payload = await response.json();
-    const savedProgress = storage.getMockProgress();
-    return payload.modules.map((module) => ({
-        ...module,
-        completedStages: savedProgress[module.id]?.completedStages ?? [],
-    }));
-}
+const MODULE_PRESENTATION = Object.freeze({
+    "corpo humano": { icon: "fi fi-br-portrait", color: "a" },
+    cores: { icon: "fi fi-br-palette", color: "b" },
+    animais: { icon: "fi fi-br-paw", color: "a" },
+    emoções: { icon: "fi fi-br-grin-alt", color: "b" },
+    emocoes: { icon: "fi fi-br-grin-alt", color: "b" },
+    comida: { icon: "fi fi-br-hamburger", color: "b" },
+    família: { icon: "fi fi-br-users", color: "a" },
+    familia: { icon: "fi fi-br-users", color: "a" },
+    casa: { icon: "fi fi-br-house-chimney", color: "a" },
+    escola: { icon: "fi fi-br-backpack", color: "b" },
+});
 
-function withJourney(module) {
-    const completedStages = [...new Set(module.completedStages ?? [])];
-    const totalStages = module.activities?.length || 3;
-    return {
-        ...module,
-        completedStages,
-        progress: Math.round((completedStages.length / totalStages) * 100),
-        nextStage: Math.min(totalStages, completedStages.length + 1),
-    };
+const DEFAULT_PRESENTATION = Object.freeze({ icon: "fi fi-br-puzzle-pieces", color: "a" });
+
+function normalizeModule(module) {
+    const id = Number(module?.id);
+    const title = String(module?.nome ?? "").trim();
+    if (!Number.isInteger(id) || id <= 0 || !title) return null;
+
+    const presentation = MODULE_PRESENTATION[title.toLocaleLowerCase("pt-BR")] ?? DEFAULT_PRESENTATION;
+    return Object.freeze({
+        id,
+        title,
+        active: module.ativo !== false,
+        icon: presentation.icon,
+        color: presentation.color,
+        totalActivities: Math.max(0, Number(module.total_atividades) || 0),
+        completedActivities: Math.max(0, Number(module.atividades_concluidas) || 0),
+        progress: Math.min(100, Math.max(0, Number(module.progresso_pct) || 0)),
+        status: ["available", "in_progress", "completed", "preparation"].includes(module.status)
+            ? module.status
+            : "preparation",
+        nextStage: Number.isInteger(Number(module.proxima_etapa))
+            ? Number(module.proxima_etapa)
+            : null,
+    });
 }
 
 export const moduloService = Object.freeze({
     async listJourney() {
-        const modules = APP_CONFIG.useMocks ? await readMockModules() : await modulosApi.getProgress();
-        const displayOrder = ["corpo-humano", "cores", "animais-fazenda", "emocoes", "comida", "familia", "casa", "escola"];
-        const position = (module) => {
-            const index = displayOrder.indexOf(module.id);
-            return index === -1 ? displayOrder.length : index;
-        };
-        return modules
-            .map(withJourney)
-            .sort((first, second) => position(first) - position(second));
+        const payload = await modulosApi.list();
+        if (!Array.isArray(payload)) {
+            throw new Error("A API retornou uma lista de módulos inválida.");
+        }
+        return payload.map(normalizeModule).filter(Boolean).filter((module) => module.active);
+    },
+    async getActivities(moduleId, studentId) {
+        const payload = await modulosApi.getActivities(moduleId, studentId);
+        if (!payload || !Array.isArray(payload.atividades)) {
+            throw new Error("A API retornou um módulo de atividades inválido.");
+        }
+        return payload.atividades;
     },
 });

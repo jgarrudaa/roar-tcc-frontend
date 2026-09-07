@@ -1,615 +1,1134 @@
-/* Comportamento extraído de atividades.html. */
+import { moduloService } from "../../services/modulo-service.js";
+import { relatoriosService } from "../../services/relatorios-service.js";
+import { sessionService } from "../../services/session-service.js";
+import { showToast } from "../../components/toast.js";
 
-// ================================================================
-// DADOS DOS ALUNOS (mesmos de alunos.html)
-// ================================================================
-const AVATAR_COLORS = [
-    '#244D8C','#1a7c49','#7c3aed','#b07000',
-    '#1F6CE3','#0e7490','#be185d','#c2410c',
-];
-const NIVEL_LABELS = {
-    1: 'N\u00edvel 1 \u2014 Suporte Visual Puro',
-    2: 'N\u00edvel 2 \u2014 Aprendiz Guiado',
-    3: 'N\u00edvel 3 \u2014 Autonomia Contextual',
+const MODULE_STYLES = Object.freeze([
+    {
+        icon: "fi fi-br-portrait",
+        color: "blue",
+    },
+    {
+        icon: "fi fi-br-paw",
+        color: "green",
+    },
+    {
+        icon: "fi fi-br-palette",
+        color: "purple",
+    },
+    {
+        icon: "fi fi-br-book-open-cover",
+        color: "orange",
+    },
+]);
+
+const elements = {
+    statistics: document.getElementById("statsBar"),
+    search: document.getElementById("searchInput"),
+    order: document.getElementById("sortSel"),
+    filters: document.getElementById("filterBar"),
+    container: document.getElementById(
+        "atividadesContainer",
+    ),
+    modal: document.getElementById("modalAtiv"),
+    modalName: document.getElementById("mActNome"),
+    modalMeta: document.getElementById("mActMeta"),
+    modalStatistics: document.getElementById(
+        "mActStats",
+    ),
+    moduleDetails: document.getElementById(
+        "moduleDetails",
+    ),
+    activityList: document.getElementById(
+        "mModuleActivities",
+    ),
+    moduleManagement: document.getElementById(
+        "moduleManagement",
+    ),
+    closeButton: document.querySelector(
+        "#modalAtiv .modal-close",
+    ),
+    notificationButton: document.getElementById(
+        "btnNotif",
+    ),
+    profileAvatar: document.querySelector(
+        ".navbar__avatar",
+    ),
 };
-const XP_PER_ACTIVITY = 50;
-const MODULE_XP = 150;
-const MODULE_ACTIVITY_TYPES = ["Reconhecer", "Associar", "Validar"];
 
-const studentsData = [
-    { id:1, name:'Leandro Matos',   turma:'A', nivel:1, xp:1240, avatarColor:AVATAR_COLORS[0] },
-    { id:2, name:'Ana Clara Souza', turma:'A', nivel:3, xp:1850, avatarColor:AVATAR_COLORS[1] },
-    { id:3, name:'Bruno Ferreira',  turma:'A', nivel:2, xp:1620, avatarColor:AVATAR_COLORS[2] },
-    { id:4, name:'Mariana Lima',    turma:'A', nivel:2, xp:980,  avatarColor:AVATAR_COLORS[3] },
-    { id:5, name:'Gabriel Santos',  turma:'B', nivel:1, xp:760,  avatarColor:AVATAR_COLORS[4] },
-    { id:6, name:'Isabela Costa',   turma:'B', nivel:3, xp:2100, avatarColor:AVATAR_COLORS[5] },
-    { id:7, name:'Rafael Mendes',   turma:'B', nivel:2, xp:1380, avatarColor:AVATAR_COLORS[6] },
-    { id:8, name:'Valentina Rocha', turma:'A', nivel:1, xp:540,  avatarColor:AVATAR_COLORS[7] },
-];
+const state = {
+    dashboard: null,
+    modules: [],
+    visibleModules: [],
+    activeFilter: "all",
+};
 
-// ================================================================
-// DADOS DAS ATIVIDADES (completas do site)
-// ================================================================
-const allCategories = [
-    {
-        id:'corpo', name:'Corpo Humano', icon:'fi fi-br-portrait', iconCls:'blue',
-        atividades: [
-            {
-                id:'a1', name:'Partes do Corpo \u2014 Arraste', tipo:'Arrastar e Soltar',
-                dif:'facil', xp:50, link:'../aluno/atividade.html?modulo=corpo-humano&etapa=2',
-                icon:'fi fi-br-hand-holding-magic',
-                stats:{ mediaAcertos:72, mediaErros:28, mediaXP:840, completaram:6 },
-                alunosPerf:[
-                    {id:1, acertos:8, erros:2, xp:50,  prog:100},
-                    {id:2, acertos:10,erros:0, xp:50,  prog:100},
-                    {id:3, acertos:7, erros:3, xp:40,  prog:100},
-                    {id:4, acertos:9, erros:1, xp:50,  prog:100},
-                    {id:5, acertos:4, erros:6, xp:20,  prog:100},
-                    {id:6, acertos:10,erros:0, xp:50,  prog:100},
-                    {id:7, acertos:6, erros:4, xp:35,  prog:100},
-                    {id:8, acertos:3, erros:7, xp:15,  prog:100},
-                ]
-            },
-            {
-                id:'a2', name:'Identificar Membros', tipo:'Associa\u00e7\u00e3o',
-                dif:'medio', xp:70, link:'../aluno/atividade.html?modulo=corpo-humano&etapa=3',
-                icon:'fi fi-br-link',
-                stats:{ mediaAcertos:65, mediaErros:35, mediaXP:920, completaram:5 },
-                alunosPerf:[
-                    {id:1, acertos:6, erros:4, xp:45,  prog:100},
-                    {id:2, acertos:9, erros:1, xp:65,  prog:100},
-                    {id:3, acertos:5, erros:5, xp:35,  prog:100},
-                    {id:4, acertos:8, erros:2, xp:60,  prog:100},
-                    {id:5, acertos:0, erros:0, xp:0,   prog:0},
-                    {id:6, acertos:9, erros:1, xp:68,  prog:100},
-                    {id:7, acertos:5, erros:5, xp:38,  prog:75},
-                    {id:8, acertos:0, erros:0, xp:0,   prog:0},
-                ]
-            },
-        ]
-    },
-    {
-        id:'vocabulario', name:'Cores', icon:'fi fi-br-palette', iconCls:'green',
-        atividades: [
-            {
-                id:'b1', name:'Aprender as Cores', tipo:'Associa\u00e7\u00e3o',
-                dif:'facil', xp:40, link:'../aluno/atividade.html?modulo=corpo-humano&etapa=3',
-                icon:'fi fi-br-palette',
-                stats:{ mediaAcertos:80, mediaErros:20, mediaXP:720, completaram:7 },
-                alunosPerf:[
-                    {id:1, acertos:6, erros:4, xp:40,  prog:100},
-                    {id:2, acertos:9, erros:1, xp:40,  prog:100},
-                    {id:3, acertos:4, erros:6, xp:22,  prog:100},
-                    {id:4, acertos:7, erros:3, xp:38,  prog:100},
-                    {id:5, acertos:5, erros:5, xp:25,  prog:100},
-                    {id:6, acertos:10,erros:0, xp:40,  prog:100},
-                    {id:7, acertos:7, erros:3, xp:36,  prog:100},
-                    {id:8, acertos:2, erros:5, xp:10,  prog:60},
-                ]
-            },
-            {
-                id:'b2', name:'Misturar Cores', tipo:'M\u00faltipla Escolha',
-                dif:'medio', xp:60, link:'../aluno/atividade.html?modulo=corpo-humano&etapa=1',
-                icon:'fi fi-br-brush',
-                stats:{ mediaAcertos:55, mediaErros:45, mediaXP:580, completaram:4 },
-                alunosPerf:[
-                    {id:1, acertos:5, erros:5, xp:30,  prog:100},
-                    {id:2, acertos:8, erros:2, xp:55,  prog:100},
-                    {id:3, acertos:3, erros:7, xp:18,  prog:60},
-                    {id:4, acertos:6, erros:4, xp:42,  prog:100},
-                    {id:5, acertos:0, erros:0, xp:0,   prog:0},
-                    {id:6, acertos:9, erros:1, xp:58,  prog:100},
-                    {id:7, acertos:4, erros:6, xp:24,  prog:40},
-                    {id:8, acertos:0, erros:0, xp:0,   prog:0},
-                ]
-            },
-        ]
-    },
-    {
-        id:'animais', name:'Animais da Fazenda', icon:'fi fi-br-paw', iconCls:'orange',
-        atividades: [
-            {
-                id:'c1', name:'Sons dos Animais', tipo:'Ouvir e Identificar',
-                dif:'facil', xp:45, link:'../aluno/atividade.html?modulo=corpo-humano&etapa=1',
-                icon:'fi fi-br-music-alt',
-                stats:{ mediaAcertos:68, mediaErros:32, mediaXP:610, completaram:5 },
-                alunosPerf:[
-                    {id:1, acertos:7, erros:3, xp:40,  prog:100},
-                    {id:2, acertos:10,erros:0, xp:45,  prog:100},
-                    {id:3, acertos:2, erros:8, xp:10,  prog:50},
-                    {id:4, acertos:8, erros:2, xp:43,  prog:100},
-                    {id:5, acertos:0, erros:0, xp:0,   prog:0},
-                    {id:6, acertos:9, erros:1, xp:44,  prog:100},
-                    {id:7, acertos:5, erros:5, xp:28,  prog:100},
-                    {id:8, acertos:0, erros:0, xp:0,   prog:0},
-                ]
-            },
-            {
-                id:'c2', name:'Nomes dos Animais', tipo:'Arrastar e Soltar',
-                dif:'medio', xp:65, link:'../aluno/atividade.html?modulo=corpo-humano&etapa=2',
-                icon:'fi fi-br-dog',
-                stats:{ mediaAcertos:58, mediaErros:42, mediaXP:740, completaram:4 },
-                alunosPerf:[
-                    {id:1, acertos:6, erros:4, xp:40,  prog:100},
-                    {id:2, acertos:9, erros:1, xp:62,  prog:100},
-                    {id:3, acertos:0, erros:0, xp:0,   prog:0},
-                    {id:4, acertos:7, erros:3, xp:50,  prog:100},
-                    {id:5, acertos:0, erros:0, xp:0,   prog:0},
-                    {id:6, acertos:10,erros:0, xp:65,  prog:100},
-                    {id:7, acertos:4, erros:6, xp:28,  prog:50},
-                    {id:8, acertos:0, erros:0, xp:0,   prog:0},
-                ]
-            },
-        ]
-    },
-    {
-        id:'emocoes', name:'Emo\u00e7\u00f5es', icon:'fi fi-br-grin-alt', iconCls:'purple',
-        atividades: [
-            {
-                id:'d1', name:'Express\u00f5es Faciais', tipo:'Identificar Imagens',
-                dif:'facil', xp:40, link:'../aluno/atividade.html?modulo=corpo-humano&etapa=3',
-                icon:'fi fi-br-face-smile',
-                stats:{ mediaAcertos:63, mediaErros:37, mediaXP:560, completaram:6 },
-                alunosPerf:[
-                    {id:1, acertos:5, erros:3, xp:35,  prog:100},
-                    {id:2, acertos:8, erros:2, xp:40,  prog:100},
-                    {id:3, acertos:5, erros:5, xp:22,  prog:100},
-                    {id:4, acertos:6, erros:2, xp:38,  prog:100},
-                    {id:5, acertos:2, erros:8, xp:10,  prog:60},
-                    {id:6, acertos:9, erros:1, xp:40,  prog:100},
-                    {id:7, acertos:4, erros:6, xp:20,  prog:100},
-                    {id:8, acertos:0, erros:0, xp:0,   prog:0},
-                ]
-            },
-            {
-                id:'d2', name:'Como me sinto?', tipo:'M\u00faltipla Escolha',
-                dif:'facil', xp:35, link:'../aluno/atividade.html?modulo=corpo-humano&etapa=1',
-                icon:'fi fi-br-comment-heart',
-                stats:{ mediaAcertos:55, mediaErros:45, mediaXP:420, completaram:4 },
-                alunosPerf:[
-                    {id:1, acertos:4, erros:4, xp:25,  prog:100},
-                    {id:2, acertos:7, erros:1, xp:35,  prog:100},
-                    {id:3, acertos:4, erros:6, xp:18,  prog:50},
-                    {id:4, acertos:5, erros:3, xp:28,  prog:100},
-                    {id:5, acertos:0, erros:0, xp:0,   prog:0},
-                    {id:6, acertos:8, erros:0, xp:35,  prog:100},
-                    {id:7, acertos:3, erros:5, xp:15,  prog:30},
-                    {id:8, acertos:0, erros:0, xp:0,   prog:0},
-                ]
-            },
-        ]
-    },
-    {
-        id:'vocabulario', name:'Frutas e Comida', icon:'fi fi-br-hamburger', iconCls:'green',
-        atividades: [
-            {
-                id:'e1', name:'Frutas e Vegetais', tipo:'Associa\u00e7\u00e3o',
-                dif:'facil', xp:40, link:'../aluno/atividade.html?modulo=corpo-humano&etapa=3',
-                icon:'fi fi-br-apple-whole',
-                stats:{ mediaAcertos:48, mediaErros:52, mediaXP:310, completaram:3 },
-                alunosPerf:[
-                    {id:1, acertos:0, erros:0, xp:0,  prog:0},
-                    {id:2, acertos:8, erros:2, xp:40, prog:100},
-                    {id:3, acertos:0, erros:0, xp:0,  prog:0},
-                    {id:4, acertos:0, erros:0, xp:0,  prog:0},
-                    {id:5, acertos:0, erros:0, xp:0,  prog:0},
-                    {id:6, acertos:9, erros:1, xp:40, prog:100},
-                    {id:7, acertos:0, erros:0, xp:0,  prog:0},
-                    {id:8, acertos:0, erros:0, xp:0,  prog:0},
-                ]
-            },
-        ]
-    },
-    {
-        id:'vocabulario', name:'Fam\u00edlia', icon:'fi fi-br-users', iconCls:'blue',
-        atividades: [
-            {
-                id:'f1', name:'Membros da Fam\u00edlia', tipo:'M\u00faltipla Escolha',
-                dif:'facil', xp:40, link:'../aluno/atividade.html?modulo=corpo-humano&etapa=1',
-                icon:'fi fi-br-home-heart',
-                stats:{ mediaAcertos:60, mediaErros:40, mediaXP:480, completaram:4 },
-                alunosPerf:[
-                    {id:1, acertos:5, erros:5, xp:28,  prog:100},
-                    {id:2, acertos:9, erros:1, xp:40,  prog:100},
-                    {id:3, acertos:4, erros:6, xp:20,  prog:40},
-                    {id:4, acertos:7, erros:3, xp:35,  prog:100},
-                    {id:5, acertos:0, erros:0, xp:0,   prog:0},
-                    {id:6, acertos:8, erros:2, xp:38,  prog:100},
-                    {id:7, acertos:0, erros:0, xp:0,   prog:0},
-                    {id:8, acertos:0, erros:0, xp:0,   prog:0},
-                ]
-            },
-        ]
-    },
-];
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
 
-allCategories.forEach((category) => {
-    const sourceActivities = category.atividades;
-    category.atividades = MODULE_ACTIVITY_TYPES.map((name, index) => {
-        const source = sourceActivities[index] || sourceActivities[sourceActivities.length - 1];
-        return {
-            ...source,
-            id: `${category.id}-${category.name}-${index + 1}`,
-            name,
-            tipo: name,
-            xp: XP_PER_ACTIVITY,
-        };
-    });
-});
+function formatInteger(value) {
+    return Math.max(
+        0,
+        Number(value) || 0,
+    ).toLocaleString("pt-BR");
+}
 
-// Estado de desbloqueios por módulo: { moduleId: Set(alunoIds) }
-const moduleUnlocks = {};
-allCategories.forEach((category) => {
-    moduleUnlocks[`${category.id}-${category.name}`] = new Set(studentsData.map((student) => student.id));
-});
-
-// ================================================================
-// ESTADO GLOBAL
-// ================================================================
-let activeFilter = 'all';
-let searchTerm   = '';
-let currentModuleId = null;
-let currentTab   = 'A';
-
-// ================================================================
-// RENDER: STATS BAR
-// ================================================================
-function renderStatsBar() {
-    const totalActs   = allCategories.reduce((s,c)=>s+c.atividades.length,0);
-    const totalAlunos = studentsData.length;
-    const mediaXP     = Math.round(studentsData.reduce((s,a)=>s+a.xp,0)/totalAlunos);
-    const mediaAcertos= Math.round(allCategories.reduce((s,c)=>s+c.atividades.reduce((ss,a)=>ss+a.stats.mediaAcertos,0),0)
-                        / totalActs);
-    const stats = [
-        {icon:'fi fi-br-puzzle-pieces', bg:'rgba(133,199,242,0.30)', color:'var(--c-blue-dark)', label:'Total Atividades', val:totalActs},
-        {icon:'fi fi-br-users',         bg:'rgba(68,246,152,0.25)',  color:'#1a7c49',            label:'Total Alunos',    val:totalAlunos},
-        {icon:'fi fi-br-check-circle',  bg:'rgba(245,158,11,0.20)', color:'#b07000',            label:'M\u00e9dia Acertos', val:mediaAcertos+'%'},
-        {icon:'fi fi-br-trophy',        bg:'rgba(168,85,247,0.15)', color:'#7c3aed',            label:'M\u00e9dia XP',   val:mediaXP.toLocaleString('pt-BR')},
-    ];
-    const c = document.getElementById('statsBar');
-    stats.forEach(s=>{
-        c.innerHTML += `<div class="stat-card">
-            <div class="stat-card__icon" style="background:${s.bg};color:${s.color}"><i class="${s.icon}"></i></div>
-            <div><div class="stat-card__label">${s.label}</div><div class="stat-card__value">${s.val}</div></div>
-        </div>`;
+function formatDecimal(value) {
+    return Math.max(
+        0,
+        Number(value) || 0,
+    ).toLocaleString("pt-BR", {
+        maximumFractionDigits: 1,
     });
 }
 
-function moduleKey(category) {
-    return `${category.id}-${category.name}`;
+function getModuleStyle(moduleId) {
+    const index =
+        Math.abs(Number(moduleId) - 1) %
+        MODULE_STYLES.length;
+
+    return MODULE_STYLES[index];
 }
 
-function getModuleStats(category) {
-    const activities = category.atividades;
-    const averageAccuracy = Math.round(activities.reduce((sum, activity) => sum + activity.stats.mediaAcertos, 0) / activities.length);
-    const completedStudents = studentsData.filter((student) => activities.every((activity) => {
-        const performance = activity.alunosPerf.find((item) => item.id === student.id);
-        return performance?.prog === 100;
-    })).length;
-    return {
-        averageAccuracy,
-        completedStudents,
-        totalXp: completedStudents * activities.length * XP_PER_ACTIVITY,
-    };
-}
-
-function renderAll() {
-    const container = document.getElementById('atividadesContainer');
-    container.innerHTML = '';
-    const q = searchTerm.toLowerCase();
-
-    let anyFound = false;
-    let modules = allCategories.filter((category) => {
-        const matchFilter = activeFilter === 'all' || category.id === activeFilter;
-        const matchSearch = !q || category.name.toLowerCase().includes(q) || category.atividades.some((activity) => (
-            activity.name.toLowerCase().includes(q) || activity.tipo.toLowerCase().includes(q)
-        ));
-        return matchFilter && matchSearch;
-    });
-
-    const order = document.getElementById('sortSel').value;
-    if (order === 'nome') modules = modules.slice().sort((a, b) => a.name.localeCompare(b.name, 'pt'));
-    if (order === 'acertos') modules = modules.slice().sort((a, b) => getModuleStats(b).averageAccuracy - getModuleStats(a).averageAccuracy);
-
-    modules.forEach(cat => {
-        anyFound = true;
-
-        const section = document.createElement('section');
-        section.className = 'cat-section';
-        section.innerHTML = `
-            <div class="cat-header">
-                <h2>${cat.name}</h2>
-                <span class="badge badge--blue">${cat.atividades.length} atividade${cat.atividades.length>1?'s':''}</span>
-            </div>
-            <div class="cat-grid">
-                ${renderModuleCard(cat)}
-            </div>
-        `;
-        container.appendChild(section);
-    });
-
-    if(!anyFound) {
-        container.innerHTML = `<div class="u-pages-professor-atividades-016">
-            <i class="fi fi-br-search u-pages-professor-atividades-017"></i>
-            Nenhuma atividade encontrada.
-        </div>`;
+function getProgressClass(percentage) {
+    if (percentage >= 70) {
+        return "progress-bar--green";
     }
 
-    // Botões de detalhe
-    document.querySelectorAll('.btn-ver-detalhes').forEach((button) => {
-        button.addEventListener('click', () => abrirModal(button.dataset.moduleid, 'details'));
-    });
-    document.querySelectorAll('.btn-gerenciar-modulo').forEach((button) => {
-        button.addEventListener('click', () => abrirModal(button.dataset.moduleid, 'manage'));
+    if (percentage >= 40) {
+        return "progress-bar--blue";
+    }
+
+    return "progress-bar--red";
+}
+
+function createEmptyModuleReport(moduleId) {
+    return Object.freeze({
+        moduleId,
+        totalActivities: 0,
+        participants: 0,
+        completedStudents: 0,
+        totalAttempts: 0,
+        totalCompletions: 0,
+        totalErrors: 0,
+        accuracy: 0,
+        activities: [],
     });
 }
 
-function renderModuleCard(category) {
-    const key = moduleKey(category);
-    const unlocked = moduleUnlocks[key].size;
-    const total    = studentsData.length;
-    const stats = getModuleStats(category);
-    const pctAc = stats.averageAccuracy;
-    const barCls   = pctAc>=70?'progress-bar--green':pctAc>=40?'progress-bar--blue':'progress-bar--red';
+function setProfileAvatar() {
+    const session = sessionService.get();
+
+    const name = String(
+        session?.user?.name ?? "Professor",
+    ).trim();
+
+    elements.profileAvatar.textContent =
+        name
+            .charAt(0)
+            .toLocaleUpperCase("pt-BR") ||
+        "P";
+}
+
+function renderLoading() {
+    elements.statistics.innerHTML = Array
+        .from(
+            { length: 4 },
+            () => `
+                <div
+                    class="stat-card"
+                    aria-hidden="true"
+                >
+                    <div class="stat-card__icon">
+                        <i class="fi fi-br-spinner"></i>
+                    </div>
+
+                    <div>
+                        <div class="stat-card__label">
+                            Carregando
+                        </div>
+
+                        <div class="stat-card__value">
+                            —
+                        </div>
+                    </div>
+                </div>
+            `,
+        )
+        .join("");
+
+    elements.container.innerHTML = `
+        <div
+            class="u-pages-professor-atividades-016"
+            role="status"
+        >
+            <i
+                class="
+                    fi
+                    fi-br-spinner
+                    u-pages-professor-atividades-017
+                "
+            ></i>
+
+            Carregando módulos...
+        </div>
+    `;
+}
+
+function renderStatistics() {
+    const totalActivities = state.modules.reduce(
+        (total, module) =>
+            total +
+            module.report.totalActivities,
+        0,
+    );
+
+    const totalCompletions = state.modules.reduce(
+        (total, module) =>
+            total +
+            module.report.totalCompletions,
+        0,
+    );
+
+    const totalErrors = state.modules.reduce(
+        (total, module) =>
+            total +
+            module.report.totalErrors,
+        0,
+    );
+
+    const interactions =
+        totalCompletions + totalErrors;
+
+    const accuracy = interactions
+        ? Math.round(
+            (
+                totalCompletions /
+                interactions
+            ) * 100,
+        )
+        : 0;
+
+    const students = state.dashboard.students;
+
+    const averageXp = students.length
+        ? Math.round(
+            students.reduce(
+                (total, student) =>
+                    total + student.xp,
+                0,
+            ) / students.length,
+        )
+        : 0;
+
+    const statistics = [
+        {
+            icon: "fi fi-br-puzzle-pieces",
+            background:
+                "rgba(133, 199, 242, 0.30)",
+            color: "var(--c-blue-dark)",
+            label: "Total de atividades",
+            value: totalActivities,
+        },
+        {
+            icon: "fi fi-br-users",
+            background:
+                "rgba(68, 246, 152, 0.25)",
+            color: "#1a7c49",
+            label: "Total de alunos",
+            value:
+                state.dashboard.totalStudents,
+        },
+        {
+            icon: "fi fi-br-check-circle",
+            background:
+                "rgba(245, 158, 11, 0.20)",
+            color: "#b07000",
+            label: "Aproveitamento",
+            value: `${accuracy}%`,
+        },
+        {
+            icon: "fi fi-br-trophy",
+            background:
+                "rgba(168, 85, 247, 0.15)",
+            color: "#7c3aed",
+            label: "Média de XP",
+            value: formatInteger(averageXp),
+        },
+    ];
+
+    elements.statistics.innerHTML =
+        statistics
+            .map(
+                (statistic) => `
+                    <div class="stat-card">
+                        <div
+                            class="stat-card__icon"
+                            style="
+                                background:
+                                    ${statistic.background};
+                                color:
+                                    ${statistic.color};
+                            "
+                        >
+                            <i
+                                class="${statistic.icon}"
+                                aria-hidden="true"
+                            ></i>
+                        </div>
+
+                        <div>
+                            <div
+                                class="stat-card__label"
+                            >
+                                ${statistic.label}
+                            </div>
+
+                            <div
+                                class="stat-card__value"
+                            >
+                                ${statistic.value}
+                            </div>
+                        </div>
+                    </div>
+                `,
+            )
+            .join("");
+}
+
+function renderFilters() {
+    elements.filters.innerHTML = [
+        `
+            <button
+                class="filter-chip active"
+                type="button"
+                data-module-id="all"
+            >
+                Todas
+            </button>
+        `,
+
+        ...state.modules.map(
+            (module) => `
+                <button
+                    class="filter-chip"
+                    type="button"
+                    data-module-id="${module.id}"
+                >
+                    ${escapeHtml(module.title)}
+                </button>
+            `,
+        ),
+    ].join("");
+
+    const filterButtons =
+        elements.filters.querySelectorAll(
+            ".filter-chip",
+        );
+
+    filterButtons.forEach((button) => {
+        button.addEventListener(
+            "click",
+            () => {
+                state.activeFilter =
+                    button.dataset.moduleId;
+
+                filterButtons.forEach(
+                    (chip) => {
+                        chip.classList.toggle(
+                            "active",
+                            chip === button,
+                        );
+                    },
+                );
+
+                applyFilters();
+            },
+        );
+    });
+}
+
+function renderModuleCard(module) {
+    const report = module.report;
+    const style = getModuleStyle(module.id);
+    const totalStudents =
+        state.dashboard.totalStudents;
+
+    const isPreparation =
+        report.totalActivities === 0;
+
+    const actions = isPreparation
+        ? `
+            <span class="badge">
+                Em preparação
+            </span>
+        `
+        : `
+            <button
+                class="btn btn--ghost btn--sm"
+                type="button"
+                data-action="details"
+                data-module-id="${module.id}"
+            >
+                Ver detalhes
+            </button>
+
+            <button
+                class="btn btn--primary btn--sm"
+                type="button"
+                data-action="manage"
+                data-module-id="${module.id}"
+            >
+                Gerenciar
+            </button>
+        `;
+
+    const activityLabel =
+        report.totalActivities === 1
+            ? "atividade"
+            : "atividades";
 
     return `
-    <div class="act-card module-card" data-module-key="${key}">
-        <div class="act-card__top">
-            <div class="act-card__info">
-                <div class="act-card__name">${category.name}</div>
-                <div class="act-card__meta-row">
-                    <span class="badge badge--blue u-pages-professor-atividades-018">${category.atividades.length} atividade${category.atividades.length > 1 ? 's' : ''}</span>
-                    <span class="u-pages-professor-atividades-020">
-                        ${MODULE_XP} XP por módulo
-                    </span>
+        <section class="cat-section">
+            <div class="cat-header">
+                <div
+                    class="
+                        cat-icon
+                        cat-icon--${style.color}
+                    "
+                >
+                    <i
+                        class="${style.icon}"
+                        aria-hidden="true"
+                    ></i>
                 </div>
-                <div class="u-pages-professor-atividades-021">
-                    <div class="u-pages-professor-atividades-022">
-                        <span>M\u00e9dia de acertos da turma</span><span class="u-pages-professor-atividades-023">${pctAc}%</span>
-                    </div>
-                    <div class="progress-wrap u-pages-professor-atividades-024">
-                        <div class="progress-bar ${barCls}" style="width:${pctAc}%"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="act-card__stats">
-            <div class="act-stat">
-                <div class="act-stat__val u-pages-professor-atividades-025">${pctAc}%</div>
-                <div class="act-stat__lbl">Acertos</div>
-            </div>
-            <div class="act-stat">
-                <div class="act-stat__val u-pages-professor-atividades-026">${stats.totalXp.toLocaleString('pt-BR')}</div>
-                <div class="act-stat__lbl">XP total</div>
-            </div>
-            <div class="act-stat">
-                <div class="act-stat__val">${stats.completedStudents}/${total}</div>
-                <div class="act-stat__lbl">Completaram</div>
-            </div>
-        </div>
-        <div class="act-card__footer">
-            <span class="unlock-count">
-                ${unlocked}/${total} alunos com acesso
-            </span>
-            <div class="module-card__actions">
-                <button class="btn btn--ghost btn--sm btn-ver-detalhes" data-moduleid="${key}">Ver detalhes</button>
-                <button class="btn btn--primary btn--sm btn-gerenciar-modulo" data-moduleid="${key}">Gerenciar</button>
-            </div>
-        </div>
-    </div>`;
-}
 
-// ================================================================
-// MODAL
-// ================================================================
-function abrirModal(key, mode) {
-    currentModuleId = key;
-    currentTab   = 'A';
+                <h2>
+                    ${escapeHtml(module.title)}
+                </h2>
 
-    const category = allCategories.find((item) => moduleKey(item) === key);
-    const stats = getModuleStats(category);
-    const isDetails = mode === 'details';
-    document.getElementById('mActNome').textContent = isDetails ? `Detalhes: ${category.name}` : `Gerenciar: ${category.name}`;
-    document.getElementById('mActMeta').textContent = `Módulo completo · 3 atividades · ${MODULE_XP} XP`;
-
-    const totalAc = category.atividades.reduce((sum, activity) => sum + activity.alunosPerf.reduce((subtotal, performance) => subtotal + performance.acertos, 0), 0);
-    const totalEr = category.atividades.reduce((sum, activity) => sum + activity.alunosPerf.reduce((subtotal, performance) => subtotal + performance.erros, 0), 0);
-    document.getElementById('mActStats').innerHTML = `
-        <div class="mstat"><div class="mstat__val u-pages-professor-atividades-025">${totalAc}</div><div class="mstat__lbl">Acertos totais</div></div>
-        <div class="mstat"><div class="mstat__val u-pages-professor-atividades-029">${totalEr}</div><div class="mstat__lbl">Erros totais</div></div>
-        <div class="mstat"><div class="mstat__val u-pages-professor-atividades-026">${stats.totalXp.toLocaleString('pt-BR')}</div><div class="mstat__lbl">XP distribu\u00eddo</div></div>
-        <div class="mstat"><div class="mstat__val">${stats.completedStudents}/${studentsData.length}</div><div class="mstat__lbl">Conclu\u00edram o módulo</div></div>
-    `;
-
-    const tableRows = studentsData.map((student) => {
-        const cells = category.atividades.map((activity) => {
-            const performance = activity.alunosPerf.find((item) => item.id === student.id) || { acertos: 0, erros: 0 };
-            return `<td>${performance.acertos} acertos<br><small>${performance.erros} erros</small></td>`;
-        }).join('');
-        return `<tr><th scope="row">${student.name}</th>${cells}</tr>`;
-    }).join('');
-    document.getElementById('mModuleActivities').innerHTML = `
-        <table class="module-performance-table">
-            <thead><tr><th>Aluno</th>${MODULE_ACTIVITY_TYPES.map((activity) => `<th>${activity}</th>`).join('')}</tr></thead>
-            <tbody>${tableRows}</tbody>
-        </table>
-    `;
-    document.getElementById('mActStats').hidden = !isDetails;
-    document.getElementById('mActMeta').hidden = !isDetails;
-    document.getElementById('moduleDetails').hidden = !isDetails;
-    document.getElementById('moduleManagement').hidden = isDetails;
-
-    if (!isDetails) {
-        ['A','B','all'].forEach(t=>{
-            document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===currentTab||t==='A'&&currentTab==='A');
-        });
-        renderModalAlunos(category);
-    }
-    document.getElementById('modalAtiv').classList.add('open');
-}
-
-function switchTab(t) {
-    currentTab = t;
-    ['A','B','all'].forEach(id=>{
-        document.getElementById('tab'+(id==='all'?'All':id)).classList.remove('active');
-    });
-    document.getElementById('tab'+(t==='all'?'All':t)).classList.add('active');
-    const category = allCategories.find((item) => moduleKey(item) === currentModuleId);
-    renderModalAlunos(category);
-}
-
-function renderModalAlunos(category) {
-    const lista = currentTab==='all'
-        ? studentsData
-        : studentsData.filter(s=>s.turma===currentTab);
-
-    const container = document.getElementById('mAlunosList');
-    container.innerHTML = '';
-
-    lista.forEach(s => {
-        const isUnlocked = moduleUnlocks[moduleKey(category)].has(s.id);
-
-        const row = document.createElement('div');
-        row.className = 'aluno-unlock-row';
-        row.innerHTML = `
-            <div class="aluno-av" style="background:${s.avatarColor}">${s.name[0]}</div>
-            <div class="aluno-info">
-                <div class="aluno-info__name">${s.name}</div>
-            </div>
-            <div class="toggle-wrap">
-                <span class="toggle-lbl${isUnlocked?' on':''}">
-                    ${isUnlocked?'Liberado':'Bloqueado'}
+                <span class="badge badge--blue">
+                    ${report.totalActivities}
+                    ${activityLabel}
                 </span>
-                <label class="toggle-switch" title="${isUnlocked?'Bloquear':'Liberar'} para ${s.name}">
-                    <input type="checkbox" ${isUnlocked?'checked':''} onchange="toggleModuleUnlock('${moduleKey(category)}',${s.id},this)">
-                    <span class="toggle-slider"></span>
-                </label>
+            </div>
+
+            <div class="cat-grid">
+                <article
+                    class="act-card module-card"
+                >
+                    <div class="act-card__top">
+                        <div
+                            class="act-card__info"
+                        >
+                            <div
+                                class="act-card__name"
+                            >
+                                ${escapeHtml(
+                                    module.title,
+                                )}
+                            </div>
+
+                            <div
+                                class="
+                                    act-card__meta-row
+                                "
+                            >
+                                <span
+                                    class="
+                                        badge
+                                        badge--blue
+                                        u-pages-professor-atividades-018
+                                    "
+                                >
+                                    ${report.totalActivities}
+                                    ${activityLabel}
+                                </span>
+
+                                <span
+                                    class="
+                                        u-pages-professor-atividades-020
+                                    "
+                                >
+                                    ${formatInteger(
+                                        report.totalAttempts,
+                                    )}
+                                    tentativas
+                                </span>
+                            </div>
+
+                            <div
+                                class="
+                                    u-pages-professor-atividades-021
+                                "
+                            >
+                                <div
+                                    class="
+                                        u-pages-professor-atividades-022
+                                    "
+                                >
+                                    <span>
+                                        Aproveitamento
+                                        da turma
+                                    </span>
+
+                                    <span
+                                        class="
+                                            u-pages-professor-atividades-023
+                                        "
+                                    >
+                                        ${report.accuracy}%
+                                    </span>
+                                </div>
+
+                                <div
+                                    class="
+                                        progress-wrap
+                                        u-pages-professor-atividades-024
+                                    "
+                                >
+                                    <div
+                                        class="
+                                            progress-bar
+                                            ${getProgressClass(
+                                                report.accuracy,
+                                            )}
+                                        "
+                                        style="
+                                            width:
+                                                ${report.accuracy}%;
+                                        "
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="act-card__stats"
+                    >
+                        <div class="act-stat">
+                            <div
+                                class="
+                                    act-stat__val
+                                    u-pages-professor-atividades-025
+                                "
+                            >
+                                ${report.accuracy}%
+                            </div>
+
+                            <div
+                                class="act-stat__lbl"
+                            >
+                                Aproveit.
+                            </div>
+                        </div>
+
+                        <div class="act-stat">
+                            <div
+                                class="
+                                    act-stat__val
+                                    u-pages-professor-atividades-026
+                                "
+                            >
+                                ${formatInteger(
+                                    report.totalAttempts,
+                                )}
+                            </div>
+
+                            <div
+                                class="act-stat__lbl"
+                            >
+                                Tentativas
+                            </div>
+                        </div>
+
+                        <div class="act-stat">
+                            <div
+                                class="act-stat__val"
+                            >
+                                ${formatInteger(
+                                    report.completedStudents,
+                                )}
+                                /
+                                ${formatInteger(
+                                    totalStudents,
+                                )}
+                            </div>
+
+                            <div
+                                class="act-stat__lbl"
+                            >
+                                Completaram
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="act-card__footer"
+                    >
+                        <span
+                            class="unlock-count"
+                        >
+                            ${formatInteger(
+                                report.participants,
+                            )}
+                            /
+                            ${formatInteger(
+                                totalStudents,
+                            )}
+                            alunos participaram
+                        </span>
+
+                        <div
+                            class="
+                                module-card__actions
+                            "
+                        >
+                            ${actions}
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+    `;
+}
+
+function renderModules() {
+    if (!state.visibleModules.length) {
+        elements.container.innerHTML = `
+            <div
+                class="
+                    u-pages-professor-atividades-016
+                "
+            >
+                <i
+                    class="
+                        fi
+                        fi-br-search
+                        u-pages-professor-atividades-017
+                    "
+                ></i>
+
+                Nenhum módulo encontrado.
             </div>
         `;
-        container.appendChild(row);
-    });
-}
 
-function toggleModuleUnlock(key, alunoId, chk) {
-    if(chk.checked) {
-        moduleUnlocks[key].add(alunoId);
-    } else {
-        moduleUnlocks[key].delete(alunoId);
+        return;
     }
-    const aluno = studentsData.find(s=>s.id===alunoId);
-    const lbl = chk.closest('.toggle-wrap').querySelector('.toggle-lbl');
-    lbl.textContent = chk.checked ? 'Liberado' : 'Bloqueado';
-    lbl.className = 'toggle-lbl'+(chk.checked?' on':'');
-    showToast(`${aluno.name}: módulo ${chk.checked?'liberado!':'bloqueado'}`, chk.checked?'success':'');
-    atualizarUnlockCount(key);
-}
 
-function desbloquearTodos() {
-    const category = allCategories.find((item) => moduleKey(item) === currentModuleId);
-    const lista = currentTab==='all'
-        ? studentsData
-        : studentsData.filter(s=>s.turma===currentTab);
+    elements.container.innerHTML =
+        state.visibleModules
+            .map(renderModuleCard)
+            .join("");
 
-    lista.forEach(s=>moduleUnlocks[currentModuleId].add(s.id));
-    renderModalAlunos(category);
-    showToast('Módulo liberado para os alunos selecionados!', 'success');
-    atualizarUnlockCount(currentModuleId);
-}
+    const detailsButtons =
+        elements.container.querySelectorAll(
+            "[data-action='details']",
+        );
 
-function atualizarUnlockCount(key) {
-    const el = document.querySelector(`[data-module-key="${key}"] .unlock-count`);
-    if(el) el.textContent = `${moduleUnlocks[key].size}/${studentsData.length} alunos com acesso`;
-}
-
-function fecharModal() {
-    document.getElementById('modalAtiv').classList.remove('open');
-}
-
-document.getElementById('modalAtiv').addEventListener('click', function(e){ if(e.target===this) fecharModal(); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') fecharModal(); });
-
-// ================================================================
-// FILTROS E BUSCA
-// ================================================================
-function filtrar() { renderAll(); }
-
-document.querySelectorAll('.filter-chip').forEach(chip=>{
-    chip.addEventListener('click',()=>{
-        document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
-        chip.classList.add('active');
-        activeFilter = chip.dataset.f;
-        filtrar();
+    detailsButtons.forEach((button) => {
+        button.addEventListener(
+            "click",
+            () => {
+                openModuleDetails(
+                    Number(
+                        button.dataset.moduleId,
+                    ),
+                );
+            },
+        );
     });
-});
 
-document.getElementById('searchInput').addEventListener('input', e=>{
-    searchTerm = e.target.value.trim();
-    filtrar();
-});
+    const managementButtons =
+        elements.container.querySelectorAll(
+            "[data-action='manage']",
+        );
 
-function toggleSection(sec) { sec.classList.toggle('collapsed'); }
-
-// Tab buttons estilo
-document.querySelectorAll('.tab-btn').forEach(b=>{
-    b.style.cssText='padding:7px 18px;border-radius:var(--r-sm);border:none;background:transparent;font-family:\'Poppins\',sans-serif;font-size:0.85rem;font-weight:600;color:var(--c-text-soft);cursor:pointer;transition:all 0.15s';
-    b.addEventListener('mouseenter',()=>{ if(!b.classList.contains('active')) b.style.background='rgba(0,0,0,0.05)'; });
-    b.addEventListener('mouseleave',()=>{ if(!b.classList.contains('active')) b.style.background='transparent'; });
-});
-document.getElementById('modalAtiv').addEventListener('click',function(e){
-    document.querySelectorAll('.tab-btn').forEach(b=>{
-        b.style.background = b.classList.contains('active')
-            ? 'var(--c-card)'
-            : 'transparent';
-        b.style.color = b.classList.contains('active')
-            ? 'var(--c-blue-dark)'
-            : 'var(--c-text-soft)';
-        b.style.boxShadow = b.classList.contains('active')
-            ? 'var(--shadow-sm)'
-            : 'none';
+    managementButtons.forEach((button) => {
+        button.addEventListener(
+            "click",
+            () => {
+                showToast(
+                    (
+                        "A liberação individual será " +
+                        "ativada quando o controle de " +
+                        "acesso existir no banco."
+                    ),
+                    "info",
+                );
+            },
+        );
     });
-});
-
-// ================================================================
-// SIDEBAR
-// ================================================================
-const sidebar   = document.getElementById('sidebar');
-const toggle    = document.getElementById('sidebarToggle');
-const backdrop  = document.getElementById('sidebarBackdrop');
-const mobileBtn = document.getElementById('mobileMenuBtn');
-toggle.addEventListener('click',  ()=>sidebar.classList.toggle('sidebar--collapsed'));
-mobileBtn.addEventListener('click',()=>{ sidebar.classList.add('open'); backdrop.classList.add('open'); });
-backdrop.addEventListener('click', ()=>{ sidebar.classList.remove('open'); backdrop.classList.remove('open'); });
-document.getElementById('btnNotif').addEventListener('click',()=>showToast('3 novas notifica\u00e7\u00f5es','info'));
-
-// ================================================================
-// TOAST
-// ================================================================
-function showToast(msg, type='') {
-    const c = document.getElementById('toast-container');
-    const t = document.createElement('div');
-    t.className = `toast${type?' toast--'+type:''}`;
-    t.innerHTML = `<i class="fi fi-br-bell"></i> ${msg}`;
-    c.appendChild(t);
-    setTimeout(()=>t.remove(), 3500);
 }
 
-// ================================================================
-// INIT
-// ================================================================
-renderStatsBar();
-renderAll();
+function applyFilters() {
+    const query = elements.search.value
+        .trim()
+        .toLocaleLowerCase("pt-BR");
 
-// Aplica estilos iniciais nas tabs após render
-setTimeout(()=>{
-    document.querySelectorAll('.tab-btn').forEach(b=>{
-        b.style.background = b.classList.contains('active')
-            ? 'var(--c-card)'
-            : 'transparent';
-        b.style.color = b.classList.contains('active')
-            ? 'var(--c-blue-dark)'
-            : 'var(--c-text-soft)';
-        b.style.boxShadow = b.classList.contains('active')
-            ? 'var(--shadow-sm)'
-            : 'none';
-    });
-},100);
+    const order = elements.order.value;
+
+    state.visibleModules =
+        state.modules.filter((module) => {
+            const matchesFilter =
+                state.activeFilter === "all" ||
+                String(module.id) ===
+                    state.activeFilter;
+
+            const matchesModuleName =
+                module.title
+                    .toLocaleLowerCase(
+                        "pt-BR",
+                    )
+                    .includes(query);
+
+            const matchesActivity =
+                module.report.activities.some(
+                    (activity) =>
+                        activity.name
+                            .toLocaleLowerCase(
+                                "pt-BR",
+                            )
+                            .includes(query),
+                );
+
+            const matchesSearch =
+                !query ||
+                matchesModuleName ||
+                matchesActivity;
+
+            return (
+                matchesFilter &&
+                matchesSearch
+            );
+        });
+
+    state.visibleModules.sort(
+        (
+            firstModule,
+            secondModule,
+        ) => {
+            if (order === "nome") {
+                return firstModule.title
+                    .localeCompare(
+                        secondModule.title,
+                        "pt-BR",
+                    );
+            }
+
+            if (order === "acertos") {
+                return (
+                    secondModule
+                        .report.accuracy -
+                    firstModule
+                        .report.accuracy
+                );
+            }
+
+            return (
+                firstModule.id -
+                secondModule.id
+            );
+        },
+    );
+
+    renderModules();
+}
+
+function renderActivityTable(module) {
+    const rows = module.report.activities
+        .map(
+            (activity) => `
+                <tr>
+                    <th scope="row">
+                        ${escapeHtml(
+                            activity.name,
+                        )}
+
+                        <br>
+
+                        <small>
+                            Etapa
+                            ${formatInteger(
+                                activity.order,
+                            )}
+                        </small>
+                    </th>
+
+                    <td>
+                        ${formatInteger(
+                            activity.participants,
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatInteger(
+                            activity.totalAttempts,
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatInteger(
+                            activity.completions,
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatInteger(
+                            activity.totalErrors,
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatDecimal(
+                            activity.averageTimeSeconds,
+                        )}s
+                    </td>
+
+                    <td>
+                        ${activity.accuracy}%
+                    </td>
+                </tr>
+            `,
+        )
+        .join("");
+
+    elements.activityList.innerHTML = `
+        <table
+            class="module-performance-table"
+        >
+            <thead>
+                <tr>
+                    <th>Atividade</th>
+                    <th>Alunos</th>
+                    <th>Tentativas</th>
+                    <th>Conclusões</th>
+                    <th>Erros</th>
+                    <th>Tempo médio</th>
+                    <th>Aproveit.</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                ${
+                    rows ||
+                    `
+                        <tr>
+                            <td colspan="7">
+                                Nenhuma atividade
+                                cadastrada.
+                            </td>
+                        </tr>
+                    `
+                }
+            </tbody>
+        </table>
+    `;
+}
+
+function openModuleDetails(moduleId) {
+    const module = state.modules.find(
+        (item) => item.id === moduleId,
+    );
+
+    if (!module) {
+        return;
+    }
+
+    const report = module.report;
+
+    elements.modalName.textContent =
+        `Detalhes: ${module.title}`;
+
+    elements.modalMeta.textContent =
+        (
+            `${report.totalActivities} atividades · ` +
+            `${report.totalAttempts} tentativas registradas`
+        );
+
+    elements.modalStatistics.hidden = false;
+    elements.moduleDetails.hidden = false;
+    elements.moduleManagement.hidden = true;
+
+    elements.modalStatistics.innerHTML = `
+        <div class="mstat">
+            <div
+                class="
+                    mstat__val
+                    u-pages-professor-atividades-025
+                "
+            >
+                ${report.accuracy}%
+            </div>
+
+            <div class="mstat__lbl">
+                Aproveitamento
+            </div>
+        </div>
+
+        <div class="mstat">
+            <div
+                class="
+                    mstat__val
+                    u-pages-professor-atividades-029
+                "
+            >
+                ${formatInteger(
+                    report.totalErrors,
+                )}
+            </div>
+
+            <div class="mstat__lbl">
+                Erros registrados
+            </div>
+        </div>
+
+        <div class="mstat">
+            <div
+                class="
+                    mstat__val
+                    u-pages-professor-atividades-026
+                "
+            >
+                ${formatInteger(
+                    report.participants,
+                )}
+            </div>
+
+            <div class="mstat__lbl">
+                Participantes
+            </div>
+        </div>
+
+        <div class="mstat">
+            <div class="mstat__val">
+                ${formatInteger(
+                    report.completedStudents,
+                )}
+                /
+                ${formatInteger(
+                    state.dashboard.totalStudents,
+                )}
+            </div>
+
+            <div class="mstat__lbl">
+                Concluíram o módulo
+            </div>
+        </div>
+    `;
+
+    renderActivityTable(module);
+
+    elements.modal.classList.add("open");
+
+    elements.modal.setAttribute(
+        "aria-hidden",
+        "false",
+    );
+}
+
+function closeModal() {
+    elements.modal.classList.remove(
+        "open",
+    );
+
+    elements.modal.setAttribute(
+        "aria-hidden",
+        "true",
+    );
+}
+
+function validateElements() {
+    const missingElements =
+        Object.entries(elements)
+            .filter(
+                ([, element]) => !element,
+            )
+            .map(([name]) => name);
+
+    if (missingElements.length) {
+        throw new Error(
+            (
+                "Elementos ausentes na página: " +
+                `${missingElements.join(", ")}.`
+            ),
+        );
+    }
+}
+
+function bindEvents() {
+    elements.search.addEventListener(
+        "input",
+        applyFilters,
+    );
+
+    elements.order.addEventListener(
+        "change",
+        applyFilters,
+    );
+
+    elements.closeButton.addEventListener(
+        "click",
+        closeModal,
+    );
+
+    elements.modal.addEventListener(
+        "click",
+        (event) => {
+            if (
+                event.target ===
+                elements.modal
+            ) {
+                closeModal();
+            }
+        },
+    );
+
+    elements.notificationButton
+        .addEventListener(
+            "click",
+            () => {
+                showToast(
+                    (
+                        "Você não possui " +
+                        "novas notificações."
+                    ),
+                    "info",
+                );
+            },
+        );
+
+    document.addEventListener(
+        "keydown",
+        (event) => {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        },
+    );
+}
+
+async function loadPage() {
+    const session = sessionService.get();
+    const teacherId = Number(
+        session?.user?.id,
+    );
+
+    if (
+        !Number.isInteger(teacherId) ||
+        teacherId <= 0
+    ) {
+        throw new Error(
+            (
+                "Não foi possível identificar " +
+                "o professor autenticado."
+            ),
+        );
+    }
+
+    renderLoading();
+
+    const [modules, dashboard] =
+        await Promise.all([
+            moduloService.listJourney(),
+
+            relatoriosService
+                .getTeacherDashboard(
+                    teacherId,
+                ),
+        ]);
+
+    const reports = await Promise.all(
+        modules.map(async (module) => {
+            try {
+                return await relatoriosService
+                    .getModuleReport(
+                        module.id,
+                    );
+            } catch (error) {
+                const isEmptyModule =
+                    error?.status === 404 ||
+                    error?.code ===
+                        "MODULE_WITHOUT_ACTIVITIES";
+
+                if (isEmptyModule) {
+                    return createEmptyModuleReport(
+                        module.id,
+                    );
+                }
+
+                throw error;
+            }
+        }),
+    );
+
+    state.dashboard = dashboard;
+
+    state.modules = modules.map(
+        (module, index) => ({
+            ...module,
+            report: reports[index],
+        }),
+    );
+
+    renderStatistics();
+    renderFilters();
+    applyFilters();
+}
+
+async function initialize() {
+    try {
+        validateElements();
+        setProfileAvatar();
+        bindEvents();
+
+        await loadPage();
+    } catch (error) {
+        console.error(
+            (
+                "Erro ao carregar atividades " +
+                "do professor:"
+            ),
+            error,
+        );
+
+        if (elements.container) {
+            elements.container.innerHTML = `
+                <div
+                    class="
+                        u-pages-professor-atividades-016
+                    "
+                    role="alert"
+                >
+                    <i
+                        class="
+                            fi
+                            fi-br-exclamation
+                            u-pages-professor-atividades-017
+                        "
+                    ></i>
+
+                    Não foi possível carregar
+                    as atividades.
+                </div>
+            `;
+        }
+
+        showToast(
+            (
+                error?.message ??
+                "Não foi possível carregar as atividades."
+            ),
+            "error",
+        );
+    }
+}
+
+initialize();

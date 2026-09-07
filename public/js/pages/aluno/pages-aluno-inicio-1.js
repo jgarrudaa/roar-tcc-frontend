@@ -1,111 +1,526 @@
-/* Comportamento extraído de inicio.html. */
+import { studentHomeService } from "../../services/student-home-service.js";
+import { showToast } from "../../components/toast.js";
 
-// ============================================================
-// DADOS CENTRALIZADOS (via roar-storage.js)
-// ============================================================
 
-const categorias = [
-    { name: 'Corpo Humano', icon: 'fi fi-br-portrait',      color: 'a', link: 'atividade.html?modulo=corpo-humano&etapa=1' },
-    { name: 'Cores',        icon: 'fi fi-br-palette',       color: 'b', link: 'atividades.html' },
-    { name: 'Animais',      icon: 'fi fi-br-paw',           color: 'a', link: 'atividades.html' },
-    { name: 'Emoções',      icon: 'fi fi-br-grin-alt',           color: 'b', link: 'atividades.html' },
-    { name: 'Comida',       icon: 'fi fi-br-hamburger',   color: 'b', link: 'atividades.html' },
-    { name: 'Família',      icon: 'fi fi-br-users',         color: 'a', link: 'atividades.html' },
-    { name: 'Casa',         icon: 'fi fi-br-house-chimney', color: 'a', link: 'atividades.html' },
-    { name: 'Escola',       icon: 'fi fi-br-backpack',      color: 'b', link: 'atividades.html' },
-];
+const MASCOT_MESSAGES = Object.freeze([
+    "Você está indo\nmuito bem!",
+    "Continue assim,\ncampeão!",
+    "Hoje é um ótimo\ndia para aprender!",
+    "Você consegue!",
+    "Que orgulho de você!",
+]);
 
-const mascotMsgs = [
-    'Você está indo\nmuito bem!',
-    'Continue assim,\ncampeão!',
-    'Hoje é um ótimo\ndia para aprender!',
-    'Você consegue!',
-    'Que orgulho de você!',
-];
-let mascotIdx = 0;
 
-// ============================================================
-// INIT
-// ============================================================
-function init() {
-    const data = ROAR.init();
+const elements = {
+    userName:
+        document.querySelector("#userName"),
 
-    // Navbar
-    document.getElementById('userName').textContent = data.userName;
-    document.getElementById('navAvatar').textContent = data.userInitial;
+    navAvatar:
+        document.querySelector("#navAvatar"),
 
-    // Stats
-    document.getElementById('xpTotal').textContent    = data.xp.toLocaleString('pt-BR');
+    xpTotal:
+        document.querySelector("#xpTotal"),
 
-    document.getElementById('streakDays').textContent  = data.streak + ' dias';
-    document.getElementById('progressoGeral').textContent = data.progressoGeral + '%';
+    learningMode:
+        document.querySelector("#learningMode"),
 
-    // Hero
-    document.getElementById('heroProgress').style.width = data.heroCat.progress + '%';
-    document.getElementById('heroPercent').textContent   = data.heroCat.progress + '% concluído';
+    availableModules:
+        document.querySelector("#availableModules"),
 
-    // Categorias
-    const grid = document.getElementById('categoriasGrid');
-    categorias.forEach(cat => {
-        const el = document.createElement('div');
-        el.className = 'cat-card';
-        el.onclick = () => {
-            if (window.roarNavigate) {
-                window.roarNavigate(cat.link);
-            } else {
-                window.location.href = cat.link;
+    heroCard:
+        document.querySelector("#heroCard"),
+
+    heroLabel:
+        document.querySelector("#heroLabel"),
+
+    heroTitle:
+        document.querySelector("#heroTitle"),
+
+    heroProgress:
+        document.querySelector("#heroProgress"),
+
+    heroPercent:
+        document.querySelector("#heroPercent"),
+
+    heroAction:
+        document.querySelector("#heroAction"),
+
+    categoriesGrid:
+        document.querySelector("#categoriasGrid"),
+
+    recentList:
+        document.querySelector("#recentList"),
+
+    mascotBubble:
+        document.querySelector("#mascotBubble"),
+
+    mascotImage:
+        document.querySelector("#mascotImg"),
+
+    notificationsButton:
+        document.querySelector("#btnNotif"),
+};
+
+
+let mascotMessageIndex = 0;
+
+
+function navigateTo(url) {
+    if (typeof window.roarNavigate === "function") {
+        window.roarNavigate(url);
+        return;
+    }
+
+    window.location.assign(url);
+}
+
+
+function buildActivityUrl(module) {
+    const parameters = new URLSearchParams({
+        modulo: String(module.id),
+        etapa: String(module.nextStage ?? 1),
+    });
+
+    return `atividade.html?${parameters.toString()}`;
+}
+
+
+function setMascotMessage(message) {
+    const lines = String(message).split("\n");
+
+    const content = document.createDocumentFragment();
+
+    lines.forEach((line, index) => {
+        content.append(
+            document.createTextNode(line),
+        );
+
+        if (index < lines.length - 1) {
+            content.append(
+                document.createElement("br"),
+            );
+        }
+    });
+
+    elements.mascotBubble.replaceChildren(content);
+}
+
+
+function renderProfile(profile, modulesCount) {
+    elements.userName.textContent =
+        profile.name;
+
+    elements.navAvatar.textContent =
+        profile.initial;
+
+    elements.navAvatar.title =
+        `Abrir perfil de ${profile.name}`;
+
+    elements.xpTotal.textContent =
+        profile.xpTotal.toLocaleString("pt-BR");
+
+    elements.learningMode.textContent =
+        profile.learningMode;
+
+    elements.availableModules.textContent =
+        String(modulesCount);
+}
+
+
+function clearHeroInteractions() {
+    const cleanHeroCard =
+        elements.heroCard.cloneNode(true);
+
+    elements.heroCard.replaceWith(
+        cleanHeroCard,
+    );
+
+    elements.heroCard = cleanHeroCard;
+
+    elements.heroLabel =
+        cleanHeroCard.querySelector("#heroLabel");
+
+    elements.heroTitle =
+        cleanHeroCard.querySelector("#heroTitle");
+
+    elements.heroProgress =
+        cleanHeroCard.querySelector("#heroProgress");
+
+    elements.heroPercent =
+        cleanHeroCard.querySelector("#heroPercent");
+
+    elements.heroAction =
+        cleanHeroCard.querySelector("#heroAction");
+}
+
+
+function renderEmptyHero() {
+    clearHeroInteractions();
+
+    elements.heroLabel.textContent =
+        "Novidades em breve";
+
+    elements.heroTitle.textContent =
+        "Nenhum módulo disponível";
+
+    elements.heroPercent.textContent =
+        "Aguarde sua professora liberar um módulo.";
+
+    elements.heroProgress.style.width = "0%";
+
+    elements.heroAction.textContent =
+        "Indisponível";
+
+    elements.heroAction.disabled = true;
+
+    elements.heroCard.removeAttribute("role");
+    elements.heroCard.removeAttribute("tabindex");
+}
+
+
+function renderHero(module) {
+    if (!module) {
+        renderEmptyHero();
+        return;
+    }
+
+    clearHeroInteractions();
+
+    const progress = Math.min(
+        100,
+        Math.max(
+            0,
+            Number(module.progress) || 0,
+        ),
+    );
+
+    const openModule = () => {
+        navigateTo(
+            buildActivityUrl(module),
+        );
+    };
+
+    const completed = module.status === "completed";
+    elements.heroLabel.textContent = completed
+        ? "Módulo concluído"
+        : progress > 0 ? "Continue de onde parou" : "Próximo módulo";
+
+    elements.heroTitle.textContent =
+        module.title;
+
+    elements.heroProgress.style.width =
+        `${progress}%`;
+
+    elements.heroPercent.textContent = completed
+        ? "100% concluído"
+        : progress > 0 ? `${progress}% concluído` : "Disponível para começar";
+
+    elements.heroAction.textContent = completed
+        ? "Revisar"
+        : progress > 0 ? "Continuar" : "Começar";
+
+    elements.heroAction.disabled = false;
+
+    elements.heroCard.setAttribute(
+        "role",
+        "button",
+    );
+
+    elements.heroCard.setAttribute(
+        "tabindex",
+        "0",
+    );
+
+    elements.heroAction.addEventListener(
+        "click",
+        (event) => {
+            event.stopPropagation();
+            openModule();
+        },
+    );
+
+    elements.heroCard.addEventListener(
+        "click",
+        openModule,
+    );
+
+    elements.heroCard.addEventListener(
+        "keydown",
+        (event) => {
+            if (
+                event.key !== "Enter" &&
+                event.key !== " "
+            ) {
+                return;
             }
-        };
-        el.innerHTML = `
-            <div class="cat-card__icon cat-card__icon--${cat.color}">
-                <i class="${cat.icon}"></i>
-            </div>
-            <span class="cat-card__name">${cat.name}</span>
-        `;
-        grid.appendChild(el);
-    });
 
-    // Recentes
-    const recentList = document.getElementById('recentList');
-    data.recent.forEach(item => {
-        const el = document.createElement('div');
-        el.className = 'recent-item';
-        el.innerHTML = `
-            <div class="recent-item__icon activity-card__icon activity-card__icon--${item.color}">
-                <i class="${item.icon}"></i>
-            </div>
-            <div class="recent-item__info">
-                <div class="recent-item__name">${item.name}</div>
-                <div class="recent-item__meta">${item.cat}</div>
-            </div>
-            <span class="badge badge--blue">+${item.xp} XP</span>
-        `;
-        recentList.appendChild(el);
-    });
+            event.preventDefault();
+            openModule();
+        },
+    );
 }
 
-// ============================================================
-// MASCOTE
-// ============================================================
-function changeMascotMsg() {
-    mascotIdx = (mascotIdx + 1) % mascotMsgs.length;
-    document.getElementById('mascotBubble').innerHTML = mascotMsgs[mascotIdx].replace('\n', '<br>');
+
+function createCategoryCard(module) {
+    const card =
+        document.createElement("button");
+
+    const iconWrapper =
+        document.createElement("span");
+
+    const icon =
+        document.createElement("i");
+
+    const name =
+        document.createElement("span");
+
+    card.type = "button";
+    card.className = "cat-card";
+    card.disabled = module.status === "preparation";
+
+    card.setAttribute(
+        "aria-label",
+        `Abrir módulo ${module.title}`,
+    );
+
+    iconWrapper.className =
+        `cat-card__icon cat-card__icon--${module.color}`;
+
+    icon.className =
+        module.icon ||
+        "fi fi-br-puzzle-pieces";
+
+    icon.setAttribute(
+        "aria-hidden",
+        "true",
+    );
+
+    name.className =
+        "cat-card__name";
+
+    name.textContent =
+        module.title;
+
+    iconWrapper.append(icon);
+
+    card.append(
+        iconWrapper,
+        name,
+    );
+
+    card.addEventListener(
+        "click",
+        () => {
+            if (module.status === "preparation") return;
+            navigateTo(
+                buildActivityUrl(module),
+            );
+        },
+    );
+
+    return card;
 }
 
-// ============================================================
-// SIDEBAR (inicializado por roar-sidebar.js)
-// ============================================================
 
-// ============================================================
-// NOTIFICAÇÃO (demo)
-// ============================================================
-document.getElementById('btnNotif').addEventListener('click', () => {
-    showToast('Nenhuma notificação nova', 'info');
-});
+function renderModules(modules) {
+    elements.categoriesGrid.replaceChildren();
 
-// showToast is provided by roar-sidebar.js
+    if (!modules.length) {
+        const message =
+            document.createElement("p");
 
-// ============================================================
-// START
-// ============================================================
-init();
+        message.className = "text-muted";
+
+        message.textContent =
+            "Nenhum módulo está disponível no momento.";
+
+        elements.categoriesGrid.append(message);
+
+        return;
+    }
+
+    const fragment =
+        document.createDocumentFragment();
+
+    modules.forEach((module) => {
+        fragment.append(
+            createCategoryCard(module),
+        );
+    });
+
+    elements.categoriesGrid.append(fragment);
+}
+
+
+function renderRecentActivities() {
+    const message =
+        document.createElement("p");
+
+    message.className = "text-muted";
+
+    message.textContent =
+        "Acesse a página de desempenho para consultar seu histórico.";
+
+    elements.recentList.replaceChildren(
+        message,
+    );
+}
+
+
+function bindMascotInteraction() {
+    elements.mascotImage.addEventListener(
+        "click",
+        () => {
+            mascotMessageIndex =
+                (
+                    mascotMessageIndex + 1
+                ) % MASCOT_MESSAGES.length;
+
+            setMascotMessage(
+                MASCOT_MESSAGES[
+                    mascotMessageIndex
+                ],
+            );
+        },
+    );
+}
+
+
+function bindNotificationInteraction() {
+    elements.notificationsButton.addEventListener(
+        "click",
+        () => {
+            showToast(
+                "Nenhuma notificação nova",
+                "info",
+            );
+        },
+    );
+}
+
+
+function showLoadingState() {
+    elements.heroLabel.textContent =
+        "Próximo módulo";
+
+    elements.heroTitle.textContent =
+        "Carregando módulos...";
+
+    elements.heroPercent.textContent =
+        "Aguarde um instante";
+
+    elements.heroProgress.style.width =
+        "0%";
+
+    elements.heroAction.disabled = true;
+}
+
+
+function showErrorState(error) {
+    console.error(
+        "Falha ao carregar a home do aluno:",
+        error,
+    );
+
+    elements.heroLabel.textContent =
+        "Não foi possível carregar";
+
+    elements.heroTitle.textContent =
+        "Tente novamente";
+
+    elements.heroPercent.textContent =
+        "Verifique sua conexão com a API.";
+
+    elements.heroProgress.style.width =
+        "0%";
+
+    elements.heroAction.textContent =
+        "Recarregar";
+
+    elements.heroAction.disabled = false;
+
+    elements.heroAction.addEventListener(
+        "click",
+        () => {
+            window.location.reload();
+        },
+        {
+            once: true,
+        },
+    );
+
+    showToast(
+        error?.message ||
+        "Não foi possível carregar a página.",
+        "error",
+    );
+}
+
+
+function validateRequiredElements() {
+    const missingElements = Object.entries(
+        elements,
+    )
+        .filter(([, element]) => !element)
+        .map(([name]) => name);
+
+    if (missingElements.length) {
+        throw new Error(
+            `Elementos ausentes na home: ${missingElements.join(", ")}.`,
+        );
+    }
+}
+
+
+async function initialize() {
+    try {
+        validateRequiredElements();
+
+        bindMascotInteraction();
+        bindNotificationInteraction();
+
+        renderRecentActivities();
+        showLoadingState();
+
+        const {
+            profile,
+            modules,
+            featuredModule,
+        } = await studentHomeService.load();
+
+        renderProfile(
+            profile,
+            modules.length,
+        );
+
+        renderModules(modules);
+        const nextModule = modules.find((module) =>
+            module.status === "in_progress" || module.status === "available"
+        ) ?? modules.find((module) => module.status === "completed") ?? featuredModule;
+        renderHero(nextModule);
+    } catch (error) {
+        /*
+         * Se os elementos essenciais existirem, mostramos
+         * o erro visualmente. Caso o próprio HTML esteja
+         * incompatível, o erro permanecerá no console.
+         */
+        if (
+            elements.heroLabel &&
+            elements.heroTitle &&
+            elements.heroPercent &&
+            elements.heroProgress &&
+            elements.heroAction
+        ) {
+            showErrorState(error);
+            return;
+        }
+
+        console.error(
+            "Não foi possível inicializar a home:",
+            error,
+        );
+    }
+}
+
+
+initialize();

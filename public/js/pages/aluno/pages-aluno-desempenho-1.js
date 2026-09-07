@@ -1,193 +1,703 @@
-/* Comportamento extraído de desempenho.html. */
+import { showToast } from "../../components/toast.js";
+import { desempenhoService } from "../../services/desempenho-service.js";
 
-// ============================================================
-// DADOS
-// ============================================================
-const weekData  = [40, 75, 55, 120, 90, 150, 80];
-const weekLabels= ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
-const monthData = [320, 280, 450, 510];
-const monthLbls = ['Sem 1','Sem 2','Sem 3','Sem 4'];
 
-const catData = [
-    { name: 'Corpo Humano', icon: 'fi fi-br-user',      color: '#85C7F2', prog: 70 },
-    { name: 'Cores',        icon: 'fi fi-br-palette',    color: '#44F698', prog: 100 },
-    { name: 'Animais',      icon: 'fi fi-br-cat',        color: '#85C7F2', prog: 50 },
-    { name: 'Emoções',      icon: 'fi fi-br-grin-alt', color: '#44F698', prog: 60 },
-    { name: 'Comida',       icon: 'fi fi-br-hamburger',      color: '#44F698', prog: 0 },
-];
-
-const rankData = [
-    { pos: 1, name: 'Ana Clara',  xp: 1850, me: false },
-    { pos: 2, name: 'Bruno',      xp: 1620, me: false },
-    { pos: 3, name: 'Leandro',    xp: 1240, me: true  },
-    { pos: 4, name: 'Mariana',    xp: 980,  me: false },
-    { pos: 5, name: 'Pedro',      xp: 760,  me: false },
-];
-
-const medals = [
-    { name: 'Primeira Aula',   icon: 'fi fi-br-star',      color: '#ffd700', bg: 'rgba(255,215,0,0.2)',  locked: false },
-    { name: '7 Dias Seguidos', icon: 'fi fi-br-flame',      color: '#f97316', bg: 'rgba(249,115,22,0.2)', locked: false },
-    { name: '100% Acertos',    icon: 'fi fi-br-check',      color: '#22c55e', bg: 'rgba(34,197,94,0.2)',  locked: false },
-    { name: '10 Atividades',   icon: 'fi fi-br-trophy',     color: '#a855f7', bg: 'rgba(168,85,247,0.2)', locked: false },
-    { name: '30 Dias',         icon: 'fi fi-br-calendar',   color: '#3b82f6', bg: 'rgba(59,130,246,0.2)', locked: true  },
-    { name: 'Perfeito!',       icon: 'fi fi-br-medal',      color: '#f59e0b', bg: 'rgba(245,158,11,0.2)', locked: true  },
-];
-
-// ============================================================
-// GRÁFICO DE BARRAS
-// ============================================================
-let currentData   = weekData;
-let currentLabels = weekLabels;
-let todayIdx      = 5; // Sábado
-
-function renderBarChart() {
-    const chart = document.getElementById('barChart');
-    chart.innerHTML = '';
-    const max = Math.max(...currentData);
-
-    currentData.forEach((val, i) => {
-        const col = document.createElement('div');
-        col.className = 'bar-chart__col';
-
-        const pct = max > 0 ? (val / max) * 100 : 0;
-        const isHighlight = i === todayIdx;
-
-        col.innerHTML = `
-            <div class="bar-chart__bar${isHighlight ? ' highlight' : ''} u-pages-aluno-desempenho-009" data-h="${pct}">
-                <span class="bar-chart__val">${val}</span>
-            </div>
-            <span class="bar-chart__label">${currentLabels[i]}</span>
-        `;
-        chart.appendChild(col);
-    });
-
-    // Animar as barras
-    requestAnimationFrame(() => {
-        chart.querySelectorAll('.bar-chart__bar').forEach(bar => {
-            bar.style.height = bar.dataset.h + '%';
-        });
-    });
-}
-
-// ============================================================
-// DONUT CANVAS
-// ============================================================
-function drawDonut() {
-    const canvas = document.getElementById('donutCanvas');
-    if (!canvas) return;
-    const ctx    = canvas.getContext('2d');
-    const cx = 65, cy = 65, r = 52, lw = 18;
-    const acc = 0.82;
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-
-    ctx.clearRect(0, 0, 130, 130);
-
-    // Fundo
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.08)';
-    ctx.lineWidth = lw;
-    ctx.stroke();
-
-    // Progresso
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + acc * Math.PI * 2);
-    ctx.strokeStyle = isDark ? '#3B82F6' : '#1F6CE3';
-    ctx.lineWidth = lw;
-    ctx.lineCap = 'round';
-    ctx.stroke();
-}
-
-window.addEventListener('roar-theme-changed', () => {
-    drawDonut();
+const PERIOD_LABELS = Object.freeze({
+    overview: "Geral",
+    weekly: "Semanal",
+    monthly: "Mensal",
 });
 
-// ============================================================
-// CATEGORIAS
-// ============================================================
-function renderCatProgress() {
-    const list = document.getElementById('catProgressList');
-    list.innerHTML = '';
-    catData.forEach(cat => {
-        const div = document.createElement('div');
-        div.className = 'category-progress-item';
-        div.innerHTML = `
-            <div class="cat-progress-icon" style="background:${cat.color}33">
-                <i class="${cat.icon}" style="color:${cat.color}cc;filter:brightness(0.7)"></i>
-            </div>
-            <div class="cat-progress-info">
-                <div class="cat-progress-name">${cat.name}</div>
-                <div class="u-pages-aluno-desempenho-010">
-                    <div class="progress-wrap u-pages-aluno-desempenho-011">
-                        <div class="progress-bar" style="width:${cat.prog}%;background:${cat.color === '#44F698' ? 'var(--c-primary)' : 'var(--c-blue-mid)'}"></div>
-                    </div>
-                    <span class="u-pages-aluno-desempenho-012">${cat.prog}%</span>
-                </div>
-            </div>
-        `;
-        list.appendChild(div);
-    });
+const TAB_PERIODS = Object.freeze({
+    visao: "overview",
+    semanal: "weekly",
+    mensal: "monthly",
+});
+
+const elements = {
+    avatar: document.querySelector("#studentAvatar"),
+
+    xpTotal:
+        document.querySelector("#xpTotal"),
+
+    completedActivities:
+        document.querySelector(
+            "#completedActivities",
+        ),
+
+    averageErrors:
+        document.querySelector("#averageErrors"),
+
+    averageTime:
+        document.querySelector("#averageTime"),
+
+    periodLabel:
+        document.querySelector("#periodoLabel"),
+
+    barChart:
+        document.querySelector("#barChart"),
+
+    donutCanvas:
+        document.querySelector("#donutCanvas"),
+
+    completionPercentage:
+        document.querySelector(
+            "#completionPercentage",
+        ),
+
+    completedLegend:
+        document.querySelector(
+            "#completedLegend",
+        ),
+
+    remainingLegend:
+        document.querySelector(
+            "#remainingLegend",
+        ),
+
+    averageTimeLegend:
+        document.querySelector(
+            "#averageTimeLegend",
+        ),
+
+    moduleProgressList:
+        document.querySelector(
+            "#catProgressList",
+        ),
+
+    recentHistory:
+        document.querySelector("#recentHistory"),
+
+    tabs:
+        Array.from(
+            document.querySelectorAll(
+                ".tab-btn",
+            ),
+        ),
+};
+
+
+let activePeriod = "overview";
+let requestSequence = 0;
+
+
+function formatSeconds(value) {
+    const totalSeconds = Math.max(
+        0,
+        Math.round(Number(value) || 0),
+    );
+
+    if (totalSeconds < 60) {
+        return `${totalSeconds}s`;
+    }
+
+    const minutes = Math.floor(
+        totalSeconds / 60,
+    );
+
+    const seconds = totalSeconds % 60;
+
+    return seconds
+        ? `${minutes}min ${seconds}s`
+        : `${minutes}min`;
 }
 
 
+function formatDate(date) {
+    if (!(date instanceof Date)) {
+        return "Data não informada";
+    }
 
-// ============================================================
-// MEDALHAS
-// ============================================================
-function renderMedals() {
-    const grid = document.getElementById('medalsGrid');
-    grid.innerHTML = '';
-    medals.forEach(m => {
-        const div = document.createElement('div');
-        div.className = `medal-card${m.locked ? ' locked' : ''}`;
-        div.setAttribute('data-tooltip', m.locked ? 'Bloqueado' : m.name);
-        div.innerHTML = `
-            <div class="medal-card__icon" style="background:${m.bg}">
-                <i class="${m.icon}" style="color:${m.color}"></i>
-            </div>
-            <div class="medal-card__name">${m.name}</div>
-        `;
-        grid.appendChild(div);
-    });
+    return new Intl.DateTimeFormat(
+        "pt-BR",
+        {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        },
+    ).format(date);
 }
 
-// ============================================================
-// ABAS
-// ============================================================
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const tab = btn.dataset.tab;
-        if (tab === 'semanal' || tab === 'visao') {
-            currentData   = weekData;
-            currentLabels = weekLabels;
-            todayIdx      = 5;
-            document.getElementById('periodoLabel').textContent = 'Semanal';
-        } else {
-            currentData   = monthData;
-            currentLabels = monthLbls;
-            todayIdx      = 2;
-            document.getElementById('periodoLabel').textContent = 'Mensal';
+
+function formatShortDate(dateValue) {
+    const date = new Date(
+        `${dateValue}T00:00:00`,
+    );
+
+    if (Number.isNaN(date.getTime())) {
+        return dateValue;
+    }
+
+    return new Intl.DateTimeFormat(
+        "pt-BR",
+        {
+            day: "2-digit",
+            month: "2-digit",
+        },
+    ).format(date);
+}
+
+
+function renderStudent(student) {
+    elements.avatar.textContent =
+        student.initial;
+
+    elements.avatar.title =
+        `Perfil de ${student.name}`;
+}
+
+
+function renderSummary(student, summary) {
+    elements.xpTotal.textContent =
+        student.xp.toLocaleString("pt-BR");
+
+    elements.completedActivities.textContent =
+        String(summary.completed);
+
+    elements.averageErrors.textContent =
+        String(summary.averageErrors);
+
+    elements.averageTime.textContent =
+        formatSeconds(
+            summary.averageTimeSeconds,
+        );
+}
+
+
+function renderBarChart(dailyEvolution) {
+    elements.barChart.replaceChildren();
+
+    if (!dailyEvolution.length) {
+        const message =
+            document.createElement("p");
+
+        message.className =
+            "performance-empty";
+
+        message.textContent =
+            "Nenhuma atividade registrada neste período.";
+
+        elements.barChart.append(message);
+
+        return;
+    }
+
+    const maximumValue = Math.max(
+        ...dailyEvolution.map(
+            (day) => day.attempts,
+        ),
+        1,
+    );
+
+    const fragment =
+        document.createDocumentFragment();
+
+    dailyEvolution.forEach((day, index) => {
+        const column =
+            document.createElement("div");
+
+        const bar =
+            document.createElement("div");
+
+        const value =
+            document.createElement("span");
+
+        const label =
+            document.createElement("span");
+
+        column.className =
+            "bar-chart__col";
+
+        bar.className =
+            "bar-chart__bar";
+
+        if (
+            index ===
+            dailyEvolution.length - 1
+        ) {
+            bar.classList.add("highlight");
         }
-        renderBarChart();
+
+        const percentage = Math.max(
+            5,
+            Math.round(
+                (
+                    day.attempts /
+                    maximumValue
+                ) * 100,
+            ),
+        );
+
+        bar.style.height = `${percentage}%`;
+        bar.title =
+            `${day.attempts} tentativa(s), ` +
+            `${day.completed} conclusão(ões)`;
+
+        value.className =
+            "bar-chart__val";
+
+        value.textContent =
+            String(day.attempts);
+
+        label.className =
+            "bar-chart__label";
+
+        label.textContent =
+            formatShortDate(day.date);
+
+        bar.append(value);
+
+        column.append(
+            bar,
+            label,
+        );
+
+        fragment.append(column);
     });
-});
 
-// ============================================================
-// SIDEBAR
-// ============================================================
-const sidebar  = document.getElementById('sidebar');
-const toggle   = document.getElementById('sidebarToggle');
-const backdrop = document.getElementById('sidebarBackdrop');
-const mobileBtn= document.getElementById('mobileMenuBtn');
+    elements.barChart.append(fragment);
+}
 
-toggle.addEventListener('click', () => sidebar.classList.toggle('sidebar--collapsed'));
-mobileBtn.addEventListener('click', () => { sidebar.classList.add('open'); backdrop.classList.add('open'); });
-backdrop.addEventListener('click', () => { sidebar.classList.remove('open'); backdrop.classList.remove('open'); });
 
-// INIT
-renderBarChart();
-drawDonut();
-renderCatProgress();
-renderMedals();
+function drawDonut(percentage) {
+    const canvas = elements.donutCanvas;
+    const context = canvas.getContext("2d");
+
+    const width = canvas.width;
+    const height = canvas.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    const radius = 51;
+    const lineWidth = 14;
+
+    context.clearRect(
+        0,
+        0,
+        width,
+        height,
+    );
+
+    context.lineWidth = lineWidth;
+    context.lineCap = "round";
+
+    context.beginPath();
+    context.strokeStyle =
+        "rgba(0, 0, 0, 0.10)";
+
+    context.arc(
+        centerX,
+        centerY,
+        radius,
+        0,
+        Math.PI * 2,
+    );
+
+    context.stroke();
+
+    if (percentage <= 0) {
+        return;
+    }
+
+    const startAngle = -Math.PI / 2;
+
+    const endAngle =
+        startAngle +
+        (
+            Math.PI *
+            2 *
+            percentage
+        ) /
+        100;
+
+    context.beginPath();
+    context.strokeStyle = "#1F6CE3";
+
+    context.arc(
+        centerX,
+        centerY,
+        radius,
+        startAngle,
+        endAngle,
+    );
+
+    context.stroke();
+}
+
+
+function renderCompletion(summary) {
+    const percentage =
+        summary.completionRate;
+
+    elements.completionPercentage.textContent =
+        `${percentage}%`;
+
+    elements.completedLegend.textContent =
+        `${percentage}%`;
+
+    elements.remainingLegend.textContent =
+        `${Math.max(0, 100 - percentage)}%`;
+
+    elements.averageTimeLegend.textContent =
+        formatSeconds(
+            summary.averageTimeSeconds,
+        );
+
+    drawDonut(percentage);
+}
+
+
+function createModuleProgress(module) {
+    const container =
+        document.createElement("div");
+
+    const icon =
+        document.createElement("div");
+
+    const iconElement =
+        document.createElement("i");
+
+    const information =
+        document.createElement("div");
+
+    const name =
+        document.createElement("div");
+
+    const progressWrapper =
+        document.createElement("div");
+
+    const progressBar =
+        document.createElement("div");
+
+    const percentage =
+        document.createElement("div");
+
+    container.className =
+        "category-progress-item";
+
+    icon.className =
+        "cat-progress-icon stat-card__icon--xp";
+
+    iconElement.className =
+        "fi fi-br-book-open-cover";
+
+    information.className =
+        "cat-progress-info";
+
+    name.className =
+        "cat-progress-name";
+
+    name.textContent = module.name;
+
+    progressWrapper.className =
+        "progress-wrap";
+
+    progressBar.className =
+        "progress-bar";
+
+    progressBar.style.width =
+        `${module.completionRate}%`;
+
+    percentage.className =
+        "u-pages-aluno-desempenho-012";
+
+    percentage.textContent =
+        `${module.completionRate}%`;
+
+    icon.append(iconElement);
+    progressWrapper.append(progressBar);
+
+    information.append(
+        name,
+        progressWrapper,
+    );
+
+    container.append(
+        icon,
+        information,
+        percentage,
+    );
+
+    return container;
+}
+
+
+function renderModules(modules) {
+    elements.moduleProgressList.replaceChildren();
+
+    if (!modules.length) {
+        const message =
+            document.createElement("p");
+
+        message.className =
+            "performance-empty";
+
+        message.textContent =
+            "Nenhum módulo realizado neste período.";
+
+        elements.moduleProgressList.append(message);
+
+        return;
+    }
+
+    const fragment =
+        document.createDocumentFragment();
+
+    modules.forEach((module) => {
+        fragment.append(
+            createModuleProgress(module),
+        );
+    });
+
+    elements.moduleProgressList.append(fragment);
+}
+
+
+function createHistoryItem(record) {
+    const container =
+        document.createElement("div");
+
+    const icon =
+        document.createElement("div");
+
+    const iconElement =
+        document.createElement("i");
+
+    const information =
+        document.createElement("div");
+
+    const title =
+        document.createElement("div");
+
+    const metadata =
+        document.createElement("div");
+
+    const status =
+        document.createElement("span");
+
+    container.className =
+        "category-progress-item";
+
+    icon.className =
+        "cat-progress-icon";
+
+    iconElement.className =
+        record.completed
+            ? "fi fi-br-check-circle"
+            : "fi fi-br-time-forward";
+
+    information.className =
+        "cat-progress-info";
+
+    title.className =
+        "cat-progress-name";
+
+    title.textContent =
+        `${record.moduleName} — ${record.activityName}`;
+
+    metadata.className =
+        "big-stat__label";
+
+    metadata.textContent =
+        `${formatDate(record.dateTime)} · ` +
+        `${record.errors} erro(s) · ` +
+        formatSeconds(record.timeSeconds);
+
+    status.className =
+        record.completed
+            ? "badge badge--green"
+            : "badge badge--blue";
+
+    status.textContent =
+        record.completed
+            ? "Concluída"
+            : "Não concluída";
+
+    icon.append(iconElement);
+
+    information.append(
+        title,
+        metadata,
+    );
+
+    container.append(
+        icon,
+        information,
+        status,
+    );
+
+    return container;
+}
+
+
+function renderHistory(history) {
+    elements.recentHistory.replaceChildren();
+
+    if (!history.length) {
+        const message =
+            document.createElement("p");
+
+        message.className =
+            "performance-empty";
+
+        message.textContent =
+            "Nenhuma atividade encontrada neste período.";
+
+        elements.recentHistory.append(message);
+
+        return;
+    }
+
+    const fragment =
+        document.createDocumentFragment();
+
+    history.forEach((record) => {
+        fragment.append(
+            createHistoryItem(record),
+        );
+    });
+
+    elements.recentHistory.append(fragment);
+}
+
+
+function renderDashboard(data) {
+    elements.periodLabel.textContent =
+        PERIOD_LABELS[data.period];
+
+    renderStudent(data.student);
+
+    renderSummary(
+        data.student,
+        data.summary,
+    );
+
+    renderBarChart(
+        data.dailyEvolution,
+    );
+
+    renderCompletion(
+        data.summary,
+    );
+
+    renderModules(
+        data.modules,
+    );
+
+    renderHistory(
+        data.recentHistory,
+    );
+}
+
+
+function showLoading() {
+    elements.barChart.textContent =
+        "Carregando desempenho...";
+
+    elements.moduleProgressList.textContent =
+        "Carregando módulos...";
+
+    elements.recentHistory.textContent =
+        "Carregando histórico...";
+}
+
+
+function showError(error) {
+    console.error(
+        "Falha ao carregar desempenho:",
+        error,
+    );
+
+    elements.barChart.textContent =
+        "Não foi possível carregar a evolução.";
+
+    elements.moduleProgressList.textContent =
+        "Não foi possível carregar os módulos.";
+
+    elements.recentHistory.textContent =
+        "Não foi possível carregar o histórico.";
+
+    showToast(
+        error?.message ||
+        "Não foi possível carregar seu desempenho.",
+        "error",
+    );
+}
+
+
+async function loadDashboard(period) {
+    const currentRequest =
+        ++requestSequence;
+
+    activePeriod = period;
+
+    showLoading();
+
+    try {
+        const data =
+            await desempenhoService.load(
+                period,
+            );
+
+        if (
+            currentRequest !== requestSequence
+        ) {
+            return;
+        }
+
+        renderDashboard(data);
+    } catch (error) {
+        if (
+            currentRequest !== requestSequence
+        ) {
+            return;
+        }
+
+        showError(error);
+    }
+}
+
+
+function bindTabs() {
+    elements.tabs.forEach((button) => {
+        button.addEventListener(
+            "click",
+            () => {
+                const period =
+                    TAB_PERIODS[
+                        button.dataset.tab
+                    ];
+
+                if (
+                    !period ||
+                    period === activePeriod
+                ) {
+                    return;
+                }
+
+                elements.tabs.forEach(
+                    (tabButton) => {
+                        tabButton.classList.remove(
+                            "active",
+                        );
+                    },
+                );
+
+                button.classList.add("active");
+
+                loadDashboard(period);
+            },
+        );
+    });
+}
+
+
+function initialize() {
+    bindTabs();
+    loadDashboard(activePeriod);
+}
+
+
+initialize();

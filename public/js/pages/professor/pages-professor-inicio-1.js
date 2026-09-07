@@ -1,200 +1,832 @@
-/* Comportamento extraído de inicio.html. */
+import { showToast } from "../../components/toast.js";
+import { relatoriosService } from "../../services/relatorios-service.js";
+import { sessionService } from "../../services/session-service.js";
 
-// ============================================================
-// DADOS SIMULADOS
-// ============================================================
-const studentsData = [
-    {
-        name: 'Leandro', turma: 'A', nivel: 1, xp: 1240, prog: 70, last: 'Hoje',
-        historico: [
-            { tema: 'Corpo Humano', acertos: 8, erros: 2 },
-            { tema: 'Cores', acertos: 6, erros: 4 },
-            { tema: 'Emoções', acertos: 5, erros: 3 },
-        ]
-    },
-    {
-        name: 'Ana Clara', turma: 'A', nivel: 3, xp: 1850, prog: 90, last: 'Hoje',
-        historico: [
-            { tema: 'Corpo Humano', acertos: 10, erros: 0 },
-            { tema: 'Cores', acertos: 9, erros: 1 },
-            { tema: 'Emoções', acertos: 8, erros: 2 },
-        ]
-    },
-    {
-        name: 'Bruno', turma: 'A', nivel: 2, xp: 1620, prog: 55, last: 'Ontem',
-        historico: [
-            { tema: 'Corpo Humano', acertos: 7, erros: 3 },
-            { tema: 'Cores', acertos: 4, erros: 6 },
-        ]
-    },
-    {
-        name: 'Mariana', turma: 'A', nivel: 2, xp: 980, prog: 80, last: 'Hoje',
-        historico: [
-            { tema: 'Corpo Humano', acertos: 9, erros: 1 },
-            { tema: 'Cores', acertos: 7, erros: 3 },
-            { tema: 'Emoções', acertos: 6, erros: 2 },
-        ]
-    },
-];
+const SELECTORS = Object.freeze({
+    teacherAvatar: "#teacherAvatar",
 
-const nivelLabels = {
-    1: { text: 'Nível 1 — Suporte Visual Puro', cls: 'nivel-1' },
-    2: { text: 'Nível 2 — Aprendiz Guiado', cls: 'nivel-2' },
-    3: { text: 'Nível 3 — Autonomia Contextual', cls: 'nivel-3' },
+    totalStudents: "#totalStudents",
+    totalActivities: "#totalActivities",
+    classAverage: "#classAverage",
+    totalCompletions: "#totalCompletions",
+
+    studentsList: "#alunosNivelList",
+    attentionList: "#attentionList",
+    attentionCount: "#attentionCount",
+
+    performanceStudent: "#histAluno",
+    performanceList: "#histList",
+
+    reportStudent: "#relAluno",
+    generateReport: "#generateReportButton",
+
+    reportModal: "#modalRelatorio",
+    reportText: "#relatorioTexto",
+    closeReport: "#closeReportButton",
+    closeReportFooter: "#closeReportFooterButton",
+    copyReport: "#copyReportButton",
+});
+
+const state = {
+    dashboard: null,
+    selectedStudentId: null,
+    isGeneratingReport: false,
 };
 
-const notifData = [
-    { icon:'fi fi-br-check-circle', color:'rgba(34,197,94,0.20)', iconColor:'#15803d', text:'Leandro completou Corpo Humano', time:'há 10 min' },
-    { icon:'fi fi-br-star',          color:'rgba(245,158,11,0.20)', iconColor:'#b07000',  text:'Ana Clara ganhou nova medalha',   time:'há 1 hora' },
-    { icon:'fi fi-br-exclamation',   color:'rgba(239,68,68,0.15)',  iconColor:'#b91c1c',  text:'Bruno não acessa há 3 dias',      time:'há 3 dias' },
-];
+function getElements() {
+    return {
+        teacherAvatar: document.querySelector(
+            SELECTORS.teacherAvatar,
+        ),
 
-// ============================================================
-// RENDER: ALUNOS COM NÍVEL TEA
-// ============================================================
-const alunosList = document.getElementById('alunosNivelList');
-studentsData.forEach(s => {
-    const nv = nivelLabels[s.nivel];
-    const div = document.createElement('div');
-    div.className = 'student-row';
-    div.innerHTML = `
-        <div class="avatar u-pages-professor-inicio-025">${s.name[0]}</div>
-        <div class="student-row__name">${s.name}</div>
-        <span class="nivel-badge ${nv.cls}">${nv.text}</span>
-        <div class="u-pages-professor-inicio-026">
-            <div class="u-pages-professor-inicio-027">
-                <span>${s.prog}%</span>
-            </div>
-            <div class="progress-wrap u-pages-professor-inicio-028">
-                <div class="progress-bar ${s.prog>=80?'progress-bar--green':'progress-bar--blue'}" style="width:${s.prog}%"></div>
-            </div>
-        </div>
-    `;
-    alunosList.appendChild(div);
-});
+        totalStudents: document.querySelector(
+            SELECTORS.totalStudents,
+        ),
 
-// ============================================================
-// RENDER: NOTIFICAÇÕES
-// ============================================================
-const notifList = document.getElementById('notifList');
-notifData.forEach(n => {
-    const div = document.createElement('div');
-    div.className = 'notif-item';
-    div.innerHTML = `
-        <div class="notif-icon" style="background:${n.color}"><i class="${n.icon}" style="color:${n.iconColor}"></i></div>
-        <div><div class="notif-text">${n.text}</div><div class="notif-time">${n.time}</div></div>
-    `;
-    notifList.appendChild(div);
-});
+        totalActivities: document.querySelector(
+            SELECTORS.totalActivities,
+        ),
 
-// ============================================================
-// RENDER: HISTÓRICO POR ALUNO
-// ============================================================
-const histSelect = document.getElementById('histAluno');
-const relSelect  = document.getElementById('relAluno');
-studentsData.forEach((s, i) => {
-    histSelect.innerHTML += `<option value="${i}">${s.name}</option>`;
-    relSelect.innerHTML  += `<option value="${i}">${s.name}</option>`;
-});
+        classAverage: document.querySelector(
+            SELECTORS.classAverage,
+        ),
 
-function renderHistorico(index) {
-    const s = studentsData[index];
-    const list = document.getElementById('histList');
-    list.innerHTML = '';
-    s.historico.forEach(h => {
-        const div = document.createElement('div');
-        div.className = 'hist-row';
-        div.innerHTML = `
-            <span class="u-pages-professor-inicio-029">${h.tema}</span>
-            <span class="acertos u-pages-professor-inicio-014">${h.acertos}</span>
-            <span class="erros u-pages-professor-inicio-014">${h.erros}</span>
-        `;
-        list.appendChild(div);
+        totalCompletions: document.querySelector(
+            SELECTORS.totalCompletions,
+        ),
+
+        studentsList: document.querySelector(
+            SELECTORS.studentsList,
+        ),
+
+        attentionList: document.querySelector(
+            SELECTORS.attentionList,
+        ),
+
+        attentionCount: document.querySelector(
+            SELECTORS.attentionCount,
+        ),
+
+        performanceStudent: document.querySelector(
+            SELECTORS.performanceStudent,
+        ),
+
+        performanceList: document.querySelector(
+            SELECTORS.performanceList,
+        ),
+
+        reportStudent: document.querySelector(
+            SELECTORS.reportStudent,
+        ),
+
+        generateReport: document.querySelector(
+            SELECTORS.generateReport,
+        ),
+
+        reportModal: document.querySelector(
+            SELECTORS.reportModal,
+        ),
+
+        reportText: document.querySelector(
+            SELECTORS.reportText,
+        ),
+
+        closeReport: document.querySelector(
+            SELECTORS.closeReport,
+        ),
+
+        closeReportFooter: document.querySelector(
+            SELECTORS.closeReportFooter,
+        ),
+
+        copyReport: document.querySelector(
+            SELECTORS.copyReport,
+        ),
+    };
+}
+
+function createElement(tagName, className, text) {
+    const element = document.createElement(tagName);
+
+    if (className) {
+        element.className = className;
+    }
+
+    if (text !== undefined) {
+        element.textContent = text;
+    }
+
+    return element;
+}
+
+function formatNumber(value) {
+    return Number(value ?? 0).toLocaleString(
+        "pt-BR",
+    );
+}
+
+function formatDecimal(value) {
+    return Number(value ?? 0).toLocaleString(
+        "pt-BR",
+        {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        },
+    );
+}
+
+function formatTime(seconds) {
+    const safeSeconds = Number(seconds ?? 0);
+
+    if (safeSeconds < 60) {
+        return `${Math.round(safeSeconds)} s`;
+    }
+
+    const minutes = Math.floor(safeSeconds / 60);
+    const remainingSeconds = Math.round(
+        safeSeconds % 60,
+    );
+
+    return `${minutes}min ${remainingSeconds}s`;
+}
+
+function getStudentLevel(student) {
+    const source =
+        student?.level ??
+        student?.learningMode ??
+        {};
+
+    const parsedNumber = Number(source.number);
+    const number = [1, 2, 3].includes(parsedNumber)
+        ? parsedNumber
+        : 1;
+
+    const defaultNames = {
+        1: "Suporte Visual Puro",
+        2: "Aprendiz Guiado",
+        3: "Autonomia Contextual",
+    };
+
+    return {
+        number,
+        name:
+            source.name ??
+            source.label ??
+            defaultNames[number],
+        className:
+            source.className ??
+            `nivel-${number}`,
+    };
+}
+
+function setText(element, value) {
+    if (element) {
+        element.textContent = value;
+    }
+}
+
+function setPageLoading(elements) {
+    setText(elements.totalStudents, "—");
+    setText(elements.totalActivities, "—");
+    setText(elements.classAverage, "—");
+    setText(elements.totalCompletions, "—");
+
+    if (elements.studentsList) {
+        elements.studentsList.textContent =
+            "Carregando alunos...";
+    }
+
+    if (elements.attentionList) {
+        elements.attentionList.textContent =
+            "Carregando dados...";
+    }
+
+    elements.performanceStudent?.setAttribute(
+        "disabled",
+        "",
+    );
+
+    elements.reportStudent?.setAttribute(
+        "disabled",
+        "",
+    );
+
+    if (elements.generateReport) {
+        elements.generateReport.disabled = true;
+    }
+}
+
+function renderTeacherIdentity(elements) {
+    const session = sessionService.get();
+    const teacherName = session?.user?.name ?? "Professor";
+
+    setText(
+        elements.teacherAvatar,
+        teacherName.charAt(0).toUpperCase(),
+    );
+}
+
+function renderStatistics(elements, dashboard) {
+    setText(
+        elements.totalStudents,
+        formatNumber(dashboard.totalStudents),
+    );
+
+    setText(
+        elements.totalActivities,
+        formatNumber(dashboard.totalActivities),
+    );
+
+    setText(
+        elements.classAverage,
+        `${formatNumber(dashboard.classAverage)}%`,
+    );
+
+    setText(
+        elements.totalCompletions,
+        formatNumber(dashboard.totalCompletions),
+    );
+}
+
+function createStudentRow(student) {
+    const studentLevel = getStudentLevel(student);
+
+    const row = createElement(
+        "div",
+        "student-row",
+    );
+
+    const avatar = createElement(
+        "div",
+        "avatar u-pages-professor-inicio-025",
+        student.name.charAt(0).toUpperCase(),
+    );
+
+    const name = createElement(
+        "div",
+        "student-row__name",
+        student.name,
+    );
+
+    const level = createElement(
+        "span",
+        `nivel-badge ${studentLevel.className}`,
+        `Nível ${studentLevel.number} — ${studentLevel.name}`,
+    );
+
+    const progressContainer = createElement(
+        "div",
+        "u-pages-professor-inicio-026",
+    );
+
+    const percentage = createElement(
+        "div",
+        "u-pages-professor-inicio-027",
+    );
+
+    percentage.append(
+        createElement(
+            "span",
+            "",
+            `${student.completionRate}%`,
+        ),
+    );
+
+    const progressWrap = createElement(
+        "div",
+        "progress-wrap u-pages-professor-inicio-028",
+    );
+
+    const progressBar = createElement(
+        "div",
+        [
+            "progress-bar",
+            student.completionRate >= 80
+                ? "progress-bar--green"
+                : "progress-bar--blue",
+        ].join(" "),
+    );
+
+    progressBar.style.width =
+        `${student.completionRate}%`;
+
+    progressBar.setAttribute(
+        "role",
+        "progressbar",
+    );
+
+    progressBar.setAttribute(
+        "aria-valuemin",
+        "0",
+    );
+
+    progressBar.setAttribute(
+        "aria-valuemax",
+        "100",
+    );
+
+    progressBar.setAttribute(
+        "aria-valuenow",
+        String(student.completionRate),
+    );
+
+    progressWrap.append(progressBar);
+    progressContainer.append(percentage, progressWrap);
+
+    row.append(
+        avatar,
+        name,
+        level,
+        progressContainer,
+    );
+
+    return row;
+}
+
+function renderStudents(elements, students) {
+    if (!elements.studentsList) {
+        return;
+    }
+
+    elements.studentsList.replaceChildren();
+
+    if (!students.length) {
+        elements.studentsList.append(
+            createElement(
+                "p",
+                "",
+                "Nenhum aluno cadastrado.",
+            ),
+        );
+
+        return;
+    }
+
+    students.slice(0, 5).forEach((student) => {
+        elements.studentsList.append(
+            createStudentRow(student),
+        );
     });
 }
 
-histSelect.addEventListener('change', (e) => renderHistorico(parseInt(e.target.value)));
-renderHistorico(0);
+function createAttentionRow(student) {
+    const row = createElement(
+        "div",
+        "notif-item",
+    );
 
-// ============================================================
-// RELATÓRIO PEDAGÓGICO VIA IA (Simulado)
-// ============================================================
-function gerarRelatorioIA() {
-    const idx = parseInt(relSelect.value);
-    const s = studentsData[idx];
-    const nv = nivelLabels[s.nivel];
-    const totalAcertos = s.historico.reduce((a, h) => a + h.acertos, 0);
-    const totalErros   = s.historico.reduce((a, h) => a + h.erros, 0);
-    const total        = totalAcertos + totalErros;
-    const taxa         = total > 0 ? Math.round((totalAcertos / total) * 100) : 0;
+    const icon = createElement(
+        "div",
+        "notif-icon",
+    );
 
-    const temasFortes  = s.historico.filter(h => h.acertos / (h.acertos + h.erros) >= 0.7).map(h => h.tema);
-    const temasFracos  = s.historico.filter(h => h.acertos / (h.acertos + h.erros) < 0.7).map(h => h.tema);
+    icon.style.background = "rgba(239, 68, 68, 0.15)";
 
-    const texto = `RELATÓRIO PEDAGÓGICO — PLATAFORMA ROAR
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    const iconElement = createElement(
+        "i",
+        "fi fi-br-exclamation",
+    );
 
-Aluno(a): ${s.name}
-Turma: ${s.turma}
-Nível de Suporte TEA: ${nv.text}
-Data de Emissão: ${new Date().toLocaleDateString('pt-BR')}
+    iconElement.style.color = "#b91c1c";
+    iconElement.setAttribute("aria-hidden", "true");
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    icon.append(iconElement);
 
-DESEMPENHO GERAL
-O(a) aluno(a) ${s.name} apresentou uma taxa geral de acertos de ${taxa}% nas atividades realizadas na plataforma ROAR, com ${totalAcertos} acertos e ${totalErros} erros ao longo de ${s.historico.length} tema(s) trabalhado(s).
+    const content = createElement("div");
+    const title = createElement(
+        "div",
+        "notif-text",
+        student.name,
+    );
 
-O progresso acumulado nos módulos da plataforma é de ${s.prog}%, com ${s.xp.toLocaleString('pt-BR')} pontos de experiência.
+    const description = createElement(
+        "div",
+        "notif-time",
+        `Média de ${formatDecimal(
+            student.averageErrors,
+        )} erros por atividade`,
+    );
 
-PONTOS FORTES
-${temasFortes.length > 0 ? `O(a) aluno(a) demonstrou bom domínio nos seguintes temas: ${temasFortes.join(', ')}. Nesses temas, a taxa de acerto foi igual ou superior a 70%.` : 'Nenhum tema com taxa de acerto >= 70% foi identificado até o momento.'}
+    content.append(title, description);
+    row.append(icon, content);
 
-PONTOS DE ATENÇÃO
-${temasFracos.length > 0 ? `Os seguintes temas necessitam de reforço: ${temasFracos.join(', ')}. Recomenda-se atividades complementares com foco em repetição espaçada e suporte visual ampliado.` : 'Todos os temas trabalhados apresentaram desempenho satisfatório.'}
-
-RECOMENDAÇÕES
-Considerando o nível de suporte TEA atribuído (${nv.text}), recomenda-se que as atividades continuem priorizando:
-${s.nivel === 1 ? '• Estímulos visuais puros com hitboxes ampliadas\n• Áudio automático para reforço auditivo\n• Instruções com palavra isolada em caixa alta' : s.nivel === 2 ? '• Frases curtas e diretas (estrutura S+V+O)\n• Áudio sob demanda para autonomia parcial\n• Hitboxes de tamanho padrão' : '• Contextos e diálogos curtos para estimular autonomia\n• Instruções textuais sem áudio obrigatório\n• Hitboxes reduzidas para desafio motor'}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Relatório gerado automaticamente pela plataforma ROAR.
-Este documento pode ser anexado ao prontuário escolar do(a) aluno(a).`;
-
-    document.getElementById('relatorioTexto').value = texto;
-    document.getElementById('modalRelatorio').classList.add('open');
+    return row;
 }
 
-function fecharModal() {
-    document.getElementById('modalRelatorio').classList.remove('open');
+function renderAttentionStudents(
+    elements,
+    attentionStudents,
+) {
+    setText(
+        elements.attentionCount,
+        `${attentionStudents.length} ${attentionStudents.length === 1
+            ? "aluno"
+            : "alunos"
+        }`,
+    );
+
+    if (!elements.attentionList) {
+        return;
+    }
+
+    elements.attentionList.replaceChildren();
+
+    if (!attentionStudents.length) {
+        elements.attentionList.append(
+            createElement(
+                "p",
+                "",
+                "Nenhum alerta de dificuldade no momento.",
+            ),
+        );
+
+        return;
+    }
+
+    attentionStudents.forEach((student) => {
+        elements.attentionList.append(
+            createAttentionRow(student),
+        );
+    });
 }
 
-function copiarRelatorio() {
-    const textarea = document.getElementById('relatorioTexto');
-    textarea.select();
-    document.execCommand('copy');
-    showToast('Relatório copiado!', 'success');
+function populateStudentSelect(
+    select,
+    students,
+    placeholder,
+) {
+    if (!select) {
+        return;
+    }
+
+    select.replaceChildren();
+
+    const placeholderOption =
+        createElement("option", "", placeholder);
+
+    placeholderOption.value = "";
+    placeholderOption.disabled = true;
+
+    select.append(placeholderOption);
+
+    students.forEach((student) => {
+        const option = createElement(
+            "option",
+            "",
+            student.name,
+        );
+
+        option.value = String(student.id);
+        select.append(option);
+    });
+
+    if (students.length) {
+        select.value = String(students[0].id);
+        select.disabled = false;
+    } else {
+        placeholderOption.selected = true;
+        select.disabled = true;
+    }
 }
 
-// ============================================================
-// SIDEBAR
-// ============================================================
-const sidebar  = document.getElementById('sidebar');
-const toggle   = document.getElementById('sidebarToggle');
-const backdrop = document.getElementById('sidebarBackdrop');
-const mobileBtn= document.getElementById('mobileMenuBtn');
-toggle.addEventListener('click', () => sidebar.classList.toggle('sidebar--collapsed'));
-mobileBtn.addEventListener('click', () => { sidebar.classList.add('open'); backdrop.classList.add('open'); });
-backdrop.addEventListener('click', () => { sidebar.classList.remove('open'); backdrop.classList.remove('open'); });
+function createPerformanceRow(
+    label,
+    value,
+    description,
+) {
+    const row = createElement(
+        "div",
+        "hist-row",
+    );
 
-document.getElementById('btnNotif').addEventListener('click', () => {
-    showToast('3 novas notificações', 'info');
-});
+    row.append(
+        createElement(
+            "span",
+            "u-pages-professor-inicio-029",
+            label,
+        ),
 
-function showToast(msg, type='') {
-    const c = document.getElementById('toast-container');
-    const t = document.createElement('div');
-    t.className = `toast${type?' toast--'+type:''}`;
-    t.innerHTML = `<i class="fi fi-br-bell"></i> ${msg}`;
-    c.appendChild(t);
-    setTimeout(() => t.remove(), 3000);
+        createElement(
+            "span",
+            "acertos u-pages-professor-inicio-014",
+            value,
+        ),
+
+        createElement(
+            "span",
+            "u-pages-professor-inicio-014",
+            description,
+        ),
+    );
+
+    return row;
 }
+
+function renderStudentPerformance(elements, studentId) {
+    const student = state.dashboard?.students.find(
+        (item) => item.id === Number(studentId),
+    );
+
+    if (!elements.performanceList) {
+        return;
+    }
+
+    elements.performanceList.replaceChildren();
+
+    if (!student) {
+        elements.performanceList.append(
+            createElement(
+                "p",
+                "",
+                "Selecione um aluno.",
+            ),
+        );
+
+        return;
+    }
+
+    elements.performanceList.append(
+        createPerformanceRow(
+            "Tentativas",
+            formatNumber(student.attempted),
+            "registros",
+        ),
+
+        createPerformanceRow(
+            "Conclusões",
+            formatNumber(student.completed),
+            `${student.completionRate}%`,
+        ),
+
+        createPerformanceRow(
+            "Média de erros",
+            formatDecimal(student.averageErrors),
+            "por atividade",
+        ),
+
+        createPerformanceRow(
+            "Tempo médio",
+            formatTime(student.averageTimeSeconds),
+            "por atividade",
+        ),
+    );
+}
+
+function buildPedagogicalReport(report) {
+    const { student, summary } = report;
+    const studentLevel = getStudentLevel(student);
+
+    return [
+        "RELATÓRIO PEDAGÓGICO — PLATAFORMA ROAR",
+        "",
+        `Aluno(a): ${student.name}`,
+        `Ano escolar: ${student.schoolYear}`,
+        `Nível de suporte: Nível ${studentLevel.number} — ${studentLevel.name}`,
+        `Data de emissão: ${new Date().toLocaleDateString("pt-BR")}`,
+        "",
+        "DESEMPENHO GERAL",
+        `Atividades registradas: ${summary.attempted}`,
+        `Atividades concluídas: ${summary.completed}`,
+        `Taxa de conclusão: ${summary.completionRate}%`,
+        `Média de erros: ${formatDecimal(summary.averageErrors)}`,
+        `Tempo médio: ${formatTime(summary.averageTimeSeconds)}`,
+        `XP total: ${formatNumber(student.xp)}`,
+        "",
+        "ORIENTAÇÃO",
+        getRecommendation(studentLevel.number, summary),
+        "",
+        "Relatório gerado automaticamente com base nos dados registrados na plataforma ROAR.",
+    ].join("\n");
+}
+
+function getRecommendation(levelNumber, summary) {
+    if (!summary.attempted) {
+        return "Ainda não existem tentativas suficientes para produzir uma orientação de desempenho.";
+    }
+
+    const difficultyMessage =
+        summary.averageErrors >= 3
+            ? "Recomenda-se reforçar as atividades com maior quantidade de erros e acompanhar novas tentativas."
+            : "O aluno apresenta uma quantidade controlada de erros nas atividades registradas.";
+
+    const levelMessage = {
+        1: "Mantenha apoio visual intenso, instruções objetivas e repetição de áudio quando necessário.",
+        2: "Mantenha instruções curtas, apoio intermediário e participação ativa.",
+        3: "Priorize leitura, interpretação contextual e maior autonomia.",
+    }[levelNumber];
+
+    return `${difficultyMessage} ${levelMessage}`;
+}
+
+function openReportModal(elements) {
+    elements.reportModal?.classList.add("open");
+}
+
+function closeReportModal(elements) {
+    elements.reportModal?.classList.remove("open");
+}
+
+async function generateReport(elements) {
+    if (state.isGeneratingReport) {
+        return;
+    }
+
+    const studentId = Number(
+        elements.reportStudent?.value,
+    );
+
+    if (!studentId) {
+        showToast(
+            "Selecione um aluno para gerar o relatório.",
+            "warning",
+        );
+        return;
+    }
+
+    state.isGeneratingReport = true;
+    elements.generateReport.disabled = true;
+    elements.generateReport.textContent =
+        "Gerando relatório...";
+
+    try {
+        const report =
+            await relatoriosService.getStudentReport(
+                studentId,
+            );
+
+        elements.reportText.value =
+            buildPedagogicalReport(report);
+
+        openReportModal(elements);
+    } catch (error) {
+        showToast(
+            error?.message ??
+            "Não foi possível gerar o relatório.",
+            "error",
+        );
+    } finally {
+        state.isGeneratingReport = false;
+        elements.generateReport.disabled = false;
+        elements.generateReport.textContent =
+            "Gerar relatório";
+    }
+}
+
+async function copyReport(elements) {
+    const text = elements.reportText?.value;
+
+    if (!text) {
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(text);
+
+        showToast(
+            "Relatório copiado.",
+            "success",
+        );
+    } catch {
+        elements.reportText.select();
+
+        document.execCommand("copy");
+
+        showToast(
+            "Relatório copiado.",
+            "success",
+        );
+    }
+}
+
+function registerEvents(elements) {
+    elements.performanceStudent?.addEventListener(
+        "change",
+        (event) => {
+            state.selectedStudentId =
+                Number(event.target.value);
+
+            renderStudentPerformance(
+                elements,
+                state.selectedStudentId,
+            );
+        },
+    );
+
+    elements.generateReport?.addEventListener(
+        "click",
+        () => generateReport(elements),
+    );
+
+    elements.closeReport?.addEventListener(
+        "click",
+        () => closeReportModal(elements),
+    );
+
+    elements.closeReportFooter?.addEventListener(
+        "click",
+        () => closeReportModal(elements),
+    );
+
+    elements.copyReport?.addEventListener(
+        "click",
+        () => copyReport(elements),
+    );
+
+    elements.reportModal?.addEventListener(
+        "click",
+        (event) => {
+            if (event.target === elements.reportModal) {
+                closeReportModal(elements);
+            }
+        },
+    );
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            closeReportModal(elements);
+        }
+    });
+}
+
+function renderDashboard(elements, dashboard) {
+    state.dashboard = dashboard;
+
+    renderStatistics(elements, dashboard);
+    renderStudents(elements, dashboard.students);
+
+    renderAttentionStudents(
+        elements,
+        dashboard.attentionStudents,
+    );
+
+    populateStudentSelect(
+        elements.performanceStudent,
+        dashboard.students,
+        "Selecione um aluno",
+    );
+
+    populateStudentSelect(
+        elements.reportStudent,
+        dashboard.students,
+        "Selecione um aluno",
+    );
+
+    state.selectedStudentId =
+        dashboard.students[0]?.id ?? null;
+
+    renderStudentPerformance(
+        elements,
+        state.selectedStudentId,
+    );
+
+    if (elements.generateReport) {
+        elements.generateReport.disabled =
+            dashboard.students.length === 0;
+    }
+}
+
+async function initializeTeacherDashboard() {
+    const elements = getElements();
+    const session = sessionService.get();
+    const teacherId = session?.user?.id;
+
+    renderTeacherIdentity(elements);
+    registerEvents(elements);
+    setPageLoading(elements);
+
+    if (!teacherId) {
+        showToast(
+            "Não foi possível identificar o professor.",
+            "error",
+        );
+
+        return;
+    }
+
+    try {
+        const dashboard =
+            await relatoriosService.getTeacherDashboard(
+                teacherId,
+            );
+
+        renderDashboard(elements, dashboard);
+    } catch (error) {
+        showToast(
+            error?.message ??
+            "Não foi possível carregar a dashboard.",
+            "error",
+        );
+
+        setText(
+            elements.studentsList,
+            "Não foi possível carregar os alunos.",
+        );
+
+        setText(
+            elements.attentionList,
+            "Não foi possível carregar os alertas.",
+        );
+    }
+}
+
+initializeTeacherDashboard();

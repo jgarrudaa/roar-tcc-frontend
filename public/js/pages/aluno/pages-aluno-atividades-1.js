@@ -13,16 +13,17 @@ const ICONS = Object.freeze({
 });
 
 function progressText(module) {
-    if (module.progress === 100) return "Módulo concluído";
-    if (module.progress > 0) return `${module.progress}% concluído`;
-    return module.status === "active" ? "Começar módulo" : "Em preparação";
+    if (module.status === "completed") return "Concluído — revisar";
+    if (module.status === "in_progress") return `${module.progress}% concluído — continuar`;
+    if (module.status === "available") return "Começar módulo";
+    return "Em preparação";
 }
 
 function createModuleCard(module, index) {
     const card = document.createElement("button");
     card.type = "button";
     card.className = `module-card module-card--${index % 2 === 0 ? "blue" : "green"}`;
-    card.disabled = module.status !== "active";
+    card.disabled = module.status === "preparation";
     card.setAttribute("aria-label", `${module.title}. ${progressText(module)}`);
 
     const icon = document.createElement("span");
@@ -45,7 +46,8 @@ function createModuleCard(module, index) {
 
     card.append(icon, title, progress, bar);
     card.addEventListener("click", () => {
-        const url = `atividade.html?modulo=${encodeURIComponent(module.id)}&etapa=${module.nextStage}`;
+        const etapa = module.nextStage ?? 1;
+        const url = `atividade.html?modulo=${encodeURIComponent(module.id)}&etapa=${etapa}`;
         if (window.roarNavigate) {
             window.roarNavigate(url);
         } else {

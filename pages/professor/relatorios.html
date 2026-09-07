@@ -1,85 +1,173 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Relatórios de desempenho dos alunos vinculados ao professor.">
+
     <title>ROAR — Relatórios de Desempenho</title>
-    <meta name="description" content="Dashboard completo de desempenho individual de cada aluno na plataforma ROAR.">
+
     <link rel="stylesheet" href="../../public/css/global.css">
+
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
+
     <link rel="stylesheet" href="../../public/css/pages/pages-professor-relatorios.css">
 </head>
-<body class="teacher-area">
-<div class="app-shell">
-    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-    <!-- SIDEBAR PROFESSOR -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar__logo-wrap">
-            <img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo" onclick="window.location.href='inicio.html'">
-            <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i class="fi fi-br-menu-burger"></i></button>
-        </div>
-        <nav class="sidebar__nav">
-            <a href="inicio.html"       class="sidebar__link"><i class="fi fi-br-home"></i><span>In&iacute;cio</span></a>
-            <a href="alunos.html"     class="sidebar__link"><i class="fi fi-br-users"></i><span>Alunos</span></a>
-            <a href="atividades.html" class="sidebar__link"><i class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a>
-            <a href="relatorios.html" class="sidebar__link active"><i class="fi fi-br-chart-simple"></i><span>Relat&oacute;rios</span></a>
-            <a href="perfil.html"     class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
-        </nav>
-        <div class="sidebar__footer">
-            <a href="../auth/login-professor.html" class="sidebar__link"><i class="fi fi-br-exit"></i><span>Sair</span></a>
-        </div>
-    </aside>
+<body class="teacher-area" data-auth-role="teacher">
+    <div class="app-shell">
 
-    <!-- MAIN -->
-    <div class="main-content">
-        <header class="navbar">
-            <div class="u-pages-professor-relatorios-001">
-                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button>
-                <div class="navbar__page-title">
-                    <h1>Relatório do aluno</h1>
-                    <p>Selecione um aluno para consultar o resumo do desempenho.</p>
-                </div>
-            </div>
-            <div class="navbar__right u-pages-professor-relatorios-001">
-                <button class="print-btn" onclick="window.print()">
-                    <i class="fi fi-br-print"></i> Imprimir Relat&oacute;rio
+        <!-- Fundo usado quando a sidebar é aberta no celular -->
+        <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar" aria-label="Menu principal">
+            <div class="sidebar__logo-wrap">
+                <a href="inicio.html" aria-label="Ir para o início">
+                    <img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo">
+                </a>
+
+                <button class="sidebar__toggle" id="sidebarToggle" type="button" aria-label="Minimizar menu"
+                    aria-controls="sidebar">
+                    <i class="fi fi-br-menu-burger" aria-hidden="true"></i>
                 </button>
-                <a href="perfil.html" class="navbar__avatar u-pages-professor-relatorios-005" title="Perfil" aria-label="Abrir perfil">A</a>
             </div>
-        </header>
 
-        <div class="page-body fade-in">
+            <nav class="sidebar__nav">
+                <a href="inicio.html" class="sidebar__link">
+                    <i class="fi fi-br-home" aria-hidden="true"></i>
 
-            <!-- Seletor mobile -->
-            <select class="mobile-student-sel" id="mobileSel" onchange="selecionarAluno(parseInt(this.value))"></select>
+                    <span>Início</span>
+                </a>
 
-            <div class="rel-layout">
+                <a href="alunos.html" class="sidebar__link">
+                    <i class="fi fi-br-users" aria-hidden="true"></i>
 
-                <!-- Painel lateral -->
-                <div class="student-sidebar">
-                    <div class="student-sidebar__header">Alunos</div>
-                    <div class="student-sidebar__list" id="studentList"></div>
+                    <span>Alunos</span>
+                </a>
+
+                <a href="atividades.html" class="sidebar__link">
+                    <i class="fi fi-br-puzzle-pieces" aria-hidden="true"></i>
+
+                    <span>Atividades</span>
+                </a>
+
+                <a href="relatorios.html" class="sidebar__link active" aria-current="page">
+                    <i class="fi fi-br-chart-simple" aria-hidden="true"></i>
+
+                    <span>Relatórios</span>
+                </a>
+
+                <a href="perfil.html" class="sidebar__link">
+                    <i class="fi fi-br-user" aria-hidden="true"></i>
+
+                    <span>Perfil</span>
+                </a>
+            </nav>
+
+            <div class="sidebar__footer">
+                <button class="sidebar__link" id="nav-logout" data-action="logout" type="button">
+                    <i class="fi fi-br-exit" aria-hidden="true"></i>
+
+                    <span>Sair</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Conteúdo principal -->
+        <main class="main-content">
+            <header class="navbar">
+                <div class="u-pages-professor-relatorios-001">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="Abrir menu"
+                        aria-controls="sidebar">
+                        <i class="fi fi-br-menu-burger" aria-hidden="true"></i>
+                    </button>
+
+                    <div class="navbar__page-title">
+                        <h1>Relatório do aluno</h1>
+
+                        <p>
+                            Selecione um aluno para consultar o resumo
+                            do desempenho.
+                        </p>
+                    </div>
                 </div>
 
-                <!-- Dashboard principal -->
-                <div class="dashboard-area" id="dashboardArea">
-                    <!-- populado via JS -->
+                <div class="navbar__right u-pages-professor-relatorios-001">
+                    <button class="print-btn" id="printReportButton" type="button">
+                        <i class="fi fi-br-print" aria-hidden="true"></i>
+
+                        Imprimir relatório
+                    </button>
+
+                    <a href="perfil.html" class="navbar__avatar u-pages-professor-relatorios-005" title="Abrir perfil"
+                        aria-label="Abrir perfil">
+                        P
+                    </a>
+                </div>
+            </header>
+
+            <div class="page-body fade-in">
+
+                <!-- Seletor exibido em telas menores -->
+                <div class="mobile-student-selector">
+                    <label for="mobileSel">
+                        Selecione um aluno
+                    </label>
+
+                    <select class="mobile-student-sel" id="mobileSel" aria-label="Selecionar aluno">
+                        <option value="">
+                            Carregando alunos...
+                        </option>
+                    </select>
                 </div>
 
+                <div class="rel-layout">
+
+                    <!-- Lista lateral de alunos -->
+                    <aside class="student-sidebar" aria-label="Lista de alunos">
+                        <div class="student-sidebar__header">
+                            Alunos
+                        </div>
+
+                        <div class="student-sidebar__list" id="studentList" aria-live="polite">
+                            <p class="student-list-status">
+                                Carregando alunos...
+                            </p>
+                        </div>
+                    </aside>
+
+                    <!-- Conteúdo criado pelo controller -->
+                    <section class="dashboard-area" id="dashboardArea" aria-live="polite" aria-busy="true">
+                        <div class="simple-report-card">
+                            <h2>Carregando relatório...</h2>
+
+                            <p>
+                                Aguarde enquanto buscamos os dados dos alunos.
+                            </p>
+                        </div>
+                    </section>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
-</div>
 
-<div id="toast-container"></div>
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
-<script src="../../public/js/roar-storage.js"></script>
-<script src="../../public/js/roar-page-transition.js"></script>
-<script src="../../public/js/roar-sidebar.js"></script>
-<script src="../../public/js/pages/professor/pages-professor-relatorios-1.js"></script>
+    <!-- Verifica se existe uma sessão válida de professor -->
+    <script type="module" src="../../public/js/pages/auth/route-guard.js"></script>
+
+    <!-- Transições visuais compartilhadas -->
+    <script src="../../public/js/roar-page-transition.js"></script>
+
+    <!-- Sidebar e logout -->
+    <script src="../../public/js/roar-sidebar.js"></script>
+
+    <!-- Integração do relatório com a API -->
+    <script type="module" src="../../public/js/pages/professor/pages-professor-relatorios-1.js"></script>
 </body>
+
 </html>
-
-
-

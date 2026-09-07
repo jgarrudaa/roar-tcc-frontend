@@ -1,123 +1,93 @@
-/* Comportamento extraído de configuracoes.html. */
+import { showToast } from "../../components/toast.js";
+import { sessionService } from "../../services/session-service.js";
+import { storage } from "../../utils/storage.js";
 
-// ============================================================
-// TEMA
-// ============================================================
-const themeLight = document.getElementById('themeLight');
-const themeDark  = document.getElementById('themeDark');
+const DEFAULTS = Object.freeze({ theme: "light", fontSize: "medium", volume: 80, notifications: false, highContrast: false, soundsEnabled: true, animationsEnabled: true, reducedStimuli: false });
+const elements = {
+    themeLight: document.getElementById("themeLight"), themeDark: document.getElementById("themeDark"),
+    fontButtons: [...document.querySelectorAll(".fs-btn")], name: document.getElementById("cfgNome"),
+    language: document.getElementById("cfgIdioma"), volume: document.getElementById("cfgVolume"),
+    notifications: document.getElementById("cfgNotif"), contrast: document.getElementById("cfgContrast"),
+    sounds: document.getElementById("cfgSons"), animations: document.getElementById("cfgAnim"),
+    stimuli: document.getElementById("cfgEstimulos"), saveTop: document.getElementById("btnSave"),
+    saveBottom: document.getElementById("btnSave2"), logout: document.getElementById("btnLogout"),
+    avatar: document.querySelector(".navbar__avatar"),
+};
+let preferences = { ...DEFAULTS };
 
-function updateThemeUI(theme) {
-    if (theme === 'dark') {
-        themeDark.classList.add('active');
-        themeLight.classList.remove('active');
-    } else {
-        themeLight.classList.add('active');
-        themeDark.classList.remove('active');
-    }
-}
-
-// Inicializar botões com o tema ativo
-const currentTheme = window.ROARTheme ? window.ROARTheme.get() : (localStorage.getItem('roarTheme') || 'light');
-updateThemeUI(currentTheme);
-
-themeLight.addEventListener('click', () => {
-    updateThemeUI('light');
-    if (window.ROARTheme) {
-        window.ROARTheme.set('light');
-    } else {
-        localStorage.setItem('roarTheme', 'light');
-        document.documentElement.removeAttribute('data-theme');
-    }
-    showToast('Tema claro ativado!', 'info');
-});
-
-themeDark.addEventListener('click', () => {
-    updateThemeUI('dark');
-    if (window.ROARTheme) {
-        window.ROARTheme.set('dark');
-    } else {
-        localStorage.setItem('roarTheme', 'dark');
-        document.documentElement.setAttribute('data-theme', 'dark');
-    }
-    showToast('Modo escuro ativado!', 'info');
-});
-
-// ============================================================
-// TAMANHO DE FONTE
-// ============================================================
-const savedFs = localStorage.getItem('roarFontSize') || 'medium';
-document.querySelectorAll('.fs-btn').forEach(btn => {
-    if (btn.dataset.fs === savedFs) {
-        btn.classList.add('active');
-    } else {
-        btn.classList.remove('active');
-    }
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.fs-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const sizes = { small: '17px', medium: '19px', large: '22px' };
-        document.documentElement.style.fontSize = sizes[btn.dataset.fs] || '19px';
-        localStorage.setItem('roarFontSize', btn.dataset.fs);
-    });
-});
-
-// ============================================================
-// SALVAR & RESTAURAR CONFIGS
-// ============================================================
-try {
-    const saved = JSON.parse(localStorage.getItem('roarSettings') || '{}');
-    if (saved.nome) document.getElementById('cfgNome').value = saved.nome;
-    if (saved.idioma) document.getElementById('cfgIdioma').value = saved.idioma;
-    if (saved.volume !== undefined) document.getElementById('cfgVolume').value = saved.volume;
-    if (saved.notif !== undefined) document.getElementById('cfgNotif').checked = saved.notif;
-    if (saved.contrast !== undefined) document.getElementById('cfgContrast').checked = saved.contrast;
-    if (saved.sons !== undefined) document.getElementById('cfgSons').checked = saved.sons;
-    if (saved.anim !== undefined) document.getElementById('cfgAnim').checked = saved.anim;
-    if (saved.estimulos !== undefined) document.getElementById('cfgEstimulos').checked = saved.estimulos;
-} catch (e) {}
-
-function saveConfig() {
-    const settings = {
-        nome:      document.getElementById('cfgNome').value,
-        idioma:    document.getElementById('cfgIdioma').value,
-        volume:    document.getElementById('cfgVolume').value,
-        notif:     document.getElementById('cfgNotif').checked,
-        contrast:  document.getElementById('cfgContrast').checked,
-        sons:      document.getElementById('cfgSons').checked,
-        anim:      document.getElementById('cfgAnim').checked,
-        estimulos: document.getElementById('cfgEstimulos').checked,
+function normalize(value) {
+    const source = value && typeof value === "object" ? value : {};
+    return {
+        theme: source.theme === "dark" ? "dark" : "light",
+        fontSize: ["small", "medium", "large"].includes(source.fontSize) ? source.fontSize : "medium",
+        volume: Math.min(100, Math.max(0, Number(source.volume ?? 80))),
+        notifications: Boolean(source.notifications ?? false), highContrast: Boolean(source.highContrast ?? false),
+        soundsEnabled: Boolean(source.soundsEnabled ?? true), animationsEnabled: Boolean(source.animationsEnabled ?? true),
+        reducedStimuli: Boolean(source.reducedStimuli ?? false),
     };
-    localStorage.setItem('roarSettings', JSON.stringify(settings));
-    showToast('Configurações salvas com sucesso!', 'success');
 }
 
-document.getElementById('btnSave').addEventListener('click',  saveConfig);
-document.getElementById('btnSave2').addEventListener('click', saveConfig);
-document.getElementById('btnLogout').addEventListener('click', () => {
-    if (window.roarNavigate) {
-        window.roarNavigate('../auth/login-aluno.html');
-    } else {
-        window.location.href = '../auth/login-aluno.html';
-    }
-});
-document.getElementById('btnDados').addEventListener('click',  () => { showToast('Exportação de dados em breve', 'info'); });
-
-// ============================================================
-// SIDEBAR
-// ============================================================
-const sidebar  = document.getElementById('sidebar');
-const toggle   = document.getElementById('sidebarToggle');
-const backdrop = document.getElementById('sidebarBackdrop');
-const mobileBtn= document.getElementById('mobileMenuBtn');
-toggle.addEventListener('click', () => sidebar.classList.toggle('sidebar--collapsed'));
-mobileBtn.addEventListener('click', () => { sidebar.classList.add('open'); backdrop.classList.add('open'); });
-backdrop.addEventListener('click', () => { sidebar.classList.remove('open'); backdrop.classList.remove('open'); });
-
-function showToast(msg, type = '') {
-    const c = document.getElementById('toast-container');
-    const t = document.createElement('div');
-    t.className = `toast ${type ? 'toast--'+type : ''}`;
-    t.innerHTML = `<i class="fi fi-br-check"></i> ${msg}`;
-    c.appendChild(t);
-    setTimeout(() => t.remove(), 3000);
+function apply(value) {
+    const root = document.documentElement;
+    root.dataset.theme = value.theme;
+    root.dataset.fontSize = value.fontSize;
+    root.classList.toggle("high-contrast", value.highContrast);
+    root.classList.toggle("reduced-motion", !value.animationsEnabled);
+    root.classList.toggle("reduced-stimuli", value.reducedStimuli);
+    window.ROARTheme?.set?.(value.theme);
 }
+
+function render() {
+    elements.themeLight.classList.toggle("active", preferences.theme === "light");
+    elements.themeDark.classList.toggle("active", preferences.theme === "dark");
+    elements.fontButtons.forEach((button) => button.classList.toggle("active", button.dataset.fs === preferences.fontSize));
+    elements.volume.value = preferences.volume;
+    elements.notifications.checked = preferences.notifications;
+    elements.contrast.checked = preferences.highContrast;
+    elements.sounds.checked = preferences.soundsEnabled;
+    elements.animations.checked = preferences.animationsEnabled;
+    elements.stimuli.checked = preferences.reducedStimuli;
+    const user = sessionService.get()?.user ?? {};
+    const name = String(user.name ?? user.nome ?? "Aluno").trim();
+    elements.name.value = name;
+    elements.name.readOnly = true;
+    elements.language.value = "Português";
+    elements.language.disabled = true;
+    elements.avatar.textContent = name.charAt(0).toLocaleUpperCase("pt-BR") || "A";
+}
+
+function readForm() {
+    return normalize({
+        ...preferences, volume: elements.volume.value, notifications: elements.notifications.checked,
+        highContrast: elements.contrast.checked, soundsEnabled: elements.sounds.checked,
+        animationsEnabled: elements.animations.checked, reducedStimuli: elements.stimuli.checked
+    });
+}
+
+function preview() { preferences = readForm(); apply(preferences); }
+function save() { preferences = readForm(); storage.setPreferences(preferences); apply(preferences); showToast("Configurações salvas com sucesso.", "success"); }
+function setTheme(theme) { preferences = { ...preferences, theme }; render(); apply(preferences); }
+
+function registerEvents() {
+    elements.themeLight.addEventListener("click", () => setTheme("light"));
+    elements.themeDark.addEventListener("click", () => setTheme("dark"));
+    elements.fontButtons.forEach((button) => button.addEventListener("click", () => {
+        preferences = { ...preferences, fontSize: button.dataset.fs }; render(); apply(preferences);
+    }));
+    [elements.volume, elements.notifications, elements.contrast, elements.sounds, elements.animations, elements.stimuli]
+        .forEach((element) => element.addEventListener("input", preview));
+    elements.saveTop.addEventListener("click", save);
+    elements.saveBottom.addEventListener("click", save);
+    elements.logout.addEventListener("click", () => { sessionService.end(); window.location.replace("../auth/login-aluno.html"); });
+}
+
+function initialize() {
+    preferences = normalize(storage.getPreferences());
+    render(); apply(preferences);
+    document.getElementById("btnFoto")?.setAttribute("disabled", "");
+    document.getElementById("btnDados")?.setAttribute("disabled", "");
+    document.querySelectorAll('button[aria-label="Alterar e-mail"], button[aria-label="Alterar senha"]').forEach((button) => button.setAttribute("disabled", ""));
+    registerEvents();
+}
+
+initialize();
