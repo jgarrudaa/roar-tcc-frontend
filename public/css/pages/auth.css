@@ -511,3 +511,19 @@ input {
         max-width: 200px;
     }
 }
+/* Exibe apenas a etapa ativa dos formulários integrados à API. */
+.auth-form[hidden] {
+    display: none;
+}
+
+#verificationDescription {
+    width: 100%;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#resendEmailCodeButton {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}

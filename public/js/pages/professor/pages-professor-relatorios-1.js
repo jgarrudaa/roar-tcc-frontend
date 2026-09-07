@@ -16,6 +16,7 @@ const AVATAR_COLORS = Object.freeze([
 
 
 const elements = {
+    schoolYearFilter: document.getElementById("schoolYearFilter"),
     studentList: document.getElementById("studentList"),
     mobileSelect: document.getElementById("mobileSel"),
     dashboard: document.getElementById("dashboardArea"),
@@ -275,7 +276,7 @@ function createStudentListItem(student) {
         getAvatarColor(student.id);
 
     const information =
-        createElement("span");
+        createElement("span", "si-info");
 
     const name =
         createElement(
@@ -284,17 +285,7 @@ function createStudentListItem(student) {
             student.name,
         );
 
-    const schoolYear =
-        createElement(
-            "span",
-            "si-turma",
-            student.schoolYear,
-        );
-
-    information.append(
-        name,
-        schoolYear,
-    );
+    information.append(name);
 
     const progress =
         createElement(
@@ -375,7 +366,7 @@ function renderStudentSelectors(students) {
             createElement(
                 "option",
                 null,
-                `${student.name} — ${student.schoolYear}`,
+                student.name,
             );
 
         option.value =
@@ -395,6 +386,29 @@ function renderStudentSelectors(students) {
     elements.mobileSelect.append(
         selectFragment,
     );
+}
+
+
+function initializeSchoolYearFilters(students) {
+    const filters = [elements.schoolYearFilter];
+    const years = [...new Set(students.map(student => student.schoolYear))]
+        .sort((a, b) => a.localeCompare(b, "pt-BR", { numeric: true }));
+
+    filters.forEach(filter => {
+        filter.replaceChildren(new Option("Todos os anos", ""));
+        years.forEach(year => filter.append(new Option(year, year)));
+        filter.disabled = students.length === 0;
+        filter.addEventListener("change", () => {
+            const year = filter.value;
+            filters.forEach(item => { item.value = year; });
+            const visibleStudents = students.filter(student => !year || student.schoolYear === year);
+            const selectedIsVisible = visibleStudents.some(student => student.id === state.selectedStudentId);
+            renderStudentSelectors(visibleStudents);
+            if (!selectedIsVisible && visibleStudents.length) {
+                selectStudent(visibleStudents[0].id);
+            }
+        });
+    });
 }
 
 
@@ -1065,6 +1079,8 @@ async function initialize() {
                 .charAt(0)
                 .toLocaleUpperCase("pt-BR") ||
             "P";
+
+        initializeSchoolYearFilters(dashboard.students);
 
         if (!dashboard.students.length) {
             renderStudentSelectors([]);

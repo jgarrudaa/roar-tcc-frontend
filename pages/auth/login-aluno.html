@@ -1,120 +1,56 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>ROAR — Login Aluno</title>
-
     <meta name="description" content="Login do aluno no sistema ROAR.">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
-
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
-
     <link rel="stylesheet" href="../../public/css/components/feedback.css">
-
-    <link rel="stylesheet" href="../../public/css/pages/auth.css?v=3">
-
+    <link rel="stylesheet" href="../../public/css/pages/auth.css?v=5">
     <link rel="stylesheet" href="../../public/css/pages/pages-auth-login-aluno.css?v=2">
 </head>
-
 <body class="auth-page auth-page--student">
     <main class="auth-card">
         <section class="auth-visual" aria-labelledby="student-greeting">
             <img src="../../public/assets/imagens/logo.svg" alt="ROAR" class="auth-logo">
-
             <div class="auth-copy">
-                <h1 id="student-greeting" class="auth-greeting">
-                    Olá, estudante
-                </h1>
-
-                <p>
-                    <strong class="auth-highlight auth-highlight--green">
-                        Aprimore seu inglês
-                    </strong>
-                    todos os dias.
-                    <br>
-                    Pratique, aprenda e torne-se fluente
-                    <br>
-                    mais rápido com nossa plataforma.
-                </p>
+                <h1 id="student-greeting" class="auth-greeting">Olá, estudante</h1>
+                <p><strong class="auth-highlight auth-highlight--green">Aprimore seu inglês</strong> todos os dias.<br>Pratique, aprenda e torne-se fluente<br>mais rápido com nossa plataforma.</p>
             </div>
-
             <div class="auth-mascot-stage" aria-hidden="true">
-                <img class="auth-dino" src="../../public/assets/imagens/dinooriginal.png" alt=""
-                    data-dino-neutral="../../public/assets/imagens/dinooriginal.png"
-                    data-dino-hiding="../../public/assets/imagens/dinosenha.png"
-                    data-dino-peeking="../../public/assets/imagens/dino espiando.png">
+                <img src="../../public/assets/imagens/dinooriginal.png" alt="" class="auth-dino"
+                     data-dino-neutral="../../public/assets/imagens/dinooriginal.png"
+                     data-dino-hiding="../../public/assets/imagens/dinosenha.png"
+                     data-dino-peeking="../../public/assets/imagens/dino espiando.png">
             </div>
         </section>
-
-        <section class="auth-form-panel" aria-labelledby="student-login-title">
+        <section class="auth-form-panel">
             <form id="student-login-form" class="auth-form">
                 <header class="auth-form-header">
-                    <h2 id="student-login-title">
-                        Bem-vindo de volta!
-                    </h2>
-
-                    <p class="auth-form-label">
-                        Login
-                    </p>
+                    <h2>Bem-vindo de volta!</h2>
+                    <p class="auth-form-label">Login</p>
                 </header>
-
                 <div class="auth-fields">
-                    <label class="sr-only" for="emailInput">
-                        E-mail
-                    </label>
-
-                    <input id="emailInput" class="auth-input" name="email" type="email" placeholder="E-mail"
-                        autocomplete="email" required>
-
+                    <label class="sr-only" for="emailInput">E-mail</label>
+                    <input id="emailInput" name="email" class="auth-input" type="email" placeholder="E-mail" autocomplete="email" required>
                     <div class="auth-password-field">
-                        <label class="sr-only" for="pinInput">
-                            PIN de quatro dígitos
-                        </label>
-
-                        <input id="pinInput" class="auth-input" name="pin" type="password" placeholder="PIN (4 dígitos)"
-                            inputmode="numeric" minlength="4" maxlength="4" pattern="[0-9]{4}"
-                            autocomplete="current-password" data-auth-secret-input data-secret-label="PIN"
-                            data-numeric="true" required>
-
-                        <button id="toggleSenhaIcon" class="auth-password-toggle" type="button" data-auth-secret-toggle
-                            aria-label="Mostrar PIN" aria-pressed="false">
-                            <i class="fi fi-br-eye" aria-hidden="true"></i>
-                        </button>
+                        <label class="sr-only" for="pinInput">PIN de quatro dígitos</label>
+                        <input id="pinInput" name="pin" data-auth-secret-input data-secret-label="PIN" class="auth-input" type="password" placeholder="PIN (4 dígitos)" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" autocomplete="current-password" data-numeric="true" required>
+                        <button id="toggleSenhaIcon" data-auth-secret-toggle class="auth-password-toggle" type="button" aria-label="Mostrar PIN" aria-pressed="false"><i class="fi fi-br-eye" aria-hidden="true"></i></button>
                     </div>
                 </div>
-
-                <button class="buttonlogin" type="submit">
-                    Entrar
-                </button>
-
-                    <a id="forgot-student-password" class="auth-link" href="#">
-                        Esqueci meu PIN
-                    </a>
-                    <a id="forgot-student-password" class="auth-link" href="/index.html">
-                        voltar para página inicial
-        
-                </div>
+                <button class="buttonlogin" type="submit">Login</button>
+                <a href="#" id="forgot-student-password" class="auth-link">Esqueci meu PIN</a>
             </form>
         </section>
     </main>
-
     <script src="../../public/js/roar-page-transition.js"></script>
-
     <script src="../../public/js/pages/auth/auth-interactions.js?v=3"></script>
-
     <script type="module" src="../../public/js/pages/auth/login-aluno-forgot-password.js"></script>
-
     <script type="module" src="../../public/js/pages/auth/login-aluno.js"></script>
 </body>
-
 </html>

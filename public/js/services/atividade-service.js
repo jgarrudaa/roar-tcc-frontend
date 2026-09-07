@@ -18,6 +18,17 @@ const LEARNING_MODES = Object.freeze({
     }),
 });
 
+// Nomes enviados pelo backend e nomes usados nos cadastros anteriores.
+const LEARNING_MODE_ALIASES = new Map([
+    ["visual guiado", "Nível 1 - Suporte Visual Puro"],
+    ["suporte visual puro", "Nível 1 - Suporte Visual Puro"],
+    ["interativo visual", "Nível 2 - Aprendiz Guiado"],
+    ["aprendiz guiado", "Nível 2 - Aprendiz Guiado"],
+    ["verbal", "Nível 3 - Autonomia Contextual"],
+    ["autonomia contextual", "Nível 3 - Autonomia Contextual"],
+    ...Object.keys(LEARNING_MODES).map(label => [label.toLocaleLowerCase("pt-BR"), label]),
+]);
+
 const INTERACTION_TYPES = Object.freeze({
     tap: "recognize",
     associacao: "associate",
@@ -87,7 +98,12 @@ function normalizeStudent(profile) {
         profile?.supportLevel,
     );
 
-    const learningMode = LEARNING_MODES[supportMode];
+    const modeKey = supportMode
+        .toLocaleLowerCase("pt-BR")
+        .replace(/[–—]/g, "-")
+        .replace(/\s+/g, " ");
+    const canonicalMode = LEARNING_MODE_ALIASES.get(modeKey);
+    const learningMode = LEARNING_MODES[canonicalMode];
 
     if (!learningMode) {
         throw new Error(

@@ -3,25 +3,6 @@ import { relatoriosService } from "../../services/relatorios-service.js";
 import { sessionService } from "../../services/session-service.js";
 import { showToast } from "../../components/toast.js";
 
-const MODULE_STYLES = Object.freeze([
-    {
-        icon: "fi fi-br-portrait",
-        color: "blue",
-    },
-    {
-        icon: "fi fi-br-paw",
-        color: "green",
-    },
-    {
-        icon: "fi fi-br-palette",
-        color: "purple",
-    },
-    {
-        icon: "fi fi-br-book-open-cover",
-        color: "orange",
-    },
-]);
-
 const elements = {
     statistics: document.getElementById("statsBar"),
     search: document.getElementById("searchInput"),
@@ -86,14 +67,6 @@ function formatDecimal(value) {
     ).toLocaleString("pt-BR", {
         maximumFractionDigits: 1,
     });
-}
-
-function getModuleStyle(moduleId) {
-    const index =
-        Math.abs(Number(moduleId) - 1) %
-        MODULE_STYLES.length;
-
-    return MODULE_STYLES[index];
 }
 
 function getProgressClass(percentage) {
@@ -356,7 +329,6 @@ function renderFilters() {
 
 function renderModuleCard(module) {
     const report = module.report;
-    const style = getModuleStyle(module.id);
     const totalStudents =
         state.dashboard.totalStudents;
 
@@ -397,17 +369,6 @@ function renderModuleCard(module) {
     return `
         <section class="cat-section">
             <div class="cat-header">
-                <div
-                    class="
-                        cat-icon
-                        cat-icon--${style.color}
-                    "
-                >
-                    <i
-                        class="${style.icon}"
-                        aria-hidden="true"
-                    ></i>
-                </div>
 
                 <h2>
                     ${escapeHtml(module.title)}
@@ -657,9 +618,8 @@ function renderModules() {
             () => {
                 showToast(
                     (
-                        "A liberação individual será " +
-                        "ativada quando o controle de " +
-                        "acesso existir no banco."
+                        "A liberação individual de módulos " +
+                        "ainda não está disponível."
                     ),
                     "info",
                 );

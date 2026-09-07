@@ -1,113 +1,54 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>ROAR — Cadastro Professor</title>
-
     <meta name="description" content="Cadastro do professor no sistema ROAR.">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
     <link rel="stylesheet" href="../../public/css/components/feedback.css">
-    <link rel="stylesheet" href="../../public/css/pages/auth.css?v=4">
+    <link rel="stylesheet" href="../../public/css/pages/auth.css?v=5">
     <link rel="stylesheet" href="../../public/css/pages/pages-auth-cadastro-professor.css?v=3">
 </head>
-
 <body class="auth-page auth-page--teacher-register">
     <main class="auth-card">
         <section class="auth-visual" aria-labelledby="register-greeting">
             <img src="../../public/assets/imagens/logo.svg" alt="ROAR" class="auth-logo">
-
             <div class="auth-copy">
-                <h1 id="register-greeting" class="auth-greeting">
-                    Olá, Professor
-                </h1>
-
-                <p>
-                    <strong class="auth-highlight auth-highlight--green">
-                        Junte-se a nós
-                    </strong>
-                    e gerencie seus alunos.
-                    <br>
-                    Acompanhe o progresso de cada um
-                    <br>
-                    e personalize o aprendizado.
-                </p>
+                <h1 id="register-greeting" class="auth-greeting">Olá, Professor</h1>
+                <p><strong class="auth-highlight auth-highlight--green">Junte-se a nós</strong> e gerencie seus alunos.<br>Acompanhe o progresso de cada um<br>e personalize o aprendizado.</p>
             </div>
-
             <div class="auth-mascot-stage" aria-hidden="true">
-                <img id="dinoImg" class="auth-dino" src="../../public/assets/imagens/dino2.png" alt=""
-                    data-dino-neutral="../../public/assets/imagens/dino2.png"
-                    data-dino-hiding="../../public/assets/imagens/dinosenha2-sem-colar.png"
-                    data-dino-peeking="../../public/assets/imagens/dino espiando2.png">
+                <img src="../../public/assets/imagens/dino2.png" alt="" class="auth-dino" id="dinoImg"
+                     data-dino-neutral="../../public/assets/imagens/dino2.png"
+                     data-dino-hiding="../../public/assets/imagens/dinosenha2-sem-colar.png"
+                     data-dino-peeking="../../public/assets/imagens/dino espiando2.png">
             </div>
         </section>
-
-        <section class="auth-form-panel" aria-labelledby="register-title">
+        <section class="auth-form-panel">
             <form id="teacher-register-form" class="auth-form auth-form--register">
                 <header class="auth-form-header">
-                    <h2 id="register-title">
-                        Crie sua conta!
-                    </h2>
-
-                    <p class="auth-form-label">
-                        Cadastro
-                    </p>
+                    <h2>Crie sua conta!</h2>
+                    <p class="auth-form-label">Cadastro</p>
                 </header>
-
                 <div class="auth-fields">
-                    <label class="sr-only" for="nomeInput">
-                        Nome
-                    </label>
-
-                    <input id="nomeInput" class="auth-input" name="name" type="text" placeholder="Nome"
-                        autocomplete="name" required>
-
-                    <label class="sr-only" for="emailInput">
-                        E-mail
-                    </label>
-
-                    <input id="emailInput" class="auth-input" name="email" type="email" placeholder="E-mail"
-                        autocomplete="email" required>
-
-                    <label class="sr-only" for="cpfInput">
-                        CPF
-                    </label>
-
-                    <input id="cpfInput" class="auth-input" name="cpf" type="text" placeholder="CPF" inputmode="numeric"
-                        maxlength="14" autocomplete="off" required>
-
+                    <label class="sr-only" for="nomeInput">Nome</label>
+                    <input id="nomeInput" name="name" class="auth-input" type="text" placeholder="Nome" autocomplete="name" required>
+                    <label class="sr-only" for="emailInput">E-mail</label>
+                    <input id="emailInput" name="email" class="auth-input" type="email" placeholder="E-mail" autocomplete="email" required>
+                    <label class="sr-only" for="cpfInput">CPF</label>
+                    <input id="cpfInput" name="cpf" class="auth-input" type="text" placeholder="CPF" inputmode="numeric" maxlength="14" autocomplete="off" required>
                     <div class="auth-password-field">
-                        <label class="sr-only" for="senha">
-                            Senha
-                        </label>
-
-                        <input id="senha" class="auth-input" name="password" type="password" placeholder="Senha"
-                            autocomplete="new-password" data-auth-secret-input data-secret-label="senha" required>
-
-                        <button id="toggleSenhaIcon" class="auth-password-toggle" type="button" data-auth-secret-toggle
-                            aria-label="Mostrar senha" aria-pressed="false">
-                            <i class="fi fi-br-eye" aria-hidden="true"></i>
-                        </button>
+                        <label class="sr-only" for="senha">Senha</label>
+                        <input id="senha" name="password" data-auth-secret-input data-secret-label="senha" class="auth-input" type="password" placeholder="Senha" autocomplete="new-password" required>
+                        <button id="toggleSenhaIcon" data-auth-secret-toggle class="auth-password-toggle" type="button" aria-label="Mostrar senha" aria-pressed="false"><i class="fi fi-br-eye" aria-hidden="true"></i></button>
                     </div>
                 </div>
-
-                <button class="buttoncadastro" type="submit">
-                    Cadastrar
-                </button>
-
-                <p class="auth-switch">
-                    Já tem uma conta?
-                    <a href="login-professor.html" class="auth-link auth-link--strong">
-                        Fazer login
-                    </a>
-                </p>
+                <button class="buttoncadastro" type="submit">Cadastrar</button>
+                <p class="auth-switch">Já tem uma conta? <a href="login-professor.html" class="auth-link auth-link--strong">Fazer login</a></p>
             </form>
 
             <form id="teacher-verification-form" class="auth-form auth-form--register" hidden novalidate>
@@ -141,10 +82,8 @@
             </form>
         </section>
     </main>
-
     <script src="../../public/js/roar-page-transition.js"></script>
-    <script src="../../public/js/pages/auth/auth-interactions.js?v=2"></script>
-    <script type="module" src="../../public/js/pages/auth/cadastro-professor.js?v=2"></script>
+    <script src="../../public/js/pages/auth/auth-interactions.js?v=3"></script>
+    <script type="module" src="../../public/js/pages/auth/cadastro-professor.js"></script>
 </body>
-
 </html>

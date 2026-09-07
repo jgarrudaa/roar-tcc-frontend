@@ -34,6 +34,10 @@
             top: 20px;
         }
         .student-sidebar__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
             padding: var(--space-md) var(--space-lg);
             border-bottom: 1px solid var(--c-border);
             font-size: 0.78rem; font-weight: 700;
@@ -43,6 +47,8 @@
         .student-sidebar__list { padding: var(--space-sm); }
         .student-item {
             display: flex; align-items: center;
+            width: 100%;
+            text-align: left;
             gap: var(--space-sm);
             padding: 10px var(--space-sm);
             border-radius: var(--r-md);
@@ -62,9 +68,19 @@
             font-size: 0.85rem; font-weight: 700; color: #fff;
             flex-shrink: 0;
         }
+        .si-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+            gap: 3px;
+            overflow-wrap: anywhere;
+        }
         .si-name { font-size: 0.85rem; font-weight: 600; color: var(--c-text); }
         .si-turma { font-size: 0.7rem; color: var(--c-text-soft); }
         .si-prog {
+            flex-shrink: 0;
+            white-space: nowrap;
             margin-left: auto;
             font-size: 0.72rem; font-weight: 800;
             color: var(--c-blue-dark);
@@ -501,3 +517,19 @@
 .u-pages-professor-relatorios-038 { color:#b91c1c; }
 .u-pages-professor-relatorios-039 { font-size:0.7rem;color:var(--c-text-soft);font-weight:400; }
 .u-pages-professor-relatorios-040 { font-size:0.82rem;color:var(--c-text-soft);padding:var(--space-md) 0; }
+
+/* Filtro por ano escolar da lista de alunos. */
+.school-year-filter {
+    min-width: 0;
+    max-width: 100%;
+    padding: 6px 8px;
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-sm);
+    background: var(--c-card);
+    color: var(--c-text);
+    font: inherit;
+    font-size: 0.75rem;
+    text-transform: none;
+    letter-spacing: normal;
+}
+.student-sidebar__header .school-year-filter { flex: 1; }

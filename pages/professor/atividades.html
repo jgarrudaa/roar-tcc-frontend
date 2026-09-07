@@ -1,95 +1,113 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <meta name="description" content="Atividade adaptativa da plataforma ROAR.">
-
-    <title>ROAR | Atividade</title>
-
+    <title>ROAR — Gerenciar Atividades</title>
+    <meta name="description" content="Consulte atividades e resultados dos alunos na plataforma ROAR.">
+    <link rel="stylesheet" href="../../public/css/global.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
-
-    <script src="../../public/js/roar-theme.js"></script>
-
-    <link rel="stylesheet" href="../../public/css/base/variables.css">
-
-    <link rel="stylesheet" href="../../public/css/base/reset.css">
-
-    <link rel="stylesheet" href="../../public/css/base/typography.css">
-
-    <link rel="stylesheet" href="../../public/css/base/accessibility.css">
-
-    <link rel="stylesheet" href="../../public/css/components/feedback.css">
-
-    <link rel="stylesheet" href="../../public/css/layouts/activity.css">
+    <link rel="stylesheet" href="../../public/css/pages/pages-professor-atividades.css">
 </head>
+<body class="teacher-area" data-auth-role="teacher">
+<div class="app-shell">
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-<body class="activity-page" data-auth-role="student">
-    <header class="activity-header">
-        <a class="activity-back" href="atividades.html" aria-label="Voltar para atividades">
-            <i class="fi fi-br-arrow-left" aria-hidden="true"></i>
-        </a>
+    <!-- SIDEBAR PROFESSOR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar__logo-wrap">
+            <a href="inicio.html" aria-label="Ir para o início"><img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo"></a>
+            <button class="sidebar__toggle" id="sidebarToggle" aria-label="Minimizar menu"><i class="fi fi-br-menu-burger"></i></button>
+        </div>
+        <nav class="sidebar__nav">
+            <a href="inicio.html"       class="sidebar__link"><i class="fi fi-br-home"></i><span>In&iacute;cio</span></a>
+            <a href="alunos.html"     class="sidebar__link"><i class="fi fi-br-users"></i><span>Alunos</span></a>
+            <a href="atividades.html" class="sidebar__link active"><i class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a>
+            <a href="relatorios.html" class="sidebar__link"><i class="fi fi-br-chart-simple"></i><span>Relat&oacute;rios</span></a>
+            <a href="perfil.html"     class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
+        </nav>
+        <div class="sidebar__footer">
+            <button class="sidebar__link" id="nav-logout" data-action="logout" type="button"><i class="fi fi-br-exit"></i><span>Sair</span></button>
+        </div>
+    </aside>
 
-        <div class="activity-heading">
-            <h1 id="activity-title">
-                Carregando atividade
-            </h1>
+    <!-- MAIN -->
+    <div class="main-content">
+        <header class="navbar">
+            <div class="u-pages-professor-atividades-001">
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu"><i class="fi fi-br-menu-burger"></i></button>
+                <div class="navbar__page-title">
+                    <h1>Atividades</h1>
+                    <p>Consulte os módulos e acompanhe os resultados dos alunos.</p>
+                </div>
+            </div>
+            <div class="navbar__right u-pages-professor-atividades-001">
+                <button class="navbar__icon-btn u-pages-professor-atividades-003" id="btnNotif" aria-label="Notifica&ccedil;&otilde;es">
+                    <i class="fi fi-br-bell"></i>
+                    <span class="u-pages-professor-atividades-004"></span>
+                </button>
+                <a href="perfil.html" class="navbar__avatar u-pages-professor-atividades-005" title="Perfil" aria-label="Abrir perfil">A</a>
+            </div>
+        </header>
 
-            <button class="audio-button" id="repeat-instruction" type="button" aria-label="Ouvir instrução novamente">
-                <i class="fi fi-br-volume" aria-hidden="true"></i>
-            </button>
+        <div class="page-body fade-in">
 
-            <p id="activity-instruction">
-                Aguarde um momento.
-            </p>
+            <!-- Stats gerais -->
+            <div class="grid-4 u-pages-professor-atividades-006" id="statsBar"></div>
+
+            <!-- Busca + filtros -->
+            <div class="u-pages-professor-atividades-007">
+                <div class="search-wrap">
+                    <i class="fi fi-br-search"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar atividade&hellip;" aria-label="Buscar atividade">
+                </div>
+                <select class="filter-select u-pages-professor-atividades-008" id="sortSel" aria-label="Ordenar módulos">
+                    <option value="default">Ordenar</option>
+                    <option value="nome">A&ndash;Z</option>
+                    <option value="acertos">Mais Acertos</option>
+                </select>
+            </div>
+            <div class="filter-bar" id="filterBar"></div>
+
+            <!-- Listagem por categoria -->
+            <div id="atividadesContainer"></div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Atividade -->
+<div class="modal-overlay" id="modalAtiv" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="mActNome">
+
+        <!-- Cabeçalho da atividade -->
+        <div class="u-pages-professor-atividades-009">
+            <div class="modal-act-header u-pages-professor-atividades-010">
+                <div>
+                    <div id="mActNome" class="u-pages-professor-atividades-011"></div>
+                    <div id="mActMeta" class="u-pages-professor-atividades-012"></div>
+                </div>
+            </div>
+            <button class="modal-close" aria-label="Fechar"><i class="fi fi-br-cross"></i></button>
         </div>
 
-        <span class="level-badge" id="level-badge">
-            Nível
-        </span>
-    </header>
+        <!-- Resumo do módulo -->
+        <div class="modal-act-stats" id="mActStats"></div>
 
-    <main class="activity-stage" id="activity-stage" aria-live="polite">
-        <div class="activity-loading" id="activity-loading">
-            Preparando sua atividade...
-        </div>
-    </main>
+        <section class="module-activity-details" id="moduleDetails" aria-labelledby="moduleActivitiesTitle">
+            <h3 id="moduleActivitiesTitle">Atividades do módulo</h3>
+            <div id="mModuleActivities"></div>
+        </section>
 
-    <footer class="activity-footer">
-        <div class="lex-feedback" aria-live="polite">
-            <img src="../../public/assets/imagens/dinoatividade.png" alt="LEX, mascote da ROAR">
+        <section id="moduleManagement" hidden aria-label="Liberação do módulo"></section>
+    </div>
+</div>
 
-            <p id="lex-message">
-                Vamos aprender juntos!
-            </p>
-        </div>
+<div id="toast-container"></div>
 
-        <div class="activity-progress" aria-label="Progresso da atividade">
-            <span id="progress-label">
-                0 de 0
-            </span>
-
-            <progress id="activity-progress" value="0" max="1"></progress>
-        </div>
-
-        <button class="next-button" id="next-button" type="button" disabled>
-            Próximo
-
-            <i class="fi fi-br-arrow-right" aria-hidden="true"></i>
-        </button>
-    </footer>
-
-    <div id="toast-container" class="toast-container"></div>
-
-    <script type="module" src="../../public/js/pages/auth/route-guard.js"></script>
-
-    <script src="../../public/js/roar-page-transition.js"></script>
-
-    <!-- v=3 força o navegador a carregar a versão corrigida -->
-    <script type="module" src="../../public/js/pages/aluno/atividade.js?v=3"></script>
+<script type="module" src="../../public/js/pages/auth/route-guard.js"></script>
+<script src="../../public/js/roar-page-transition.js"></script>
+<script src="../../public/js/roar-sidebar.js"></script>
+<script type="module" src="../../public/js/pages/professor/pages-professor-atividades-1.js"></script>
 </body>
-
 </html>

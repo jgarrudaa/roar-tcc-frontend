@@ -71,7 +71,6 @@ function showVerificationStep(email) {
     state.email = email;
 
     elements.registerForm.hidden = true;
-    elements.registerForm.style.display = "none";
 
     elements.verificationForm.hidden = false;
     elements.verificationForm.style.removeProperty("display");
@@ -245,7 +244,6 @@ function initialize() {
         );
 
         elements.verificationForm.hidden = true;
-        elements.verificationForm.style.display = "none";
 
         elements.cpf.addEventListener(
             "input",
