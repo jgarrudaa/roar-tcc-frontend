@@ -30,18 +30,21 @@ const LEARNING_MODE_ALIASES = new Map([
 ]);
 
 const INTERACTION_TYPES = Object.freeze({
-    tap: "recognize",
+     tap: "recognize",
+
     associacao: "associate",
     associação: "associate",
+    draganddrop: "associate",
+
     multiplaescolha: "validate",
     múltiplaescolha: "validate",
 
-    /*
-     * Compatibilidade temporária com registros antigos.
-     * Enquanto existir DragAndDrop no banco, ele será tratado
-     * pelo motor de associação.
-     */
-    draganddrop: "associate",
+    audioimagem: "audioImage",
+
+    verdadeirofalso: "trueFalse",
+
+    memoria: "memory",
+    memória: "memory",
 });
 
 function requirePositiveInteger(value, fieldName) {

@@ -310,6 +310,53 @@ async function update(studentId, data) {
     return alunosApi.update(studentId, data);
 }
 
+
+
+async function resetPin(
+    studentId,
+    newPin,
+    pinConfirmation,
+) {
+    if (!studentId) {
+        throw new Error(
+            "Selecione um aluno válido.",
+        );
+    }
+
+    const normalizedPin =
+        normalizePin(newPin);
+
+    const normalizedConfirmation =
+        normalizePin(pinConfirmation);
+
+    if (
+        !/^\d{4}$/.test(normalizedPin)
+    ) {
+        throw new Error(
+            "O novo PIN deve possuir exatamente 4 números.",
+        );
+    }
+
+    if (
+        normalizedPin !==
+        normalizedConfirmation
+    ) {
+        throw new Error(
+            "A confirmação do PIN não corresponde ao novo PIN.",
+        );
+    }
+
+    return alunosApi.resetPin(
+        studentId,
+        {
+            novo_pin: normalizedPin,
+
+            confirmacao_pin:
+                normalizedConfirmation,
+        },
+    );
+}
+
 async function remove(studentId) {
     if (!studentId) {
         throw new Error(
@@ -326,5 +373,6 @@ export const alunoService = Object.freeze({
     listByTeacher,
     getPerformance,
     update,
+    resetPin,
     remove,
 });

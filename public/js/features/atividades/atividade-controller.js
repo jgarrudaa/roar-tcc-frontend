@@ -1,12 +1,22 @@
 import { atividadeService } from "../../services/atividade-service.js";
-import { createAssociateActivity } from "./associar.js";
-import { createRecognizeActivity } from "./reconhecer.js";
-import { createValidateActivity } from "./validar.js";
+import { createAssociateActivity, } from "./associar.js";
+import { createRecognizeActivity, } from "./reconhecer.js";
+import { createValidateActivity, } from "./validar.js";
+import { createAudioImageActivity, } from "./audio-imagem.js";
+import { createTrueFalseActivity, } from "./verdadeiro-falso.js";
+import { createMemoryActivity, } from "./memoria.js";
+
+
+
 
 const ACTIVITY_FACTORIES = Object.freeze({
     recognize: createRecognizeActivity,
     associate: createAssociateActivity,
     validate: createValidateActivity,
+
+    audioImage: createAudioImageActivity,
+    trueFalse: createTrueFalseActivity,
+    memory: createMemoryActivity,
 });
 
 function navigateTo(url) {
@@ -153,7 +163,7 @@ export async function createActivityController({
 
     const factory =
         ACTIVITY_FACTORIES[
-            activity.type
+        activity.type
         ];
 
     if (!factory) {
@@ -217,9 +227,9 @@ export async function createActivityController({
     if (
         !engine ||
         typeof engine.start !==
-            "function" ||
+        "function" ||
         typeof engine.next !==
-            "function"
+        "function"
     ) {
         throw new Error(
             "O motor da atividade possui uma interface inválida.",
@@ -241,7 +251,7 @@ export async function createActivityController({
 
         const nextActivity =
             module.activities[
-                currentIndex + 1
+            currentIndex + 1
             ];
 
         if (!nextActivity) {
@@ -357,7 +367,7 @@ export async function createActivityController({
 
             if (
                 typeof
-                    engine.repeatInstruction ===
+                engine.repeatInstruction ===
                 "function"
             ) {
                 engine.repeatInstruction();

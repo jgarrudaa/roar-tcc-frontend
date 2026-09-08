@@ -437,3 +437,393 @@
         margin-bottom: 3px;
     }
 }
+
+
+/* =========================================================
+   JOGO: OUVIR E ESCOLHER A IMAGEM
+   ========================================================= */
+
+.audio-image-game {
+    width: 100%;
+    align-content: center;
+    gap: 24px;
+}
+
+.listen-button {
+    min-width: 210px;
+    min-height: 58px;
+    padding: 12px 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 2px solid var(--roar-blue);
+    border-radius: var(--roar-radius-md);
+    color: white;
+    background: var(--roar-blue);
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(15, 79, 125, 0.18);
+    transition:
+        transform 160ms ease,
+        box-shadow 160ms ease,
+        background-color 160ms ease;
+}
+
+.listen-button .fi {
+    display: flex;
+    align-items: center;
+    font-size: 23px;
+    line-height: 1;
+}
+
+.listen-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15, 79, 125, 0.24);
+}
+
+.listen-button:active {
+    transform: translateY(0);
+}
+
+.listen-button:focus-visible {
+    outline: 3px solid var(--roar-blue-light);
+    outline-offset: 4px;
+}
+
+.audio-image-options {
+    width: min(640px, 100%);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.audio-image-options .choice-card {
+    min-height: 210px;
+    padding: 18px;
+    cursor: pointer;
+    transition:
+        transform 160ms ease,
+        border-color 160ms ease,
+        background-color 160ms ease;
+}
+
+.audio-image-options .choice-card:hover:not(:disabled) {
+    transform: translateY(-3px);
+    border-color: var(--roar-blue);
+}
+
+.audio-image-options .choice-card .prompt-image {
+    width: 100%;
+    height: min(25vh, 210px);
+    max-width: 260px;
+    margin: auto;
+    object-fit: contain;
+}
+
+
+/* =========================================================
+   JOGO: VERDADEIRO OU FALSO
+   ========================================================= */
+
+.true-false-game {
+    width: min(760px, 100%);
+    margin: auto;
+    align-content: center;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 14px;
+}
+
+.true-false-question {
+    margin: 0;
+    color: var(--roar-ink);
+    font-size: clamp(20px, 2vw, 27px);
+    line-height: 1.25;
+    font-weight: 700;
+    text-align: center;
+}
+
+.true-false-game > .prompt-image {
+    width: auto;
+    max-width: min(70vw, 380px);
+    height: min(31vh, 280px);
+    margin: auto;
+    object-fit: contain;
+}
+
+.true-false-options {
+    width: min(520px, 100%);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.truth-button {
+    min-height: 64px;
+    padding: 12px 20px;
+    border: 2px solid var(--roar-border);
+    border-radius: var(--roar-radius-md);
+    color: var(--roar-ink);
+    background: var(--roar-surface);
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        transform 160ms ease,
+        border-color 160ms ease,
+        background-color 160ms ease;
+}
+
+.truth-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: var(--roar-blue);
+}
+
+.truth-button:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 3px;
+}
+
+.truth-button.is-correct {
+    border-color: var(--roar-success);
+    background: #e9fff3;
+}
+
+.truth-button.is-wrong {
+    border-color: var(--roar-danger);
+    background: #fff1f0;
+}
+
+
+/* =========================================================
+   JOGO: MEMÓRIA
+   ========================================================= */
+
+.memory-game {
+    width: 100%;
+    align-content: center;
+}
+
+.memory-grid {
+    width: min(700px, 100%);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
+    gap: 16px;
+}
+
+.memory-card {
+    position: relative;
+    min-height: 170px;
+    padding: 0;
+    overflow: hidden;
+    border: 2px solid var(--roar-blue);
+    border-radius: var(--roar-radius-md);
+    background: var(--roar-blue-light);
+    cursor: pointer;
+    box-shadow: 0 5px 14px rgba(15, 79, 125, 0.12);
+    transition:
+        transform 180ms ease,
+        border-color 180ms ease,
+        background-color 180ms ease;
+}
+
+.memory-card:hover:not(:disabled) {
+    transform: translateY(-3px);
+}
+
+.memory-card:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 3px;
+}
+
+.memory-card-front,
+.memory-card-back {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 12px;
+}
+
+.memory-card-front {
+    color: var(--roar-blue);
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.memory-card-back {
+    visibility: hidden;
+    opacity: 0;
+    color: var(--roar-blue);
+    background: var(--roar-surface);
+    font-size: clamp(18px, 2vw, 25px);
+    font-weight: 700;
+    transition: opacity 150ms ease;
+}
+
+.memory-card-back .prompt-image {
+    width: 100%;
+    height: 130px;
+    object-fit: contain;
+}
+
+.memory-card.is-revealed .memory-card-front,
+.memory-card.is-matched .memory-card-front {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.memory-card.is-revealed .memory-card-back,
+.memory-card.is-matched .memory-card-back {
+    visibility: visible;
+    opacity: 1;
+}
+
+.memory-card.is-matched {
+    border-color: var(--roar-success);
+    background: #e9fff3;
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.12);
+}
+
+.memory-card.is-matched .memory-card-back {
+    background: #e9fff3;
+}
+
+
+/* =========================================================
+   ESTADOS COMPARTILHADOS
+   ========================================================= */
+
+.audio-image-options button:disabled,
+.true-false-options button:disabled,
+.memory-card:disabled {
+    cursor: default;
+}
+
+.audio-image-options .choice-card.is-correct {
+    border-color: var(--roar-success);
+    background: #e9fff3;
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.12);
+}
+
+.audio-image-options .choice-card.is-wrong {
+    border-color: var(--roar-danger);
+    background: #fff1f0;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE DOS NOVOS JOGOS
+   ========================================================= */
+
+@media (max-width: 760px) {
+    .audio-image-game {
+        gap: 14px;
+    }
+
+    .listen-button {
+        min-width: 180px;
+        min-height: 50px;
+        padding: 10px 18px;
+        font-size: 15px;
+    }
+
+    .audio-image-options {
+        gap: 10px;
+    }
+
+    .audio-image-options .choice-card {
+        min-height: 145px;
+        padding: 8px;
+    }
+
+    .audio-image-options .choice-card .prompt-image {
+        height: min(20vh, 135px);
+    }
+
+    .true-false-question {
+        font-size: 18px;
+    }
+
+    .true-false-game > .prompt-image {
+        height: min(27vh, 220px);
+    }
+
+    .truth-button {
+        min-height: 52px;
+        padding: 9px 14px;
+        font-size: 16px;
+    }
+
+    .memory-grid {
+        grid-template-columns: repeat(2, minmax(105px, 1fr));
+        gap: 10px;
+    }
+
+    .memory-card {
+        min-height: 120px;
+    }
+
+    .memory-card-front {
+        font-size: 36px;
+    }
+
+    .memory-card-back {
+        padding: 7px;
+        font-size: 17px;
+    }
+
+    .memory-card-back .prompt-image {
+        height: 92px;
+    }
+}
+
+
+@media (max-width: 420px) {
+    .audio-image-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .audio-image-options .choice-card {
+        min-width: 0;
+        min-height: 125px;
+    }
+
+    .true-false-options {
+        gap: 10px;
+    }
+
+    .memory-grid {
+        gap: 8px;
+    }
+
+    .memory-card {
+        min-height: 105px;
+    }
+
+    .memory-card-back .prompt-image {
+        height: 78px;
+    }
+}
+
+
+/* =========================================================
+   ACESSIBILIDADE
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .listen-button,
+    .audio-image-options .choice-card,
+    .truth-button,
+    .memory-card,
+    .memory-card-back {
+        transition: none;
+    }
+
+    .listen-button:hover,
+    .audio-image-options .choice-card:hover,
+    .truth-button:hover,
+    .memory-card:hover {
+        transform: none;
+    }
+}
