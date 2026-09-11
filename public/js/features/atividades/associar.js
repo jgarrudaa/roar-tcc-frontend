@@ -143,7 +143,7 @@ export function createAssociateActivity(context) {
         button.classList.add("is-wrong");
 
         elements.setMessage(
-            "Essa associação não está correta. Tente novamente.",
+             "Vamos observar novamente.",
         );
 
         audioService.speak(

@@ -1,11 +1,15 @@
-import { audioService } from "../../services/audio-service.js";
-import { createImage } from "./activity-helpers.js";
+import {
+    audioService,
+} from "../../services/audio-service.js";
+
+import {
+    createImage,
+} from "./activity-helpers.js";
 
 
-const AUTO_ADVANCE_DELAY = 1400;
-
-
-export function createRecognizeActivity(context) {
+export function createRecognizeActivity(
+    context,
+) {
     const {
         activity,
         student,
@@ -16,7 +20,6 @@ export function createRecognizeActivity(context) {
     const item = activity.item;
 
     let resolved = false;
-    let autoAdvanceTimer = null;
 
 
     function getInstruction() {
@@ -25,89 +28,130 @@ export function createRecognizeActivity(context) {
         }
 
         if (student.supportLevel === 1) {
-            return `Toque na imagem para conhecer a palavra ${item.en}.`;
+            return "Toque na imagem para conhecer a palavra.";
         }
 
         if (student.supportLevel === 2) {
-            return "Observe a imagem e toque para descobrir a palavra em inglês.";
+            return (
+                "Observe a imagem e toque para " +
+                "descobrir a palavra em inglês."
+            );
         }
 
-        return "Observe a imagem e identifique a palavra em inglês.";
+        return (
+            "Observe a imagem e identifique " +
+            "a palavra em inglês."
+        );
     }
 
 
-    function clearAutoAdvance() {
-        if (!autoAdvanceTimer) {
-            return;
-        }
-
-        window.clearTimeout(autoAdvanceTimer);
-        autoAdvanceTimer = null;
-    }
-
-
-    function scheduleAutoAdvance() {
-        clearAutoAdvance();
-
-        autoAdvanceTimer = window.setTimeout(() => {
-            elements.nextButton.click();
-        }, AUTO_ADVANCE_DELAY);
-    }
-
-
-    function handleImageClick(
+    function revealAnswer(
         imageButton,
         revealedWord,
     ) {
+        /*
+         * A imagem sempre pronuncia a palavra,
+         * inclusive depois de já ter sido revelada.
+         */
+        audioService.speak(
+            item.en,
+            "en-US",
+        );
+
+        /*
+         * Depois da primeira revelação, os próximos
+         * cliques servem somente para repetir o áudio.
+         */
         if (resolved) {
+            elements.setMessage(
+                `Esta palavra é ${item.en}.`,
+            );
+
             return;
         }
 
         resolved = true;
 
-        imageButton.classList.add("is-correct");
-        imageButton.disabled = true;
+        imageButton.classList.add(
+            "is-correct",
+        );
+
+        imageButton.setAttribute(
+            "aria-pressed",
+            "true",
+        );
+
+        imageButton.setAttribute(
+            "aria-label",
+            `Ouvir ${item.en} novamente`,
+        );
 
         revealedWord.hidden = false;
 
         elements.setMessage(
-            `Muito bem! A resposta é ${item.en}.`,
+            `Muito bem! Esta palavra é ${item.en}.`,
         );
 
         elements.setProgress(1, 1);
-        elements.nextButton.disabled = false;
 
-        audioService.speak(item.en, "en-US");
+        elements.nextButton.disabled =
+            false;
 
         onCorrect(item);
-
-        scheduleAutoAdvance();
     }
 
 
     function render() {
         resolved = false;
-        clearAutoAdvance();
 
         elements.stage.replaceChildren();
-        elements.nextButton.disabled = true;
 
-        const content = document.createElement("div");
-        const imageButton = document.createElement("button");
-        const revealedWord = document.createElement("div");
+        elements.nextButton.disabled =
+            true;
 
-        content.className = "activity-content";
+        const content =
+            document.createElement("div");
+
+        const imageButton =
+            document.createElement("button");
+
+        const revealedWord =
+            document.createElement("div");
+
+        const supportText =
+            document.createElement("p");
+
+        content.className =
+            "activity-content recognize-game";
 
         imageButton.type = "button";
-        imageButton.className = "choice-card";
+
+        imageButton.className =
+            "choice-card recognize-card";
+
         imageButton.setAttribute(
             "aria-label",
             getInstruction(),
         );
 
-        revealedWord.className = "revealed-word";
-        revealedWord.textContent = item.en;
+        imageButton.setAttribute(
+            "aria-pressed",
+            "false",
+        );
+
+        revealedWord.className =
+            "revealed-word";
+
+        revealedWord.textContent =
+            item.en;
+
         revealedWord.hidden = true;
+
+        supportText.className =
+            "recognize-support-text";
+
+        supportText.textContent =
+            "Toque na imagem quando estiver pronto.";
 
         imageButton.append(
             createImage(
@@ -119,26 +163,36 @@ export function createRecognizeActivity(context) {
         imageButton.addEventListener(
             "click",
             () => {
-                handleImageClick(
+                revealAnswer(
                     imageButton,
                     revealedWord,
                 );
             },
-            { once: true },
         );
 
         content.append(
             imageButton,
             revealedWord,
+            supportText,
         );
 
         elements.stage.append(content);
-        elements.setInstruction(getInstruction());
+
+        elements.setInstruction(
+            getInstruction(),
+        );
+
+        elements.setMessage(
+            "Observe com calma.",
+        );
+
         elements.setProgress(0, 1);
 
-        if (student.supportLevel === 1) {
-            audioService.speak(getInstruction());
-        }
+        /*
+         * Não existe áudio automático.
+         * O aluno pode usar o botão de áudio
+         * quando quiser.
+         */
     }
 
 
@@ -146,12 +200,12 @@ export function createRecognizeActivity(context) {
         start: render,
 
         repeatInstruction() {
-            audioService.speak(getInstruction());
+            audioService.speak(
+                getInstruction(),
+            );
         },
 
         next() {
-            clearAutoAdvance();
-
             return resolved;
         },
     });

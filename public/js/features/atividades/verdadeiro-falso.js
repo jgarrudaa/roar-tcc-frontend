@@ -215,12 +215,41 @@ export function createTrueFalseActivity(
             noButton,
         );
 
-        content.append(
-            question,
+        const imageButton =
+            createButton(
+                "",
+                "true-false-image-button",
+            );
+
+        imageButton.setAttribute(
+            "aria-label",
+            `Ouvir a palavra ${displayedItem.en}`,
+        );
+
+        imageButton.append(
             createImage(
                 displayedItem,
                 1,
             ),
+        );
+
+        imageButton.addEventListener(
+            "click",
+            () => {
+                audioService.speak(
+                    displayedItem.en,
+                    "en-US",
+                );
+
+                elements.setMessage(
+                    `Esta imagem representa ${displayedItem.en}.`,
+                );
+            },
+        );
+
+        content.append(
+            question,
+            imageButton,
             optionsContainer,
         );
 
@@ -236,7 +265,7 @@ export function createTrueFalseActivity(
 
         elements.setProgress(0, 1);
 
-     
+
     }
 
 

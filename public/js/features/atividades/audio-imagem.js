@@ -68,85 +68,113 @@ export function createAudioImageActivity(
         );
     }
 
-
-    function disableOptions(
+    function disableWrongOptions(
         optionsContainer,
+        correctButton,
     ) {
         optionsContainer
             .querySelectorAll("button")
             .forEach((button) => {
+                /*
+                 * A imagem correta permanece ativa
+                 * para repetir a pronúncia.
+                 */
+                if (button === correctButton) {
+                    button.disabled = false;
+
+                    button.setAttribute(
+                        "aria-label",
+                        `Ouvir ${button.dataset.answer} novamente`,
+                    );
+
+                    return;
+                }
+
+                /*
+                 * As alternativas incorretas são
+                 * desativadas depois da conclusão.
+                 */
                 button.disabled = true;
             });
     }
 
 
     function handleOption(
-        option,
-        button,
-        optionsContainer,
+    option,
+    button,
+) {
+    /*
+     * Toda imagem funciona como um botão
+     * de vocabulário o tempo inteiro.
+     */
+    audioService.speak(
+        option.en,
+        "en-US",
+    );
+
+    /*
+     * Depois que a atividade foi concluída,
+     * os cliques continuam reproduzindo o áudio,
+     * mas não alteram mais o resultado.
+     */
+    if (resolved) {
+        elements.setMessage(
+            `Esta imagem representa ${option.en}.`,
+        );
+
+        return;
+    }
+
+    const selectedAnswer =
+        normalizeAnswer(option.en);
+
+    const correctAnswer =
+        normalizeAnswer(item.en);
+
+    if (
+        selectedAnswer ===
+        correctAnswer
     ) {
-        if (resolved) {
-            return;
-        }
-
-        const selectedAnswer =
-            normalizeAnswer(option.en);
-
-        const correctAnswer =
-            normalizeAnswer(item.en);
-
-        if (
-            selectedAnswer ===
-            correctAnswer
-        ) {
-            resolved = true;
-
-            button.classList.add(
-                "is-correct",
-            );
-
-            disableOptions(
-                optionsContainer,
-            );
-
-            elements.setMessage(
-                `Muito bem! Você encontrou ${item.en}.`,
-            );
-
-            elements.setProgress(1, 1);
-
-            elements.nextButton.disabled =
-                false;
-
-            audioService.speak(
-                item.en,
-                "en-US",
-            );
-
-            onCorrect(item);
-            return;
-        }
+        resolved = true;
 
         button.classList.add(
-            "is-wrong",
+            "is-correct",
+        );
+
+        button.setAttribute(
+            "aria-label",
+            `Ouvir ${option.en} novamente`,
         );
 
         elements.setMessage(
-            "Observe as imagens e tente novamente.",
+            `Muito bem! Esta imagem representa ${item.en}.`,
         );
 
-        audioService.speak(
-            "Tente novamente.",
-        );
+        elements.setProgress(1,1);
 
-        onWrong(item);
+        elements.nextButton.disabled =
+            false;
 
-        window.setTimeout(() => {
-            button.classList.remove(
-                "is-wrong",
-            );
-        }, 650);
+        onCorrect(item);
+
+        return;
     }
+
+    button.classList.add(
+        "is-wrong",
+    );
+
+    elements.setMessage(
+        `Esta imagem representa ${option.en}. Procure ${item.en}.`,
+    );
+
+    onWrong(item);
+
+    window.setTimeout(() =>
+        button.classList.remove(
+            "is-wrong",
+        ), 650);
+}
 
 
     function createImageOption(
@@ -257,7 +285,7 @@ export function createAudioImageActivity(
 
         elements.setProgress(0, 1);
 
-    
+
     }
 
 

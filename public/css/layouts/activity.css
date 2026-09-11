@@ -827,3 +827,94 @@
         transform: none;
     }
 }
+
+
+
+/* =========================================================
+   RECONHECIMENTO — NÍVEL 1
+   ========================================================= */
+
+.recognize-game {
+    width: 100%;
+    align-content: center;
+    gap: 14px;
+}
+
+.recognize-card {
+    width: min(420px, 100%);
+    min-height: 260px;
+    cursor: pointer;
+}
+
+.recognize-card .prompt-image {
+    width: auto;
+    max-width: 100%;
+    height: min(34vh, 300px);
+    margin: auto;
+    object-fit: contain;
+}
+
+.recognize-support-text {
+    margin: 0;
+    color: var(--roar-muted);
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 500;
+    text-align: center;
+}
+
+.recognize-card:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 4px;
+}
+
+.recognize-card.is-correct {
+    border-color: var(--roar-success);
+    background: #e9fff3;
+}
+
+@media (max-width: 760px) {
+    .recognize-card {
+        min-height: 210px;
+    }
+
+    .recognize-card .prompt-image {
+        height: min(30vh, 240px);
+    }
+
+    .recognize-support-text {
+        font-size: 13px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .recognize-card {
+        transition: none;
+    }
+}
+
+
+.true-false-image-button {
+    padding: 8px;
+    border: 2px solid transparent;
+    border-radius: var(--roar-radius-md);
+    background: transparent;
+    cursor: pointer;
+}
+
+.true-false-image-button .prompt-image {
+    width: auto;
+    max-width: min(70vw, 380px);
+    height: min(31vh, 280px);
+    margin: auto;
+    object-fit: contain;
+}
+
+.true-false-image-button:hover {
+    border-color: var(--roar-blue-light);
+}
+
+.true-false-image-button:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 3px;
+}

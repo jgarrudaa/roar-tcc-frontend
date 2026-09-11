@@ -172,6 +172,82 @@ export async function createActivityController({
         );
     }
 
+
+    /*
+ * Progresso geral do módulo.
+ *
+ * Cada motor trabalha internamente com seu próprio progresso,
+ * por exemplo 0/1 ou 1/2. O controller converte esse valor
+ * para a posição correspondente entre todas as atividades.
+ */
+    const currentActivityIndex =
+        findCurrentActivityIndex(
+            module,
+            activity,
+        );
+
+    if (currentActivityIndex < 0) {
+        throw new Error(
+            "A atividade atual não foi encontrada no módulo.",
+        );
+    }
+
+    const totalModuleActivities =
+        Math.max(
+            1,
+            module.activities.length,
+        );
+
+    function setModuleProgress(
+        activityValue,
+        activityMaximum,
+    ) {
+        const safeMaximum =
+            Math.max(
+                1,
+                Number(activityMaximum) || 1,
+            );
+
+        const safeValue =
+            Math.min(
+                safeMaximum,
+                Math.max(
+                    0,
+                    Number(activityValue) || 0,
+                ),
+            );
+
+        const activityPercentage =
+            safeValue / safeMaximum;
+
+        const moduleProgress =
+            Math.min(
+                totalModuleActivities,
+                currentActivityIndex +
+                activityPercentage,
+            );
+
+        elements.progress.max =
+            totalModuleActivities;
+
+        elements.progress.value =
+            moduleProgress;
+
+        elements.progressLabel.textContent =
+            `Etapa ${currentActivityIndex + 1} de ${totalModuleActivities}`;
+    }
+
+    const engineElements = {
+        ...elements,
+        setProgress: setModuleProgress,
+    };
+
+    /*
+     * Mostra a posição correta imediatamente,
+     * antes mesmo de o aluno responder.
+     */
+    setModuleProgress(0, 1);
+
     const statistics = {
         correct: 0,
         wrong: 0,
@@ -213,7 +289,11 @@ export async function createActivityController({
 
     const engine = factory({
         ...context,
-        elements,
+
+        /*
+         * barra representa o módulo completo.
+         */
+        elements: engineElements,
 
         onCorrect(item) {
             registerCorrect(item);

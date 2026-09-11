@@ -157,6 +157,13 @@ export function createValidateActivity(context) {
             return;
         }
 
+        if (student.supportLevel === 1) {
+            audioService.speak(
+                option.en,
+                "en-US",
+            );
+        }
+
         const selectedAnswer =
             normalizeAnswer(option.en);
 
@@ -169,9 +176,11 @@ export function createValidateActivity(context) {
             button.classList.add("is-correct");
             disableOptions(optionsContainer);
 
-            elements.setMessage(
-                "Muito bem! Resposta correta.",
-            );
+            if (student.supportLevel !== 1) {
+                audioService.speak(
+                    "Muito bem! Resposta correta.",
+                );
+            }
 
             elements.setProgress(1, 1);
             elements.nextButton.disabled = false;
@@ -189,12 +198,16 @@ export function createValidateActivity(context) {
         button.classList.add("is-wrong");
 
         elements.setMessage(
-            "Resposta incorreta. Observe novamente e tente outra opção.",
+            student.supportLevel === 1
+                ? `Esta imagem representa ${option.en}. Vamos observar novamente.`
+                : "Essa não é a resposta. Tente novamente.",
         );
 
-        audioService.speak(
-            "Resposta incorreta. Tente novamente.",
-        );
+        if (student.supportLevel !== 1) {
+            audioService.speak(
+                "Tente novamente.",
+            );
+        }
 
         onWrong(item);
 
