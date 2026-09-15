@@ -543,7 +543,7 @@
     text-align: center;
 }
 
-.true-false-game > .prompt-image {
+.true-false-game>.prompt-image {
     width: auto;
     max-width: min(70vw, 380px);
     height: min(31vh, 280px);
@@ -592,101 +592,6 @@
 .truth-button.is-wrong {
     border-color: var(--roar-danger);
     background: #fff1f0;
-}
-
-
-/* =========================================================
-   JOGO: MEMÓRIA
-   ========================================================= */
-
-.memory-game {
-    width: 100%;
-    align-content: center;
-}
-
-.memory-grid {
-    width: min(700px, 100%);
-    display: grid;
-    grid-template-columns: repeat(4, minmax(120px, 1fr));
-    gap: 16px;
-}
-
-.memory-card {
-    position: relative;
-    min-height: 170px;
-    padding: 0;
-    overflow: hidden;
-    border: 2px solid var(--roar-blue);
-    border-radius: var(--roar-radius-md);
-    background: var(--roar-blue-light);
-    cursor: pointer;
-    box-shadow: 0 5px 14px rgba(15, 79, 125, 0.12);
-    transition:
-        transform 180ms ease,
-        border-color 180ms ease,
-        background-color 180ms ease;
-}
-
-.memory-card:hover:not(:disabled) {
-    transform: translateY(-3px);
-}
-
-.memory-card:focus-visible {
-    outline: 3px solid var(--roar-blue);
-    outline-offset: 3px;
-}
-
-.memory-card-front,
-.memory-card-back {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    padding: 12px;
-}
-
-.memory-card-front {
-    color: var(--roar-blue);
-    font-size: 48px;
-    font-weight: 700;
-}
-
-.memory-card-back {
-    visibility: hidden;
-    opacity: 0;
-    color: var(--roar-blue);
-    background: var(--roar-surface);
-    font-size: clamp(18px, 2vw, 25px);
-    font-weight: 700;
-    transition: opacity 150ms ease;
-}
-
-.memory-card-back .prompt-image {
-    width: 100%;
-    height: 130px;
-    object-fit: contain;
-}
-
-.memory-card.is-revealed .memory-card-front,
-.memory-card.is-matched .memory-card-front {
-    visibility: hidden;
-    opacity: 0;
-}
-
-.memory-card.is-revealed .memory-card-back,
-.memory-card.is-matched .memory-card-back {
-    visibility: visible;
-    opacity: 1;
-}
-
-.memory-card.is-matched {
-    border-color: var(--roar-success);
-    background: #e9fff3;
-    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.12);
-}
-
-.memory-card.is-matched .memory-card-back {
-    background: #e9fff3;
 }
 
 
@@ -745,7 +650,7 @@
         font-size: 18px;
     }
 
-    .true-false-game > .prompt-image {
+    .true-false-game>.prompt-image {
         height: min(27vh, 220px);
     }
 
@@ -812,6 +717,7 @@
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
+
     .listen-button,
     .audio-image-options .choice-card,
     .truth-button,
@@ -917,4 +823,561 @@
 .true-false-image-button:focus-visible {
     outline: 3px solid var(--roar-blue);
     outline-offset: 3px;
+}
+
+
+/* ============================================================
+   Associação — imagem interativa e tamanho controlado
+   ============================================================ */
+
+.association-game {
+    align-content: center;
+    grid-template-rows: minmax(0, auto) auto;
+    gap: clamp(20px, 3vh, 32px);
+}
+
+.association-prompt {
+    width: 100%;
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+}
+
+.association-prompt-button {
+    width: min(360px, 80vw);
+    height: min(310px, 38vh);
+    padding: 18px;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--roar-border);
+    border-radius: var(--roar-radius-md);
+    background: var(--roar-surface);
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease,
+        transform 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.association-prompt-button:hover {
+    border-color: var(--roar-blue);
+    background: #f4f9fd;
+    box-shadow: 0 6px 18px rgba(15, 79, 125, 0.12);
+}
+
+.association-prompt-button:active {
+    transform: scale(0.98);
+}
+
+.association-prompt-button:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 4px;
+}
+
+.association-prompt-button .prompt-image {
+    width: 100%;
+    height: 100%;
+    max-width: 300px;
+    max-height: 260px;
+    margin: 0;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.association-prompt-help {
+    color: var(--roar-muted);
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 600;
+    text-align: center;
+}
+
+.association-grid {
+    width: min(760px, 100%);
+    grid-template-columns: repeat(3, minmax(140px, 1fr));
+}
+
+.association-grid .choice-card {
+    min-height: 64px;
+    font-size: clamp(16px, 1.5vw, 20px);
+    cursor: pointer;
+}
+
+.association-grid .choice-card:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+    .association-prompt-button {
+        width: min(300px, 88vw);
+        height: min(250px, 34vh);
+        padding: 12px;
+    }
+
+    .association-prompt-button .prompt-image {
+        max-width: 250px;
+        max-height: 210px;
+    }
+
+    .association-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .association-grid .choice-card {
+        min-height: 56px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .association-prompt-button {
+        transition: none;
+    }
+}
+
+
+/* ============================================================
+   Jogo da memória — apresentação dos pares
+   ============================================================ */
+
+.memory-preview {
+    width: 100%;
+    max-width: 980px;
+    height: auto;
+    min-height: 100%;
+    margin-inline: auto;
+    padding: 8px 0;
+    display: grid;
+    grid-template-rows: auto auto auto;
+    justify-items: center;
+    align-content: center;
+    gap: clamp(18px, 2.5vh, 28px);
+}
+
+.memory-preview>h2 {
+    margin: 0;
+    color: var(--roar-ink);
+    font-size: clamp(22px, 2vw, 30px);
+    line-height: 1.2;
+    text-align: center;
+}
+
+.memory-preview-grid {
+    width: 100%;
+    max-width: 900px;
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(170px, 1fr));
+    align-items: stretch;
+    gap: clamp(14px, 2vw, 22px);
+}
+
+.memory-preview-pair {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 16px;
+    display: grid;
+    grid-template-rows: minmax(150px, 190px) auto;
+    justify-items: center;
+    align-items: center;
+    gap: 12px;
+    border: 2px solid var(--roar-border);
+    border-radius: var(--roar-radius-md);
+    background: var(--roar-surface);
+    box-shadow: 0 5px 16px rgba(15, 79, 125, 0.08);
+}
+
+.memory-preview-pair .prompt-image {
+    width: 100%;
+    height: 100%;
+    max-width: 210px;
+    max-height: 190px;
+    margin: 0;
+    object-fit: contain;
+}
+
+.memory-preview-word {
+    width: 100%;
+    min-height: 52px;
+    padding: 10px 16px;
+    border: 2px solid var(--roar-blue);
+    border-radius: var(--roar-radius-sm);
+    color: var(--roar-blue);
+    background: #f4f9fd;
+    font-family: inherit;
+    font-size: clamp(16px, 1.5vw, 20px);
+    line-height: 1.2;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background-color 160ms ease,
+        color 160ms ease,
+        transform 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.memory-preview-word:hover {
+    color: #ffffff;
+    background: var(--roar-blue);
+    box-shadow: 0 5px 14px rgba(15, 79, 125, 0.16);
+}
+
+.memory-preview-word:active {
+    transform: scale(0.98);
+}
+
+.memory-preview-word:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 3px;
+}
+
+.memory-preview>.btn {
+    width: min(260px, 100%);
+    min-height: 54px;
+    padding: 12px 24px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--roar-blue);
+    border-radius: var(--roar-radius-sm);
+    color: #ffffff;
+    background: var(--roar-blue);
+    font-family: inherit;
+    font-size: 17px;
+    line-height: 1.2;
+    font-weight: 700;
+    cursor: pointer;
+    justify-self: center;
+    margin-inline: auto;
+    box-shadow: 0 5px 14px rgba(15, 79, 125, 0.16);
+    transition:
+        background-color 160ms ease,
+        transform 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.memory-preview>.btn:hover {
+    background: var(--roar-blue-dark);
+    box-shadow: 0 7px 18px rgba(15, 79, 125, 0.2);
+}
+
+.memory-preview>.btn:active {
+    transform: scale(0.98);
+}
+
+.memory-preview>.btn:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 3px;
+}
+
+
+/* ============================================================
+   Jogo da memória — cartas
+   ============================================================ */
+
+.memory-game {
+    width: 100%;
+    max-width: 980px;
+    height: auto;
+    min-height: 100%;
+    margin-inline: auto;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    box-sizing: border-box;
+}
+
+.memory-grid {
+    width: 100%;
+    max-width: 780px;
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+.memory-card {
+    position: relative;
+    width: 100%;
+    min-height: 170px;
+    padding: 0;
+    border: 2px solid var(--roar-border);
+    border-radius: var(--roar-radius-md);
+    background: var(--roar-surface);
+    color: var(--roar-blue);
+    font-family: inherit;
+    cursor: pointer;
+    overflow: hidden;
+    box-sizing: border-box;
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease,
+        transform 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.memory-card:hover:not(:disabled) {
+    border-color: var(--roar-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(15, 79, 125, 0.12);
+}
+
+.memory-card:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 3px;
+}
+
+.memory-card-front,
+.memory-card-back {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 12px;
+}
+
+.memory-card-front {
+    color: #ffffff;
+    background: var(--roar-blue);
+    font-size: clamp(34px, 4vw, 52px);
+    font-weight: 700;
+}
+
+.memory-card-back {
+    visibility: hidden;
+    color: var(--roar-blue);
+    background: var(--roar-surface);
+    font-size: clamp(18px, 2vw, 25px);
+    font-weight: 700;
+}
+
+.memory-card-back .prompt-image {
+    width: 100%;
+    height: 100%;
+    max-width: 150px;
+    max-height: 140px;
+    margin: 0;
+    object-fit: contain;
+}
+
+.memory-card.is-revealed .memory-card-front,
+.memory-card.is-matched .memory-card-front {
+    visibility: hidden;
+}
+
+.memory-card.is-revealed .memory-card-back,
+.memory-card.is-matched .memory-card-back {
+    visibility: visible;
+}
+
+.memory-card.is-matched {
+    border-color: var(--roar-success);
+    background: #e9fff3;
+}
+
+.memory-card.is-matched .memory-card-back {
+    background: #e9fff3;
+}
+
+
+/* ============================================================
+   Responsividade
+   ============================================================ */
+
+@media (max-width: 820px) {
+    .memory-preview {
+        align-content: start;
+    }
+
+    .memory-preview-grid {
+        grid-template-columns: repeat(2, minmax(140px, 1fr));
+    }
+
+    .memory-preview-pair {
+        grid-template-rows: 140px auto;
+    }
+
+    .memory-preview-pair .prompt-image {
+        max-height: 140px;
+    }
+
+    .memory-grid {
+        grid-template-columns: repeat(2, minmax(130px, 1fr));
+    }
+}
+
+@media (max-width: 520px) {
+    .memory-preview-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .memory-preview-pair {
+        width: min(280px, 100%);
+        grid-template-rows: 130px auto;
+    }
+
+    .memory-preview-pair .prompt-image {
+        max-height: 130px;
+    }
+
+    .memory-grid {
+        grid-template-columns: repeat(2, minmax(110px, 1fr));
+        gap: 10px;
+    }
+
+    .memory-card {
+        min-height: 135px;
+    }
+
+    .memory-card-back .prompt-image {
+        max-height: 110px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .memory-preview-word,
+    .memory-preview>.btn,
+    .memory-card {
+        transition: none;
+    }
+}
+
+
+/* ============================================================
+   Múltipla escolha — Nível 2
+   ============================================================ */
+
+.validation-game {
+    width: 100%;
+    max-width: 900px;
+    min-height: 100%;
+    margin-inline: auto;
+    padding: 6px 0;
+    display: grid;
+    grid-template-rows: minmax(0, auto) auto;
+    justify-items: center;
+    align-content: center;
+    gap: clamp(18px, 3vh, 30px);
+    box-sizing: border-box;
+}
+
+.validation-prompt {
+    width: 100%;
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+}
+
+.validation-image-button {
+    width: min(300px, 75vw);
+    height: min(250px, 32vh);
+    padding: 14px;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--roar-border);
+    border-radius: var(--roar-radius-md);
+    background: var(--roar-surface);
+    cursor: pointer;
+    overflow: hidden;
+    box-sizing: border-box;
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease,
+        transform 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.validation-image-button:hover {
+    border-color: var(--roar-blue);
+    background: #f4f9fd;
+    box-shadow: 0 6px 18px rgba(15, 79, 125, 0.12);
+}
+
+.validation-image-button:active {
+    transform: scale(0.98);
+}
+
+.validation-image-button:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 4px;
+}
+
+.validation-image-button .prompt-image {
+    width: 100%;
+    height: 100%;
+    max-width: 260px;
+    max-height: 210px;
+    margin: 0;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.validation-prompt-help {
+    color: var(--roar-muted);
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 600;
+    text-align: center;
+}
+
+.validation-options {
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(3,
+            minmax(0, 1fr));
+    gap: 14px;
+}
+
+.validation-options .choice-card {
+    width: 100%;
+    min-height: 64px;
+    padding: 12px 18px;
+    font-family: inherit;
+    font-size: clamp(16px, 1.5vw, 20px);
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.validation-options .choice-card:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+    .validation-game {
+        align-content: start;
+    }
+
+    .validation-image-button {
+        width: min(260px, 82vw);
+        height: min(210px, 28vh);
+    }
+
+    .validation-image-button .prompt-image {
+        max-width: 220px;
+        max-height: 175px;
+    }
+
+    .validation-options {
+        max-width: 360px;
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .validation-options .choice-card {
+        min-height: 56px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .validation-image-button {
+        transition: none;
+    }
 }

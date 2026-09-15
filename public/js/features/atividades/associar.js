@@ -1,13 +1,12 @@
-import { audioService } from "../../services/audio-service.js";
+import {
+    audioService,
+} from "../../services/audio-service.js";
+
 import {
     createButton,
     createImage,
     shuffle,
 } from "./activity-helpers.js";
-
-
-const AUTO_ADVANCE_DELAY = 1200;
-const MAXIMUM_OPTIONS = 4;
 
 
 function normalizeAnswer(value) {
@@ -17,38 +16,48 @@ function normalizeAnswer(value) {
 }
 
 
-function createOptions(currentItem, moduleItems) {
-    const correctAnswer = normalizeAnswer(
-        currentItem.en,
-    );
+function getOptionLimit(supportLevel) {
+    if (supportLevel === 1) {
+        return 2;
+    }
 
-    const uniqueOptions = new Map();
+    if (supportLevel === 2) {
+        return 3;
+    }
 
-    uniqueOptions.set(
-        correctAnswer,
-        currentItem,
-    );
-
-    moduleItems.forEach((item) => {
-        const answer = normalizeAnswer(item.en);
-
-        if (
-            answer &&
-            answer !== correctAnswer &&
-            !uniqueOptions.has(answer)
-        ) {
-            uniqueOptions.set(answer, item);
-        }
-    });
-
-    return shuffle(
-        Array.from(uniqueOptions.values())
-            .slice(0, MAXIMUM_OPTIONS),
-    );
+    return 4;
 }
 
 
-export function createAssociateActivity(context) {
+function createOptions(
+    currentItem,
+    moduleItems,
+    optionLimit,
+) {
+    const correctAnswer =
+        normalizeAnswer(currentItem.en);
+
+    const distractors =
+        moduleItems.filter(
+            (moduleItem) =>
+                normalizeAnswer(
+                    moduleItem.en,
+                ) !== correctAnswer,
+        );
+
+    return shuffle([
+        currentItem,
+        ...shuffle(distractors).slice(
+            0,
+            optionLimit - 1,
+        ),
+    ]);
+}
+
+
+export function createAssociateActivity(
+    context,
+) {
     const {
         activity,
         module,
@@ -61,51 +70,52 @@ export function createAssociateActivity(context) {
     const item = activity.item;
 
     let resolved = false;
-    let autoAdvanceTimer = null;
 
 
     function getInstruction() {
         return (
             activity.instruction ||
-            "Associe a imagem à palavra correspondente."
+            "Observe a imagem. Escolha a palavra correta."
         );
     }
 
 
-    function clearAutoAdvance() {
-        if (!autoAdvanceTimer) {
-            return;
-        }
-
-        window.clearTimeout(autoAdvanceTimer);
-        autoAdvanceTimer = null;
+    function speakEnglishWord(word) {
+        audioService.speak(
+            word,
+            "en-US",
+        );
     }
 
 
-    function scheduleAutoAdvance() {
-        clearAutoAdvance();
+    function handlePromptImage() {
+        speakEnglishWord(item.en);
 
-        autoAdvanceTimer = window.setTimeout(() => {
-            elements.nextButton.click();
-        }, AUTO_ADVANCE_DELAY);
-    }
-
-
-    function disableOptions(optionsContainer) {
-        optionsContainer
-            .querySelectorAll("button")
-            .forEach((button) => {
-                button.disabled = true;
-            });
+        elements.setMessage(
+            "Ouça novamente. Depois, escolha a palavra.",
+        );
     }
 
 
     function handleOption(
         option,
         button,
-        optionsContainer,
     ) {
+        /*
+         * Toda alternativa pronuncia sua própria
+         * palavra quando for selecionada.
+         */
+        speakEnglishWord(option.en);
+
+        /*
+         * Após a conclusão, os botões continuam
+         * disponíveis para repetir as palavras.
+         */
         if (resolved) {
+            elements.setMessage(
+                `Esta palavra é ${option.en}.`,
+            );
+
             return;
         }
 
@@ -115,110 +125,194 @@ export function createAssociateActivity(context) {
         const correctAnswer =
             normalizeAnswer(item.en);
 
-        if (selectedAnswer === correctAnswer) {
+        if (
+            selectedAnswer ===
+            correctAnswer
+        ) {
             resolved = true;
 
-            button.classList.add("is-correct");
+            button.classList.add(
+                "is-correct",
+            );
 
-            disableOptions(optionsContainer);
+            button.setAttribute(
+                "aria-label",
+                "Resposta correta. Ouvir novamente.",
+            );
 
             elements.setMessage(
-                "Muito bem! Você encontrou a associação correta.",
+                "Muito bem! Você encontrou a palavra correta.",
             );
 
             elements.setProgress(1, 1);
-            elements.nextButton.disabled = false;
 
-            audioService.speak(
-                item.en,
-                "en-US",
-            );
+            elements.nextButton.disabled =
+                false;
 
             onCorrect(item);
-            scheduleAutoAdvance();
 
             return;
         }
 
-        button.classList.add("is-wrong");
-
-        elements.setMessage(
-             "Vamos observar novamente.",
+        button.classList.add(
+            "is-wrong",
         );
 
-        audioService.speak(
-            "Tente novamente.",
+        elements.setMessage(
+            "Esta não é a palavra da imagem. Tente novamente.",
         );
 
         onWrong(item);
 
-        window.setTimeout(() => {
-            button.classList.remove("is-wrong");
-        }, 650);
+        window.setTimeout(
+            () => {
+                button.classList.remove(
+                    "is-wrong",
+                );
+            },
+            650,
+        );
+    }
+
+
+    function createPromptImageButton() {
+        const button =
+            document.createElement("button");
+
+        const image =
+            createImage(
+                item,
+                student.supportLevel,
+            );
+
+        button.type = "button";
+
+        button.className =
+            "association-prompt-button";
+
+        button.setAttribute(
+            "aria-label",
+            "Ouvir a palavra representada pela imagem",
+        );
+
+        button.title =
+            "Clique para ouvir";
+
+        image.alt =
+            `Imagem de ${item.pt}`;
+
+        button.append(image);
+
+        button.addEventListener(
+            "click",
+            handlePromptImage,
+        );
+
+        return button;
+    }
+
+
+    function createWordButton(option) {
+        const button =
+            createButton(option.en);
+
+        button.dataset.answer =
+            option.en;
+
+        button.setAttribute(
+            "aria-label",
+            `Selecionar e ouvir ${option.en}`,
+        );
+
+        button.addEventListener(
+            "click",
+            () => {
+                handleOption(
+                    option,
+                    button,
+                );
+            },
+        );
+
+        return button;
     }
 
 
     function render() {
         resolved = false;
-        clearAutoAdvance();
 
         elements.stage.replaceChildren();
-        elements.nextButton.disabled = true;
 
-        const content = document.createElement("div");
+        elements.nextButton.disabled =
+            true;
+
+        const content =
+            document.createElement("div");
+
         const promptContainer =
             document.createElement("div");
+
+        const promptHelp =
+            document.createElement("span");
 
         const optionsContainer =
             document.createElement("div");
 
-        content.className = "activity-content";
+        content.className =
+            "activity-content association-game";
+
         promptContainer.className =
             "association-prompt";
+
+        promptHelp.className =
+            "association-prompt-help";
+
+        promptHelp.textContent =
+            "Toque na imagem para ouvir.";
 
         optionsContainer.className =
             "choice-grid association-grid";
 
-        const promptImage = createImage(
-            item,
-            student.supportLevel,
+        promptContainer.append(
+            createPromptImageButton(),
+            promptHelp,
         );
 
-        promptContainer.append(promptImage);
-
-        const options = createOptions(
-            item,
-            module.items,
-        );
-
-        options.forEach((option) => {
-            const button = createButton(
-                option.en,
+        const options =
+            createOptions(
+                item,
+                module.items,
+                getOptionLimit(
+                    student.supportLevel,
+                ),
             );
 
-            button.addEventListener("click", () => {
-                handleOption(
-                    option,
-                    button,
-                    optionsContainer,
+        options.forEach(
+            (option) => {
+                optionsContainer.append(
+                    createWordButton(option),
                 );
-            });
-
-            optionsContainer.append(button);
-        });
+            },
+        );
 
         content.append(
             promptContainer,
             optionsContainer,
         );
 
-        elements.stage.append(content);
-        elements.setInstruction(getInstruction());
-        elements.setProgress(0, 1);
+        elements.stage.append(
+            content,
+        );
 
-        if (student.supportLevel === 1) {
-            audioService.speak(getInstruction());
-        }
+        elements.setInstruction(
+            getInstruction(),
+        );
+
+        elements.setMessage(
+            "Observe com calma. Você pode tentar novamente.",
+        );
+
+        elements.setProgress(0, 1);
     }
 
 
@@ -226,12 +320,13 @@ export function createAssociateActivity(context) {
         start: render,
 
         repeatInstruction() {
-            audioService.speak(getInstruction());
+            audioService.speak(
+                getInstruction(),
+                "pt-BR",
+            );
         },
 
         next() {
-            clearAutoAdvance();
-
             return resolved;
         },
     });

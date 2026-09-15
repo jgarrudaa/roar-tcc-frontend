@@ -1,10 +1,10 @@
 import { atividadeService } from "../../services/atividade-service.js";
-import { createAssociateActivity, } from "./associar.js";
+import { createAssociateActivity, } from "./associar.js?v=2";
 import { createRecognizeActivity, } from "./reconhecer.js";
-import { createValidateActivity, } from "./validar.js";
+import { createValidateActivity, } from "./validar.js?v=2";
 import { createAudioImageActivity, } from "./audio-imagem.js";
 import { createTrueFalseActivity, } from "./verdadeiro-falso.js";
-import { createMemoryActivity, } from "./memoria.js";
+import { createMemoryActivity, } from "./memoria.js?v=2";
 
 
 

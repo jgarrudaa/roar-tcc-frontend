@@ -30,6 +30,7 @@
                 <a href="desempenho.html" class="sidebar__link"><i
                         class="fi fi-br-chart-simple"></i><span>Desempenho</span></a>
                 <a href="perfil.html" class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
+                <a href="conquistas.html" class="sidebar__link"><i class="fi fi-br-user"></i><span>Conquistas</span></a>
                 <a href="configuracoes.html" class="sidebar__link"><i
                         class="fi fi-br-settings"></i><span>Configurações</span></a>
             </nav>
@@ -66,7 +67,9 @@
                                 <div class="stat-card__icon stat-card__icon--xp"><i class="fi fi-br-medal"></i></div>
                                 <div>
                                     <div class="stat-card__label">Conquistadas</div>
-                                    <div class="stat-card__value">4</div>
+                                    <div class="stat-card__value" id="unlocked-count">
+                                        0
+                                    </div>
                                 </div>
                             </div>
                             <div class="stat-card u-pages-aluno-conquistas-003">
@@ -74,7 +77,9 @@
                                 </div>
                                 <div>
                                     <div class="stat-card__label">Bloqueadas</div>
-                                    <div class="stat-card__value">8</div>
+                                    <div class="stat-card__value" id="locked-count">
+                                        0
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -85,7 +90,9 @@
                 <div class="medals-section">
                     <div class="section-header mb-md">
                         <h2>Conquistadas</h2>
-                        <span class="badge badge--green">4 medalhas</span>
+                        <span class="badge badge--green" id="unlocked-badge">
+                            0 medalhas
+                        </span>
                     </div>
                     <div class="medals-grid-big" id="conquistadasGrid"></div>
                 </div>
@@ -94,7 +101,9 @@
                 <div class="medals-section">
                     <div class="section-header mb-md">
                         <h2>A Desbloquear</h2>
-                        <span class="badge badge--blue">8 medalhas</span>
+                        <span class="badge badge--blue" id="locked-badge">
+                            0 medalhas
+                        </span>
                     </div>
                     <div class="medals-grid-big" id="bloqueadasGrid"></div>
                 </div>
@@ -102,10 +111,14 @@
         </div>
     </div>
     <script type="module" src="../../public/js/pages/auth/route-guard.js"></script>
+
     <script src="../../public/js/roar-storage.js"></script>
+
     <script src="../../public/js/roar-page-transition.js"></script>
+
     <script src="../../public/js/roar-sidebar.js"></script>
-    <script type="module" src="../../public/js/pages/aluno/pages-aluno-conquistas-1.js"></script>
+
+    <script type="module" src="../../public/js/pages/aluno/pages-aluno-conquistas-1.js?v=3"></script>
 </body>
 
 </html>

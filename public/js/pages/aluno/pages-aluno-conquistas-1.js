@@ -222,38 +222,44 @@ const elements = {
             ".congrats-banner__text > p",
         ),
 
-    statisticValues:
-        document.querySelectorAll(
-            ".congrats-banner .stat-card__value",
+    unlockedCount:
+        document.getElementById(
+            "unlocked-count",
+        ),
+
+    lockedCount:
+        document.getElementById(
+            "locked-count",
         ),
 
     unlockedBadge:
-        document.querySelector(
-            ".medals-section:first-of-type .badge",
+        document.getElementById(
+            "unlocked-badge",
         ),
 
     lockedBadge:
-        document.querySelector(
-            ".medals-section:last-of-type .badge",
+        document.getElementById(
+            "locked-badge",
         ),
 
     unlockedGrid:
-        document.querySelector(
-            "#conquistadasGrid",
+        document.getElementById(
+            "conquistadasGrid",
         ),
 
     lockedGrid:
-        document.querySelector(
-            "#bloqueadasGrid",
+        document.getElementById(
+            "bloqueadasGrid",
         ),
 };
-
 
 function validateElements() {
     const requiredElements = [
         "avatar",
         "bannerTitle",
         "bannerDescription",
+        "unlockedCount",
+        "lockedCount",
         "unlockedBadge",
         "lockedBadge",
         "unlockedGrid",
@@ -262,15 +268,13 @@ function validateElements() {
 
     const missingElements =
         requiredElements.filter(
-            (name) => !elements[name],
+            (name) =>
+                !elements[name],
         );
 
-    if (
-        missingElements.length > 0 ||
-        elements.statisticValues.length < 2
-    ) {
+    if (missingElements.length > 0) {
         throw new Error(
-            "A estrutura da página de conquistas está incompleta.",
+            `Elementos ausentes na página: ${missingElements.join(", ")}.`,
         );
     }
 }
@@ -615,10 +619,10 @@ function updateSummary(
                 "primeira medalha. Aprenda no seu ritmo!"
             );
 
-    elements.statisticValues[0].textContent =
+    elements.unlockedCount.textContent =
         String(unlockedCount);
 
-    elements.statisticValues[1].textContent =
+    elements.lockedCount.textContent =
         String(lockedCount);
 
     elements.unlockedBadge.textContent =
@@ -729,11 +733,15 @@ function showError(error) {
         description,
     );
 
-    elements.unlockedGrid
-        .replaceChildren(container);
+    if (elements.unlockedGrid) {
+        elements.unlockedGrid
+            .replaceChildren(container);
+    }
 
-    elements.lockedGrid
-        .replaceChildren();
+    if (elements.lockedGrid) {
+        elements.lockedGrid
+            .replaceChildren();
+    }
 
     elements.bannerTitle.textContent =
         "Suas conquistas";
