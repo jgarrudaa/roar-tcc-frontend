@@ -470,6 +470,21 @@
             .simple-summary-grid > div:last-child { border-bottom: 0; }
         }
 
+        @media (min-width: 1921px) {
+            .rel-layout {
+                grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+                gap: var(--space-2xl);
+            }
+            .student-item {
+                padding: 14px var(--space-md);
+            }
+            .si-av {
+                width: 44px;
+                height: 44px;
+                font-size: 1rem;
+            }
+        }
+
         @media print {
             .sidebar, .navbar, .student-sidebar, .mobile-student-sel, .print-btn, #toast-container { display: none !important; }
             .main-content { margin: 0 !important; }

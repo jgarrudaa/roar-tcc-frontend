@@ -279,3 +279,24 @@
         width: 100%
     }
 }
+
+@media (min-width: 1921px) {
+    .profile-grid {
+        gap: var(--space-2xl);
+    }
+    .profile-summary {
+        padding: 36px;
+    }
+    .profile-avatar {
+        width: 90px;
+        height: 90px;
+        flex-basis: 90px;
+        font-size: 1.8rem;
+    }
+    .profile-title h1 {
+        font-size: 2rem;
+    }
+    .profile-form {
+        padding: 36px;
+    }
+}

@@ -527,3 +527,54 @@ input {
     background: transparent;
     cursor: pointer;
 }
+
+@media (max-width: 360px) {
+    .auth-visual,
+    .auth-form-panel {
+        padding: 20px 14px;
+    }
+
+    .auth-greeting {
+        font-size: 22px;
+    }
+
+    .auth-input {
+        padding: 0 12px;
+    }
+}
+
+@media (min-width: 1921px) {
+    .auth-card {
+        width: min(85vw, 1400px);
+        height: min(75vh, 700px);
+        border-radius: 24px;
+    }
+
+    .auth-logo {
+        width: 240px;
+        height: 96px;
+    }
+
+    .auth-greeting {
+        font-size: 38px;
+    }
+
+    .auth-form-panel {
+        padding: 56px;
+    }
+
+    .auth-input {
+        height: 56px;
+        font-size: 1.1rem;
+    }
+
+    .auth-button {
+        height: 56px;
+        font-size: 1.15rem;
+    }
+
+    .auth-dino {
+        max-width: 240px;
+        height: 200px;
+    }
+}

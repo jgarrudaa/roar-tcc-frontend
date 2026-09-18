@@ -79,3 +79,30 @@
 .u-pages-professor-inicio-027 { display:flex;justify-content:space-between;font-size:0.72rem;color:var(--c-text-soft);margin-bottom:2px; }
 .u-pages-professor-inicio-028 { height:6px; }
 .u-pages-professor-inicio-029 { font-weight:500; }
+
+@media (max-width: 520px) {
+    .hist-row {
+        grid-template-columns: 1fr 65px 65px;
+        font-size: 0.78rem;
+    }
+    .student-row {
+        flex-wrap: wrap;
+        gap: var(--space-xs);
+    }
+    .u-pages-professor-inicio-003 {
+        padding: 0 12px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (min-width: 1921px) {
+    .student-row {
+        padding: var(--space-md) var(--space-lg);
+    }
+    .student-row__name {
+        font-size: 1.05rem;
+    }
+    .hist-row {
+        font-size: 0.95rem;
+    }
+}

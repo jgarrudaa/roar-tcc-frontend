@@ -1381,3 +1381,72 @@
         transition: none;
     }
 }
+
+/* Telas ultra-compactas (<= 360px) */
+@media (max-width: 360px) {
+    .activity-header {
+        padding: 8px 12px;
+        min-height: 72px;
+    }
+
+    .activity-heading h1 {
+        font-size: 18px;
+    }
+
+    .activity-footer {
+        padding: 10px 14px;
+    }
+
+    .next-button {
+        min-width: 140px;
+        min-height: 48px;
+        font-size: 16px;
+    }
+}
+
+/* Smart TV e Telas Ultrawide / 4K */
+@media (min-width: 1921px) {
+    .activity-header {
+        min-height: 120px;
+        padding: 18px clamp(24px, 6vw, 100px);
+    }
+
+    .activity-back {
+        width: 70px;
+        height: 70px;
+    }
+
+    .activity-back .fi {
+        font-size: 32px;
+    }
+
+    .activity-heading h1 {
+        font-size: 38px;
+    }
+
+    .next-button {
+        min-width: 260px;
+        min-height: 72px;
+        font-size: 24px;
+        border-radius: 9999px;
+    }
+
+    .choice-card,
+    .listen-card,
+    .recognize-card,
+    .association-grid .choice-card,
+    .validation-options .choice-card {
+        font-size: 24px;
+        min-height: 80px;
+        padding: 20px 28px;
+    }
+
+    .choice-card:focus-visible,
+    .listen-button:focus-visible,
+    .truth-button:focus-visible,
+    .recognize-card:focus-visible,
+    .memory-card:focus-visible {
+        outline: 4px solid var(--roar-blue);
+        outline-offset: 4px;
+    }
+}

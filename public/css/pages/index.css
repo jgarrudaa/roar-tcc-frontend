@@ -916,3 +916,60 @@ button {
         order: 2
     }
 }
+
+@media (max-width: 360px) {
+    .site-header {
+        padding: 0 12px;
+        gap: 10px;
+    }
+    .hero h1 {
+        font-size: 1.85rem;
+    }
+    .hero__actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    .hero__actions .button {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (min-width: 1921px) {
+    :root {
+        --max: 1560px;
+    }
+    body {
+        font-size: 1.25rem;
+    }
+    .site-header {
+        height: 104px;
+    }
+    .brand img {
+        width: 130px;
+    }
+    .site-nav {
+        font-size: 1.1rem;
+        gap: 40px;
+    }
+    .hero h1 {
+        font-size: 4rem;
+    }
+    .hero__lead {
+        font-size: 1.35rem;
+    }
+    .button {
+        min-height: 58px;
+        font-size: 1.15rem;
+        padding: 0 32px;
+    }
+    .step-card {
+        padding: 36px;
+    }
+    .price-card {
+        padding: 40px 32px;
+    }
+    .price strong {
+        font-size: 3.5rem;
+    }
+}
