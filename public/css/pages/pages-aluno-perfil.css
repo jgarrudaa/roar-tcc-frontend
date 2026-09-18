@@ -156,6 +156,16 @@
             .info-grid { grid-template-columns: 1fr; }
         }
 
+        @media (max-width: 480px) {
+            .u-pages-aluno-perfil-007 { width: 100% !important; }
+            .u-pages-aluno-perfil-016 { flex-direction: column; gap: var(--space-sm); }
+        }
+
+        @media (min-width: 1921px) {
+            .profile-hero { padding: var(--space-2xl); }
+            .u-pages-aluno-perfil-003 { font-size: 3.5rem; }
+        }
+
 .filter-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:9999px;border:1.5px solid rgba(0,0,0,0.10);background:#FFFAFF;font-size:.84rem;font-weight:600;color:#5a6376;white-space:nowrap;}
 .filter-chip.active{background:rgba(133,199,242,0.35);border-color:rgba(133,199,242,0.7);color:#244D8C;}
 

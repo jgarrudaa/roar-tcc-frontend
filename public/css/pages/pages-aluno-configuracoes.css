@@ -134,6 +134,25 @@
             .config-grid { grid-template-columns: 1fr; }
         }
 
+        @media (max-width: 480px) {
+            .config-row {
+                gap: var(--space-sm);
+            }
+            .u-pages-aluno-configuracoes-002,
+            .u-pages-aluno-configuracoes-004 {
+                width: 110px;
+            }
+        }
+
+        @media (min-width: 1921px) {
+            .config-grid {
+                gap: var(--space-2xl);
+            }
+            .config-row {
+                padding: var(--space-lg) 0;
+            }
+        }
+
 /* Classes geradas a partir dos antigos estilos inline. */
 .u-pages-aluno-configuracoes-001 { display:flex;align-items:center;gap:var(--space-md); }
 .u-pages-aluno-configuracoes-002 { width:140px;text-align:right; }

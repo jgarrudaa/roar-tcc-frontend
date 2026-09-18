@@ -287,6 +287,13 @@
             .cat-grid { grid-template-columns: 1fr; }
         }
 
+        @media (min-width: 1921px) {
+            .cat-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: var(--space-xl);
+            }
+        }
+
 /* Classes geradas a partir dos antigos estilos inline. */
 .u-pages-professor-atividades-001 { display:flex;align-items:center;gap:var(--space-md); }
 .u-pages-professor-atividades-002 { color:var(--c-blue-dark); }

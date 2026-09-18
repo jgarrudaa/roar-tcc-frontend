@@ -168,9 +168,19 @@
         .cat-progress-name { font-size: 0.88rem; font-weight: 600; color: var(--c-text); margin-bottom: 4px; }
 
         @media (max-width: 768px) {
-            .stats-overview { grid-template-columns: repeat(2, 1fr); }
+            .stats-overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .charts-grid { grid-template-columns: 1fr; }
             .donut-wrap { flex-direction: column; align-items: flex-start; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-overview { grid-template-columns: 1fr; }
+            .donut-wrap { align-items: center; text-align: center; }
+        }
+
+        @media (min-width: 1921px) {
+            .stats-overview { gap: var(--space-xl); }
+            .charts-grid { gap: var(--space-xl); }
         }
 
 /* Classes geradas a partir dos antigos estilos inline. */

@@ -104,7 +104,29 @@
     }
 
     .medals-grid-big {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 360px) {
+    .medals-grid-big {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 1921px) {
+    .medals-grid-big {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: var(--space-xl);
+    }
+    .congrats-banner {
+        padding: var(--space-xl) var(--space-2xl);
+    }
+    .congrats-banner img {
+        height: 150px;
+    }
+    .congrats-banner__text h2 {
+        font-size: 2rem;
     }
 }
 
