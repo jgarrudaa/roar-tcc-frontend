@@ -1,4 +1,5 @@
 import { atividadeService } from "../../services/atividade-service.js";
+import { soundFx } from "../../services/roar-sound-fx.js";
 import { createAssociateActivity, } from "./associar.js?v=2";
 import { createRecognizeActivity, } from "./reconhecer.js";
 import { createValidateActivity, } from "./validar.js?v=2";
@@ -296,10 +297,12 @@ export async function createActivityController({
         elements: engineElements,
 
         onCorrect(item) {
+            soundFx.playSuccess();
             registerCorrect(item);
         },
 
         onWrong() {
+            soundFx.playTryAgain();
             registerWrong();
         },
     });
@@ -380,6 +383,7 @@ export async function createActivityController({
                     result?.xp_ganho,
                 ) || 0;
 
+            soundFx.playAchievement();
             elements.setMessage(
                 earnedXp > 0
                     ? `Atividade concluída! Você ganhou ${earnedXp} XP.`

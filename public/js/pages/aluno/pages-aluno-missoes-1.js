@@ -50,9 +50,11 @@ function toggleMission(id) {
     const idx = doneMissions.indexOf(id);
     if (idx === -1) {
         doneMissions.push(id);
+        window.roarSound?.playAchievement?.();
         showToast('Missão concluída! +XP', 'success');
     } else {
         doneMissions.splice(idx, 1);
+        window.roarSound?.playToggle?.(false);
     }
     localStorage.setItem('roarMissions', JSON.stringify(doneMissions));
     renderMissions();
