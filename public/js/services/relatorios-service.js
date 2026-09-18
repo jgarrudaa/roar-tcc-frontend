@@ -117,6 +117,13 @@ function normalizeTeacherStudent(student) {
         ),
     );
 
+    const availableActivities = Math.max(
+        completed,
+        toSafeNumber(
+            student?.atividades_disponiveis,
+        ),
+    );
+
     const learningMode = getLearningMode(
         student?.modo_aprendizagem,
     );
@@ -155,6 +162,9 @@ function normalizeTeacherStudent(student) {
 
         attempted,
         completed,
+        availableActivities,
+
+
 
         completionRate: Math.max(
             0,
@@ -607,6 +617,14 @@ function normalizeStudentReport(payload) {
         ),
     );
 
+    const availableActivities = Math.max(
+        completed,
+        toSafeNumber(
+            summaryPayload
+                .atividades_disponiveis,
+        ),
+    );
+
     const history = Array.isArray(
         payload.historico,
     )
@@ -665,6 +683,7 @@ function normalizeStudentReport(payload) {
 
             attempted,
             completed,
+            availableActivities,
 
             completionRate: Math.max(
                 0,
@@ -911,7 +930,7 @@ function normalizeModuleReport(payload) {
         accuracy: calculatePercentage(
             totalCompletions,
             totalCompletions +
-                totalErrors,
+            totalErrors,
         ),
 
         activities,

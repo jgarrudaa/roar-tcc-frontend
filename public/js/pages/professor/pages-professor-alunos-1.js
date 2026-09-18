@@ -245,8 +245,12 @@ function calculateAccuracy(
 }
 
 function calculateProgress(student) {
-    const totalActivities =
-        state.dashboard?.totalActivities ?? 0;
+    const totalActivities = Math.max(
+        0,
+        Number(
+            student.availableActivities,
+        ) || 0,
+    );
 
     return totalActivities
         ? clampPercentage(
@@ -571,7 +575,7 @@ function renderStudentCards() {
 
                     <div class="mini-stat">
                         <div class="mini-stat__val">
-                            ${formatInteger(student.completed)}/${formatInteger(state.dashboard.totalActivities)}
+                           ${formatInteger(student.completed)}/${formatInteger(student.availableActivities)}
                         </div>
 
                         <div class="mini-stat__lbl">
@@ -790,7 +794,7 @@ function renderModalReport(report) {
 
         <div class="mstat">
             <div class="mstat__val">
-                ${formatInteger(summary.completed)}/${formatInteger(state.dashboard.totalActivities)}
+                ${formatInteger(summary.completed)}/${formatInteger(summary.availableActivities)}
             </div>
 
             <div class="mstat__lbl">
