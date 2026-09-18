@@ -312,49 +312,42 @@ async function update(studentId, data) {
 
 
 
-async function resetPin(
-    studentId,
-    newPin,
-    pinConfirmation,
-) {
+async function resetPin(studentId) {
     if (!studentId) {
         throw new Error(
             "Selecione um aluno válido.",
         );
     }
 
-    const normalizedPin =
-        normalizePin(newPin);
+    const response =
+        await alunosApi.resetPin(
+            studentId,
+        );
 
-    const normalizedConfirmation =
-        normalizePin(pinConfirmation);
+    const generatedPin =
+        String(
+            response?.pin ?? "",
+        ).trim();
 
-    if (
-        !/^\d{4}$/.test(normalizedPin)
-    ) {
+    if (!/^\d{4}$/.test(generatedPin)) {
         throw new Error(
-            "O novo PIN deve possuir exatamente 4 números.",
+            "O servidor não retornou um PIN válido.",
         );
     }
 
-    if (
-        normalizedPin !==
-        normalizedConfirmation
-    ) {
-        throw new Error(
-            "A confirmação do PIN não corresponde ao novo PIN.",
-        );
-    }
+    return Object.freeze({
+        message:
+            response?.mensagem ||
+            "Novo PIN gerado com sucesso.",
 
-    return alunosApi.resetPin(
-        studentId,
-        {
-            novo_pin: normalizedPin,
+        studentId:
+            Number(
+                response?.aluno_id ??
+                studentId,
+            ),
 
-            confirmacao_pin:
-                normalizedConfirmation,
-        },
-    );
+        pin: generatedPin,
+    });
 }
 
 async function remove(studentId) {

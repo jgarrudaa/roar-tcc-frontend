@@ -98,21 +98,30 @@ const elements = {
         "btnRelatorio",
     ),
 
-    newPin: document.getElementById(
-        "novoPinAluno",
-    ),
+    resetPinButton:
+        document.getElementById(
+            "btnRedefinirPin",
+        ),
 
-    pinConfirmation: document.getElementById(
-        "confirmarPinAluno",
-    ),
+    generatedPinContainer:
+        document.getElementById(
+            "pinGeradoContainer",
+        ),
 
-    resetPinButton: document.getElementById(
-        "btnRedefinirPin",
-    ),
+    generatedPin:
+        document.getElementById(
+            "pinGerado",
+        ),
 
-    pinMessage: document.getElementById(
-        "pinAlunoMensagem",
-    ),
+    copyPinButton:
+        document.getElementById(
+            "btnCopiarPin",
+        ),
+
+    pinMessage:
+        document.getElementById(
+            "pinAlunoMensagem",
+        ),
 
     notificationButton: document.getElementById(
         "btnNotif",
@@ -125,7 +134,7 @@ const elements = {
     closeButtons: document.querySelectorAll(
         [
             "#modalAluno .modal-close",
-            "#modalAluno .btn--secondary",
+            "#modalAluno .u-pages-professor-alunos-017 > .btn--secondary",
         ].join(", "),
     ),
 };
@@ -138,6 +147,7 @@ const state = {
     report: null,
     loadingReport: false,
     resettingPin: false,
+    generatedPin: "",
 };
 
 function escapeHtml(value) {
@@ -708,12 +718,20 @@ function prepareModal(student) {
     elements.modalLevel.className =
         `nivel-tag ${level.tagClass}`;
 
-    elements.modalLevel.innerHTML =
-        `<i class="fi fi-br-brain"></i>${escapeHtml(level.text)}`;
+    elements.modalLevel.innerHTML = `
+        <i
+            class="fi fi-br-brain"
+            aria-hidden="true"
+        ></i>
+
+        ${escapeHtml(level.text)}
+    `;
 
     elements.modalStatistics.innerHTML = `
         <div class="mstat">
-            <div class="mstat__val">—</div>
+            <div class="mstat__val">
+                —
+            </div>
 
             <div class="mstat__lbl">
                 Carregando relatório...
@@ -724,9 +742,7 @@ function prepareModal(student) {
     elements.modalChart.innerHTML = "";
     elements.modalTable.innerHTML = "";
 
-    elements.newPin.value = "";
-    elements.pinConfirmation.value = "";
-    elements.pinMessage.textContent = "";
+    clearGeneratedPin();
 }
 
 function renderModalReport(report) {
@@ -987,6 +1003,24 @@ async function openStudentModal(
     }
 }
 
+
+function clearGeneratedPin() {
+    state.generatedPin = "";
+
+    elements.generatedPin.textContent =
+        "----";
+
+    elements.generatedPinContainer.hidden =
+        true;
+
+    elements.copyPinButton.disabled =
+        true;
+
+    elements.pinMessage.textContent =
+        "";
+}
+
+
 function closeStudentModal() {
     if (state.resettingPin) {
         return;
@@ -1004,17 +1038,9 @@ function closeStudentModal() {
     state.selectedStudent = null;
     state.report = null;
 
-    elements.newPin.value = "";
-    elements.pinConfirmation.value = "";
-    elements.pinMessage.textContent = "";
+    clearGeneratedPin();
 }
 
-function keepOnlyPinDigits(event) {
-    event.currentTarget.value =
-        event.currentTarget.value
-            .replace(/\D/g, "")
-            .slice(0, 4);
-}
 
 async function resetSelectedStudentPin() {
     const student =
@@ -1033,42 +1059,64 @@ async function resetSelectedStudentPin() {
         return;
     }
 
+    const confirmed =
+        window.confirm(
+            `Gerar um novo PIN para ${student.name}? ` +
+            "O PIN atual deixará de funcionar imediatamente.",
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
     state.resettingPin = true;
 
     elements.resetPinButton.disabled =
         true;
 
-    elements.newPin.disabled = true;
-
-    elements.pinConfirmation.disabled =
+    elements.copyPinButton.disabled =
         true;
 
     elements.pinMessage.textContent =
-        "Salvando novo PIN...";
+        "Gerando um PIN seguro...";
 
     try {
         const response =
             await alunoService.resetPin(
                 student.id,
-                elements.newPin.value,
-                elements.pinConfirmation.value,
             );
 
-        elements.newPin.value = "";
-        elements.pinConfirmation.value = "";
+        state.generatedPin =
+            response.pin;
+
+        elements.generatedPin.textContent =
+            response.pin;
+
+        elements.generatedPinContainer.hidden =
+            false;
+
+        elements.copyPinButton.disabled =
+            false;
 
         elements.pinMessage.textContent =
-            response?.mensagem ||
-            "PIN redefinido com sucesso.";
+            "Novo PIN gerado. Entregue-o diretamente ao aluno.";
 
         showToast(
-            `Novo PIN de ${student.name} salvo com sucesso.`,
+            `Novo PIN de ${student.name} gerado com sucesso.`,
             "success",
         );
     } catch (error) {
+        state.generatedPin = "";
+
+        elements.generatedPin.textContent =
+            "----";
+
+        elements.generatedPinContainer.hidden =
+            true;
+
         elements.pinMessage.textContent =
             error?.message ||
-            "Não foi possível redefinir o PIN.";
+            "Não foi possível gerar um novo PIN.";
 
         showToast(
             elements.pinMessage.textContent,
@@ -1079,13 +1127,92 @@ async function resetSelectedStudentPin() {
 
         elements.resetPinButton.disabled =
             false;
-
-        elements.newPin.disabled = false;
-
-        elements.pinConfirmation.disabled =
-            false;
     }
 }
+
+
+
+
+
+async function copyGeneratedPin() {
+    const pin =
+        state.generatedPin;
+
+    if (!/^\d{4}$/.test(pin)) {
+        showToast(
+            "Gere um novo PIN primeiro.",
+            "info",
+        );
+
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(
+            pin,
+        );
+
+        elements.pinMessage.textContent =
+            "PIN copiado para a área de transferência.";
+
+        showToast(
+            "PIN copiado.",
+            "success",
+        );
+    } catch {
+        const temporaryInput =
+            document.createElement("textarea");
+
+        temporaryInput.value =
+            pin;
+
+        temporaryInput.setAttribute(
+            "readonly",
+            "",
+        );
+
+        temporaryInput.style.position =
+            "fixed";
+
+        temporaryInput.style.opacity =
+            "0";
+
+        document.body.append(
+            temporaryInput,
+        );
+
+        temporaryInput.select();
+
+        const copied =
+            document.execCommand(
+                "copy",
+            );
+
+        temporaryInput.remove();
+
+        if (!copied) {
+            showToast(
+                `Anote o PIN: ${pin}`,
+                "info",
+            );
+
+            return;
+        }
+
+        elements.pinMessage.textContent =
+            "PIN copiado para a área de transferência.";
+
+        showToast(
+            "PIN copiado.",
+            "success",
+        );
+    }
+}
+
+
+
+
+
 
 function showReportSummary() {
     if (!state.report) {
@@ -1155,19 +1282,14 @@ function bindEvents() {
         showReportSummary,
     );
 
-    elements.newPin.addEventListener(
-        "input",
-        keepOnlyPinDigits,
-    );
-
-    elements.pinConfirmation.addEventListener(
-        "input",
-        keepOnlyPinDigits,
-    );
 
     elements.resetPinButton.addEventListener(
         "click",
         resetSelectedStudentPin,
+    );
+    elements.copyPinButton.addEventListener(
+        "click",
+        copyGeneratedPin,
     );
 
     elements.notificationButton.addEventListener(

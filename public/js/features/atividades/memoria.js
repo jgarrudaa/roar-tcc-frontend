@@ -3,31 +3,48 @@ import {
 } from "../../services/audio-service.js";
 
 import {
+    createButton,
     createImage,
     shuffle,
 } from "./activity-helpers.js";
 
 
+function getPairLimit(supportLevel) {
+    if (supportLevel === 1) {
+        return 2;
+    }
+
+    if (supportLevel === 2) {
+        return 3;
+    }
+
+    return 4;
+}
+
+
 function createMemoryItems(
     currentItem,
     moduleItems,
+    pairLimit,
 ) {
-    const secondItem =
+    const otherItems =
         shuffle(
             moduleItems.filter(
                 (item) =>
                     String(item.id) !==
                     String(currentItem.id),
             ),
-        )[0];
-
-    if (!secondItem) {
-        return [currentItem];
-    }
+        );
 
     return [
         currentItem,
-        secondItem,
+        ...otherItems.slice(
+            0,
+            Math.max(
+                0,
+                pairLimit - 1,
+            ),
+        ),
     ];
 }
 
@@ -38,6 +55,7 @@ export function createMemoryActivity(
     const {
         activity,
         module,
+        student,
         elements,
         onCorrect,
         onWrong,
@@ -47,6 +65,7 @@ export function createMemoryActivity(
     let lockBoard = false;
     let matchedPairs = 0;
     let totalPairs = 0;
+    let memoryItems = [];
 
 
     function getInstruction() {
@@ -66,6 +85,19 @@ export function createMemoryActivity(
             "aria-pressed",
             "true",
         );
+
+        const word =
+            card.dataset.word;
+
+        const type =
+            card.dataset.cardType;
+
+        card.setAttribute(
+            "aria-label",
+            type === "image"
+                ? `Imagem de ${word}`
+                : `Palavra ${word}`,
+        );
     }
 
 
@@ -81,6 +113,11 @@ export function createMemoryActivity(
         card.setAttribute(
             "aria-pressed",
             "false",
+        );
+
+        card.setAttribute(
+            "aria-label",
+            "Carta fechada",
         );
     }
 
@@ -124,10 +161,6 @@ export function createMemoryActivity(
             totalPairs,
         );
 
-        elements.setMessage(
-            "Muito bem! Você encontrou um par.",
-        );
-
         audioService.speak(
             matchedItem.en,
             "en-US",
@@ -141,9 +174,15 @@ export function createMemoryActivity(
                 false;
 
             elements.setMessage(
-                "Parabéns! Todos os pares foram encontrados.",
+                "Muito bem! Todos os pares foram encontrados.",
             );
+
+            return;
         }
+
+        elements.setMessage(
+            "Muito bem! Você encontrou um par.",
+        );
     }
 
 
@@ -186,20 +225,19 @@ export function createMemoryActivity(
         onWrong(activity.item);
 
         elements.setMessage(
-            "Ainda não é o par. Observe e tente novamente.",
+            "Essas cartas são diferentes. Observe e tente novamente.",
         );
 
-        audioService.speak(
-            "Tente novamente.",
+        window.setTimeout(
+            () => {
+                hideCard(firstCard);
+                hideCard(secondCard);
+
+                firstCard = null;
+                lockBoard = false;
+            },
+            1000,
         );
-
-        window.setTimeout(() => {
-            hideCard(firstCard);
-            hideCard(secondCard);
-
-            firstCard = null;
-            lockBoard = false;
-        }, 900);
     }
 
 
@@ -224,6 +262,12 @@ export function createMemoryActivity(
         card.dataset.pair =
             String(item.id);
 
+        card.dataset.word =
+            item.en;
+
+        card.dataset.cardType =
+            cardType;
+
         card.setAttribute(
             "aria-pressed",
             "false",
@@ -231,7 +275,7 @@ export function createMemoryActivity(
 
         card.setAttribute(
             "aria-label",
-            "Virar carta",
+            "Carta fechada",
         );
 
         front.className =
@@ -244,7 +288,10 @@ export function createMemoryActivity(
 
         if (cardType === "image") {
             back.append(
-                createImage(item, 1),
+                createImage(
+                    item,
+                    student.supportLevel,
+                ),
             );
         } else {
             back.textContent =
@@ -267,25 +314,22 @@ export function createMemoryActivity(
     }
 
 
-    function render() {
+    function renderGame() {
         firstCard = null;
         lockBoard = false;
         matchedPairs = 0;
 
         elements.stage.replaceChildren();
-        elements.nextButton.disabled = true;
 
-        const items =
-            createMemoryItems(
-                activity.item,
-                module.items,
-            );
+        elements.nextButton.disabled =
+            true;
 
-        totalPairs = items.length;
+        totalPairs =
+            memoryItems.length;
 
         const cards =
             shuffle(
-                items.flatMap(
+                memoryItems.flatMap(
                     (item) => [
                         createCard(
                             item,
@@ -314,24 +358,154 @@ export function createMemoryActivity(
 
         grid.append(...cards);
         content.append(grid);
-        elements.stage.append(content);
+
+        elements.stage.append(
+            content,
+        );
 
         elements.setInstruction(
             getInstruction(),
         );
 
         elements.setMessage(
-            "Vire duas cartas para procurar um par.",
+            "Vire duas cartas para encontrar um par.",
         );
 
         elements.setProgress(
             0,
             totalPairs,
         );
+    }
 
-        audioService.speak(
-            getInstruction(),
+
+    function renderPreview() {
+        elements.stage.replaceChildren();
+
+        elements.nextButton.disabled =
+            true;
+
+        const content =
+            document.createElement("div");
+
+        const title =
+            document.createElement("h2");
+
+        const previewGrid =
+            document.createElement("div");
+
+        const startButton =
+            createButton(
+                "Começar jogo",
+                "btn btn--primary",
+            );
+
+        content.className =
+            "activity-content memory-preview";
+
+        title.textContent =
+            "Conheça os pares";
+
+        previewGrid.className =
+            "memory-preview-grid";
+
+        memoryItems.forEach(
+            (item) => {
+                const pair =
+                    document.createElement(
+                        "div",
+                    );
+
+                const image =
+                    createImage(
+                        item,
+                        student.supportLevel,
+                    );
+
+                const wordButton =
+                    createButton(
+                        item.en,
+                        "memory-preview-word",
+                    );
+
+                pair.className =
+                    "memory-preview-pair";
+
+                wordButton.setAttribute(
+                    "aria-label",
+                    `Ouvir ${item.en}`,
+                );
+
+                wordButton.addEventListener(
+                    "click",
+                    () => {
+                        audioService.speak(
+                            item.en,
+                            "en-US",
+                        );
+                    },
+                );
+
+                pair.append(
+                    image,
+                    wordButton,
+                );
+
+                previewGrid.append(
+                    pair,
+                );
+            },
         );
+
+        startButton.addEventListener(
+            "click",
+            renderGame,
+        );
+
+        content.append(
+            title,
+            previewGrid,
+            startButton,
+        );
+
+        elements.stage.append(
+            content,
+        );
+
+        elements.setInstruction(
+            "Observe os pares antes de começar.",
+        );
+
+        elements.setMessage(
+            "Quando estiver pronto, pressione Começar jogo.",
+        );
+
+        elements.setProgress(
+            0,
+            memoryItems.length,
+        );
+    }
+
+
+    function render() {
+        memoryItems =
+            createMemoryItems(
+                activity.item,
+                module.items,
+                getPairLimit(
+                    student.supportLevel,
+                ),
+            );
+
+        /*
+         * O Nível 2 recebe apresentação prévia.
+         * Os demais níveis iniciam diretamente no jogo.
+         */
+        if (student.supportLevel === 2) {
+            renderPreview();
+            return;
+        }
+
+        renderGame();
     }
 
 
@@ -341,6 +515,7 @@ export function createMemoryActivity(
         repeatInstruction() {
             audioService.speak(
                 getInstruction(),
+                "pt-BR",
             );
         },
 

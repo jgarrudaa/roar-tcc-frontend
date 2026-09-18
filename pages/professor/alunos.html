@@ -253,7 +253,7 @@
                         </h2>
 
                         <p>
-                            Cadastre um novo PIN e entregue-o
+                            Gere um novo PIN e entregue-o
                             diretamente ao aluno.
                         </p>
                     </div>
@@ -261,23 +261,33 @@
                     <i class="fi fi-br-key" aria-hidden="true"></i>
                 </div>
 
-                <div class="student-pin-fields">
-                    <label for="novoPinAluno">
-                        <span>Novo PIN</span>
-
-                        <input id="novoPinAluno" type="password" inputmode="numeric" autocomplete="new-password"
-                            maxlength="4" pattern="[0-9]{4}" placeholder="4 números">
-                    </label>
-
-                    <label for="confirmarPinAluno">
-                        <span>Confirmar novo PIN</span>
-
-                        <input id="confirmarPinAluno" type="password" inputmode="numeric" autocomplete="new-password"
-                            maxlength="4" pattern="[0-9]{4}" placeholder="Repita o PIN">
-                    </label>
-
+                <div class="student-pin-actions">
                     <button class="btn btn--primary" id="btnRedefinirPin" type="button">
-                        Redefinir PIN
+                        <i class="fi fi-br-refresh" aria-hidden="true"></i>
+
+                        Gerar novo PIN
+                    </button>
+                </div>
+
+                <div class="generated-pin" id="pinGeradoContainer" hidden>
+                    <div class="generated-pin__content">
+                        <span class="generated-pin__label">
+                            Novo PIN
+                        </span>
+
+                        <strong class="generated-pin__value" id="pinGerado">
+                            ----
+                        </strong>
+
+                        <span class="generated-pin__student">
+                            Entregue este PIN diretamente ao aluno.
+                        </span>
+                    </div>
+
+                    <button class="btn btn--secondary generated-pin__copy" id="btnCopiarPin" type="button" disabled>
+                        <i class="fi fi-br-copy" aria-hidden="true"></i>
+
+                        Copiar PIN
                     </button>
                 </div>
 

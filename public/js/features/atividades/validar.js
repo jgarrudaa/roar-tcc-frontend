@@ -1,12 +1,12 @@
-import { audioService } from "../../services/audio-service.js";
+import {
+    audioService,
+} from "../../services/audio-service.js";
+
 import {
     createButton,
     createImage,
     shuffle,
 } from "./activity-helpers.js";
-
-
-const AUTO_ADVANCE_DELAY = 1200;
 
 
 function normalizeAnswer(value) {
@@ -34,28 +34,31 @@ function createOptions(
     moduleItems,
     optionLimit,
 ) {
-    const correctAnswer = normalizeAnswer(
-        currentItem.en,
-    );
+    const correctAnswer =
+        normalizeAnswer(currentItem.en);
 
     const distractors = [];
-    const registeredAnswers = new Set([
-        correctAnswer,
-    ]);
+    const registeredAnswers =
+        new Set([correctAnswer]);
 
-    moduleItems.forEach((item) => {
-        const answer = normalizeAnswer(item.en);
+    moduleItems.forEach(
+        (moduleItem) => {
+            const answer =
+                normalizeAnswer(
+                    moduleItem.en,
+                );
 
-        if (
-            !answer ||
-            registeredAnswers.has(answer)
-        ) {
-            return;
-        }
+            if (
+                !answer ||
+                registeredAnswers.has(answer)
+            ) {
+                return;
+            }
 
-        registeredAnswers.add(answer);
-        distractors.push(item);
-    });
+            registeredAnswers.add(answer);
+            distractors.push(moduleItem);
+        },
+    );
 
     return shuffle([
         currentItem,
@@ -67,7 +70,9 @@ function createOptions(
 }
 
 
-export function createValidateActivity(context) {
+export function createValidateActivity(
+    context,
+) {
     const {
         activity,
         module,
@@ -80,7 +85,6 @@ export function createValidateActivity(context) {
     const item = activity.item;
 
     let resolved = false;
-    let autoAdvanceTimer = null;
 
 
     function getInstruction() {
@@ -89,79 +93,53 @@ export function createValidateActivity(context) {
         }
 
         if (student.supportLevel === 1) {
-            return "Selecione a imagem correta.";
+            return "Escolha a imagem correta.";
         }
 
         if (student.supportLevel === 2) {
-            return "Selecione a palavra correspondente à imagem.";
+            return "Observe a imagem. Escolha a palavra correta.";
         }
 
-        return "Analise o contexto e selecione a resposta correta.";
+        return "Analise a imagem. Escolha a resposta correta.";
     }
 
 
-    function clearAutoAdvance() {
-        if (!autoAdvanceTimer) {
-            return;
-        }
-
-        window.clearTimeout(autoAdvanceTimer);
-        autoAdvanceTimer = null;
+    function speakWord(word) {
+        audioService.speak(
+            word,
+            "en-US",
+        );
     }
 
 
-    function scheduleAutoAdvance() {
-        clearAutoAdvance();
+    function handlePromptImage() {
+        speakWord(item.en);
 
-        autoAdvanceTimer = window.setTimeout(() => {
-            elements.nextButton.click();
-        }, AUTO_ADVANCE_DELAY);
-    }
-
-
-    function disableOptions(optionsContainer) {
-        optionsContainer
-            .querySelectorAll("button")
-            .forEach((button) => {
-                button.disabled = true;
-            });
-    }
-
-
-    function markCorrectOption(
-        optionsContainer,
-        correctAnswer,
-    ) {
-        optionsContainer
-            .querySelectorAll("button")
-            .forEach((button) => {
-                if (
-                    normalizeAnswer(
-                        button.dataset.answer,
-                    ) === correctAnswer
-                ) {
-                    button.classList.add(
-                        "is-correct",
-                    );
-                }
-            });
+        elements.setMessage(
+            "Ouça a palavra. Depois, escolha uma alternativa.",
+        );
     }
 
 
     function handleOption(
         option,
         button,
-        optionsContainer,
     ) {
-        if (resolved) {
-            return;
-        }
+        /*
+         * Cada alternativa fala a própria palavra.
+         */
+        speakWord(option.en);
 
-        if (student.supportLevel === 1) {
-            audioService.speak(
-                option.en,
-                "en-US",
+        /*
+         * Após o acerto, as alternativas continuam
+         * funcionando como botões de pronúncia.
+         */
+        if (resolved) {
+            elements.setMessage(
+                `Esta palavra é ${option.en}.`,
             );
+
+            return;
         }
 
         const selectedAnswer =
@@ -170,89 +148,125 @@ export function createValidateActivity(context) {
         const correctAnswer =
             normalizeAnswer(item.en);
 
-        if (selectedAnswer === correctAnswer) {
+        if (
+            selectedAnswer ===
+            correctAnswer
+        ) {
             resolved = true;
 
-            button.classList.add("is-correct");
-            disableOptions(optionsContainer);
-
-            if (student.supportLevel !== 1) {
-                audioService.speak(
-                    "Muito bem! Resposta correta.",
-                );
-            }
-
-            elements.setProgress(1, 1);
-            elements.nextButton.disabled = false;
-
-            audioService.speak(
-                "Muito bem! Resposta correta.",
+            button.classList.add(
+                "is-correct",
             );
 
+            button.setAttribute(
+                "aria-label",
+                "Resposta correta. Ouvir novamente.",
+            );
+
+            elements.setMessage(
+                "Muito bem! Você escolheu a palavra correta.",
+            );
+
+            elements.setProgress(1, 1);
+
+            elements.nextButton.disabled =
+                false;
+
             onCorrect(item);
-            scheduleAutoAdvance();
 
             return;
         }
 
-        button.classList.add("is-wrong");
-
-        elements.setMessage(
-            student.supportLevel === 1
-                ? `Esta imagem representa ${option.en}. Vamos observar novamente.`
-                : "Essa não é a resposta. Tente novamente.",
+        button.classList.add(
+            "is-wrong",
         );
 
-        if (student.supportLevel !== 1) {
-            audioService.speak(
-                "Tente novamente.",
-            );
-        }
+        elements.setMessage(
+            "Esta não é a palavra da imagem. Tente novamente.",
+        );
 
         onWrong(item);
 
-        window.setTimeout(() => {
-            button.classList.remove("is-wrong");
+        window.setTimeout(
+            () => {
+                button.classList.remove(
+                    "is-wrong",
+                );
+            },
+            650,
+        );
+    }
 
-            markCorrectOption(
-                optionsContainer,
-                correctAnswer,
+
+    function createPromptButton() {
+        const button =
+            document.createElement("button");
+
+        const image =
+            createImage(
+                item,
+                student.supportLevel,
             );
 
-            window.setTimeout(() => {
-                optionsContainer
-                    .querySelectorAll(".is-correct")
-                    .forEach((correctButton) => {
-                        correctButton.classList.remove(
-                            "is-correct",
-                        );
-                    });
-            }, 650);
-        }, 500);
+        button.type = "button";
+
+        button.className =
+            "validation-image-button";
+
+        button.title =
+            "Clique para ouvir";
+
+        button.setAttribute(
+            "aria-label",
+            "Ouvir a palavra representada pela imagem",
+        );
+
+        image.alt =
+            `Imagem de ${item.pt}`;
+
+        button.append(image);
+
+        button.addEventListener(
+            "click",
+            handlePromptImage,
+        );
+
+        return button;
     }
 
 
     function createTextOption(option) {
-        const button = createButton(option.en);
+        const button =
+            createButton(option.en);
 
-        button.dataset.answer = option.en;
+        button.dataset.answer =
+            option.en;
+
+        button.setAttribute(
+            "aria-label",
+            `Selecionar e ouvir ${option.en}`,
+        );
 
         return button;
     }
 
 
     function createImageOption(option) {
-        const button = createButton("");
+        const button =
+            createButton("");
 
-        button.dataset.answer = option.en;
+        const image =
+            createImage(option, 1);
+
+        button.dataset.answer =
+            option.en;
+
         button.setAttribute(
             "aria-label",
             `Selecionar imagem de ${option.pt}`,
         );
 
-        button.replaceChildren(
-            createImage(option, 1),
-        );
+        button.append(image);
 
         return button;
     }
@@ -260,70 +274,103 @@ export function createValidateActivity(context) {
 
     function render() {
         resolved = false;
-        clearAutoAdvance();
 
         elements.stage.replaceChildren();
-        elements.nextButton.disabled = true;
 
-        const content = document.createElement("div");
+        elements.nextButton.disabled =
+            true;
+
+        const content =
+            document.createElement("div");
+
+        const promptArea =
+            document.createElement("div");
+
+        const promptHelp =
+            document.createElement("span");
+
         const optionsContainer =
             document.createElement("div");
 
-        content.className = "activity-content";
-        optionsContainer.className = "choice-grid";
+        content.className =
+            "activity-content validation-game";
 
-        /*
-         * Nos níveis 2 e 3 a imagem atual funciona como
-         * enunciado e as palavras são as alternativas.
-         *
-         * No nível 1, as próprias imagens são utilizadas
-         * como alternativas para aumentar o suporte visual.
-         */
+        promptArea.className =
+            "validation-prompt";
+
+        promptHelp.className =
+            "validation-prompt-help";
+
+        promptHelp.textContent =
+            "Toque na imagem para ouvir.";
+
+        optionsContainer.className =
+            "choice-grid validation-options";
+
         if (student.supportLevel !== 1) {
+            promptArea.append(
+                createPromptButton(),
+                promptHelp,
+            );
+
             content.append(
-                createImage(
-                    item,
-                    student.supportLevel,
-                ),
+                promptArea,
             );
         }
 
-        const optionLimit = getOptionLimit(
-            student.supportLevel,
-        );
+        const options =
+            createOptions(
+                item,
+                module.items,
+                getOptionLimit(
+                    student.supportLevel,
+                ),
+            );
 
-        const options = createOptions(
-            item,
-            module.items,
-            optionLimit,
-        );
+        options.forEach(
+            (option) => {
+                const button =
+                    student.supportLevel === 1
+                        ? createImageOption(
+                            option,
+                        )
+                        : createTextOption(
+                            option,
+                        );
 
-        options.forEach((option) => {
-            const button =
-                student.supportLevel === 1
-                    ? createImageOption(option)
-                    : createTextOption(option);
-
-            button.addEventListener("click", () => {
-                handleOption(
-                    option,
-                    button,
-                    optionsContainer,
+                button.addEventListener(
+                    "click",
+                    () => {
+                        handleOption(
+                            option,
+                            button,
+                        );
+                    },
                 );
-            });
 
-            optionsContainer.append(button);
-        });
+                optionsContainer.append(
+                    button,
+                );
+            },
+        );
 
-        content.append(optionsContainer);
+        content.append(
+            optionsContainer,
+        );
 
-        elements.stage.append(content);
-        elements.setInstruction(getInstruction());
+        elements.stage.append(
+            content,
+        );
+
+        elements.setInstruction(
+            getInstruction(),
+        );
+
+        elements.setMessage(
+            "Observe com calma. Você pode tentar novamente.",
+        );
+
         elements.setProgress(0, 1);
-
-        if (student.supportLevel === 1) {
-            audioService.speak(getInstruction());
-        }
     }
 
 
@@ -331,12 +378,13 @@ export function createValidateActivity(context) {
         start: render,
 
         repeatInstruction() {
-            audioService.speak(getInstruction());
+            audioService.speak(
+                getInstruction(),
+                "pt-BR",
+            );
         },
 
         next() {
-            clearAutoAdvance();
-
             return resolved;
         },
     });

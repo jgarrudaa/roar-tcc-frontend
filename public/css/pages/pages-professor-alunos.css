@@ -803,3 +803,88 @@
         grid-column: auto;
     }
 }
+
+
+.student-pin-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.student-pin-actions .btn {
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.generated-pin[hidden] {
+    display: none;
+}
+
+.generated-pin {
+    margin-top: var(--space-md);
+    padding: var(--space-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    border: 1.5px solid rgba(34, 197, 94, 0.38);
+    border-radius: var(--r-lg);
+    background: rgba(34, 197, 94, 0.09);
+}
+
+.generated-pin__content {
+    display: grid;
+    gap: 5px;
+}
+
+.generated-pin__label {
+    color: var(--c-text-soft);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.generated-pin__value {
+    color: var(--c-blue-dark);
+    font-size: clamp(1.8rem, 4vw, 2.7rem);
+    line-height: 1;
+    letter-spacing: 0.22em;
+}
+
+.generated-pin__student {
+    color: var(--c-text-soft);
+    font-size: 0.78rem;
+}
+
+.generated-pin__copy {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.student-pin-help {
+    min-height: 20px;
+    margin: var(--space-sm) 0 0;
+    color: var(--c-text-soft);
+    font-size: 0.8rem;
+}
+
+@media (max-width: 620px) {
+    .student-pin-actions .btn {
+        width: 100%;
+    }
+
+    .generated-pin {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .generated-pin__copy {
+        width: 100%;
+    }
+}

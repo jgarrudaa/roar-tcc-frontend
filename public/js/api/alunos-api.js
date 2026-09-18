@@ -69,7 +69,7 @@ export const alunosApi = Object.freeze({
         );
     },
 
-    resetPin(studentId, pinData) {
+    resetPin(studentId) {
         const validStudentId =
             requirePositiveInteger(
                 studentId,
@@ -78,7 +78,7 @@ export const alunosApi = Object.freeze({
 
         return apiClient.patch(
             `/professores/alunos/${validStudentId}/pin`,
-            pinData,
+            {},
         );
     },
 
