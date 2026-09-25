@@ -376,7 +376,10 @@
 
 
     // Escuta cliques em links
-    document.addEventListener('click', handleLinkClicks);
+    document.addEventListener(
+        "click",
+        handleLinkClick,
+    );
 
     // Restaura a página visível se restaurada do bfcache do navegador (Back / Forward)
     window.addEventListener('pageshow', function (event) {

@@ -30,7 +30,7 @@ const LEARNING_MODE_ALIASES = new Map([
 ]);
 
 const INTERACTION_TYPES = Object.freeze({
-     tap: "recognize",
+    tap: "recognize",
 
     associacao: "associate",
     associação: "associate",
@@ -45,6 +45,11 @@ const INTERACTION_TYPES = Object.freeze({
 
     memoria: "memory",
     memória: "memory",
+
+    completarfrase: "completeSentence",
+    ordenarfrase: "orderSentence",
+    escrita: "writing",
+    bancopalavras: "wordBank",
 });
 
 function requirePositiveInteger(value, fieldName) {
@@ -110,8 +115,7 @@ function normalizeStudent(profile) {
 
     if (!learningMode) {
         throw new Error(
-            `Modo de aprendizagem não suportado: ${
-                supportMode || "não informado"
+            `Modo de aprendizagem não suportado: ${supportMode || "não informado"
             }.`,
         );
     }
@@ -215,8 +219,7 @@ function normalizeActivity(rawActivity) {
 
     if (!engineType) {
         throw new Error(
-            `Tipo de interação não suportado: ${
-                originalInteractionType || "não informado"
+            `Tipo de interação não suportado: ${originalInteractionType || "não informado"
             }.`,
         );
     }
@@ -235,6 +238,11 @@ function normalizeActivity(rawActivity) {
             rawActivity?.instrucao_lex,
             "Realize a atividade apresentada.",
         ),
+
+        answer: normalizeText(
+            rawActivity?.resposta_correta,
+            rawActivity?.palavra_chave,
+        ).toLocaleUpperCase("en-US"),
 
         type: engineType,
         originalType: originalInteractionType,
@@ -371,8 +379,7 @@ function selectActivity(
 
         throw new Error(
             `A etapa ${requestedStage} não está disponível. ` +
-            `Etapas disponíveis: ${
-                availableStages || "nenhuma"
+            `Etapas disponíveis: ${availableStages || "nenhuma"
             }.`,
         );
     }
@@ -432,10 +439,9 @@ function createActivity(
         id: selectedActivity.activityId,
         stage: selectedActivity.order,
         type: selectedActivity.type,
-        originalType:
-            selectedActivity.originalType,
-        instruction:
-            selectedActivity.instruction,
+        originalType:selectedActivity.originalType,
+        instruction:selectedActivity.instruction,
+        answer: selectedActivity.answer || item.en,
         status: "active",
 
         /*

@@ -6,18 +6,24 @@ import { createValidateActivity, } from "./validar.js?v=2";
 import { createAudioImageActivity, } from "./audio-imagem.js";
 import { createTrueFalseActivity, } from "./verdadeiro-falso.js";
 import { createMemoryActivity, } from "./memoria.js?v=2";
-
+import { createCompleteSentenceActivity,} from "./completar-frase.js";
+import { createOrderSentenceActivity,} from "./ordernar-frase.js";
+import { createWritingActivity,} from "./escrita.js";
+import { createWordBankActivity,} from "./banco-palavras.js";
 
 
 
 const ACTIVITY_FACTORIES = Object.freeze({
-    recognize: createRecognizeActivity,
+   recognize: createRecognizeActivity,
     associate: createAssociateActivity,
     validate: createValidateActivity,
-
     audioImage: createAudioImageActivity,
     trueFalse: createTrueFalseActivity,
     memory: createMemoryActivity,
+    completeSentence: createCompleteSentenceActivity,
+    orderSentence:createOrderSentenceActivity,
+    writing:createWritingActivity,
+    wordBank:createWordBankActivity,
 });
 
 function navigateTo(url) {

@@ -1750,3 +1750,1307 @@
         max-height: 105px;
     }
 }
+
+
+/* =========================================================
+   JOGO — COMPLETAR FRASE
+   ========================================================= */
+
+.complete-sentence-game {
+    width: min(100%, 900px);
+    min-height: 100%;
+    margin: 0 auto;
+    padding: clamp(1rem, 3vw, 2rem);
+    gap: clamp(1rem, 3vh, 2rem);
+}
+
+.complete-sentence-prompt {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.complete-sentence-image {
+    display: grid;
+    width: min(100%, 340px);
+    min-height: 230px;
+    padding: 1rem;
+    border: 2px solid var(--roar-border);
+    border-radius: var(--roar-radius-md);
+    background: var(--roar-white, #ffffff);
+    place-items: center;
+    cursor: pointer;
+    transition:
+        border-color 160ms ease,
+        transform 160ms ease;
+}
+
+.complete-sentence-image:hover {
+    border-color: var(--roar-blue);
+}
+
+.complete-sentence-image:active {
+    transform: scale(0.98);
+}
+
+.complete-sentence-image:focus-visible {
+    border-color: var(--roar-blue);
+    outline: 3px solid rgba(45, 97, 163, 0.25);
+    outline-offset: 3px;
+}
+
+.complete-sentence-image .prompt-image {
+    width: 100%;
+    height: min(30vh, 260px);
+    object-fit: contain;
+}
+
+.complete-sentence-area {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.complete-sentence-text {
+    margin: 0;
+    color: var(--roar-text);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.complete-sentence-blank {
+    display: inline-block;
+    min-width: 150px;
+    margin: 0 0.3rem;
+    padding: 0.1rem 0.6rem;
+    border-bottom: 3px solid var(--roar-blue);
+    color: var(--roar-blue);
+}
+
+.complete-sentence-options {
+    width: min(100%, 760px);
+    margin: 0 auto;
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+}
+
+.complete-sentence-option {
+    min-height: 74px;
+    padding: 1rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+@media (max-width: 720px) {
+    .complete-sentence-game {
+        padding: 1rem;
+    }
+
+    .complete-sentence-image {
+        min-height: 190px;
+    }
+
+    .complete-sentence-image .prompt-image {
+        height: min(25vh, 220px);
+    }
+
+    .complete-sentence-options {
+        grid-template-columns: 1fr;
+    }
+
+    .complete-sentence-option {
+        min-height: 60px;
+    }
+
+    .complete-sentence-blank {
+        min-width: 110px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .complete-sentence-image {
+        transition: none;
+    }
+}
+
+
+
+/* =========================================================
+   JOGO — ORDENAR FRASE
+   ========================================================= */
+
+.order-sentence-game {
+    width: min(100%, 960px);
+    min-height: 100%;
+    margin: 0 auto;
+    padding: clamp(1rem, 3vw, 2rem);
+    gap: clamp(1rem, 3vh, 2rem);
+}
+
+.order-sentence-prompt {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.order-sentence-image {
+    display: grid;
+    width: min(100%, 300px);
+    min-height: 200px;
+    padding: 1rem;
+    border: 2px solid var(--roar-border);
+    border-radius: var(--roar-radius-md);
+    background: var(--roar-white, #ffffff);
+    place-items: center;
+    cursor: pointer;
+    transition:
+        border-color 160ms ease,
+        transform 160ms ease;
+}
+
+.order-sentence-image:hover {
+    border-color: var(--roar-blue);
+}
+
+.order-sentence-image:active {
+    transform: scale(0.98);
+}
+
+.order-sentence-image:focus-visible {
+    border-color: var(--roar-blue);
+    outline: 3px solid rgba(45, 97, 163, 0.25);
+    outline-offset: 3px;
+}
+
+.order-sentence-image .prompt-image {
+    width: 100%;
+    height: min(25vh, 220px);
+    object-fit: contain;
+}
+
+.order-sentence-game .sentence-builder {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 820px);
+    gap: 0.8rem;
+}
+
+.order-sentence-title {
+    margin: 0;
+    color: var(--roar-text);
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: left;
+}
+
+.order-sentence-game .sentence-target {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    min-height: 100px;
+    padding: 1rem;
+    gap: 0.6rem;
+    border: 2px dashed var(--roar-border);
+    border-radius: var(--roar-radius-md);
+    background: var(--roar-white, #ffffff);
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease;
+}
+
+.order-sentence-game .sentence-target.is-correct {
+    border-color: var(--roar-success);
+    background: rgba(40, 167, 105, 0.1);
+}
+
+.order-sentence-game .sentence-target.is-wrong {
+    border-color: var(--roar-danger);
+    background: rgba(220, 53, 69, 0.08);
+}
+
+.order-sentence-placeholder,
+.order-sentence-empty {
+    margin: 0;
+    color: var(--roar-text-muted);
+    font-size: 1rem;
+    text-align: center;
+}
+
+.order-sentence-game .word-bank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    min-height: 90px;
+    padding: 1rem;
+    gap: 0.6rem;
+    border-radius: var(--roar-radius-md);
+    background: rgba(45, 97, 163, 0.06);
+}
+
+.order-sentence-game .word-token {
+    min-width: 105px;
+    min-height: 56px;
+    padding: 0.7rem 1rem;
+    border: 2px solid var(--roar-blue);
+    border-radius: var(--roar-radius-sm);
+    background: var(--roar-white, #ffffff);
+    color: var(--roar-blue);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.order-sentence-game .word-token:hover {
+    background: rgba(45, 97, 163, 0.08);
+}
+
+.order-sentence-game .word-token:focus-visible {
+    outline: 3px solid rgba(45, 97, 163, 0.25);
+    outline-offset: 3px;
+}
+
+.order-sentence-game .selected-word-token {
+    background: var(--roar-blue);
+    color: var(--roar-white, #ffffff);
+}
+
+.order-sentence-punctuation {
+    color: var(--roar-text);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.order-sentence-actions {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.order-sentence-clear,
+.order-sentence-check {
+    min-width: 160px;
+    min-height: 54px;
+    padding: 0.8rem 1.2rem;
+    border-radius: var(--roar-radius-sm);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.order-sentence-clear {
+    border: 2px solid var(--roar-blue);
+    background: var(--roar-white, #ffffff);
+    color: var(--roar-blue);
+}
+
+.order-sentence-check {
+    border: 2px solid var(--roar-blue);
+    background: var(--roar-blue);
+    color: var(--roar-white, #ffffff);
+}
+
+.order-sentence-clear:disabled,
+.order-sentence-check:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+@media (max-width: 720px) {
+    .order-sentence-game {
+        padding: 1rem;
+    }
+
+    .order-sentence-image {
+        min-height: 170px;
+    }
+
+    .order-sentence-image .prompt-image {
+        height: min(22vh, 190px);
+    }
+
+    .order-sentence-actions {
+        flex-direction: column;
+    }
+
+    .order-sentence-clear,
+    .order-sentence-check {
+        width: 100%;
+    }
+
+    .order-sentence-game .word-token {
+        flex: 1 1 110px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .order-sentence-image,
+    .order-sentence-game .sentence-target {
+        transition: none;
+    }
+}
+
+/* =========================================================
+   JOGO — ESCRITA
+   ========================================================= */
+
+.writing-game {
+    width: min(100%, 900px);
+    min-height: 100%;
+    margin: 0 auto;
+    padding: clamp(1rem, 3vw, 2rem);
+    gap: clamp(1.25rem, 4vh, 2.5rem);
+}
+
+.writing-prompt {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.writing-image-button {
+    display: grid;
+    width: min(100%, 340px);
+    min-height: 230px;
+    padding: 1rem;
+    border: 2px solid var(--roar-border);
+    border-radius: var(--roar-radius-md);
+    background: var(--roar-white, #ffffff);
+    place-items: center;
+    cursor: pointer;
+    transition:
+        border-color 160ms ease,
+        transform 160ms ease;
+}
+
+.writing-image-button:hover {
+    border-color: var(--roar-blue);
+}
+
+.writing-image-button:active {
+    transform: scale(0.98);
+}
+
+.writing-image-button:focus-visible {
+    border-color: var(--roar-blue);
+    outline: 3px solid rgba(45, 97, 163, 0.25);
+    outline-offset: 3px;
+}
+
+.writing-image-button .prompt-image {
+    width: 100%;
+    height: min(30vh, 260px);
+    object-fit: contain;
+}
+
+.writing-form-area {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.writing-form {
+    display: grid;
+    width: min(100%, 600px);
+    gap: 0.75rem;
+}
+
+.writing-label {
+    color: var(--roar-text);
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.writing-input {
+    width: 100%;
+    min-height: 62px;
+    padding: 0.8rem 1rem;
+    border: 2px solid var(--roar-border);
+    border-radius: var(--roar-radius-sm);
+    background: var(--roar-white, #ffffff);
+    color: var(--roar-text);
+    font: inherit;
+    font-size: 1.15rem;
+    text-transform: uppercase;
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease;
+}
+
+.writing-input:focus {
+    border-color: var(--roar-blue);
+    outline: 3px solid rgba(45, 97, 163, 0.25);
+    outline-offset: 2px;
+}
+
+.writing-input.is-correct {
+    border-color: var(--roar-success);
+    background: rgba(40, 167, 105, 0.1);
+}
+
+.writing-input.is-wrong {
+    border-color: var(--roar-danger);
+    background: rgba(220, 53, 69, 0.08);
+}
+
+.writing-input:disabled {
+    color: var(--roar-text);
+    cursor: default;
+    opacity: 1;
+}
+
+.writing-help {
+    margin: 0;
+    color: var(--roar-text-muted);
+    font-size: 0.95rem;
+}
+
+.writing-check-button {
+    min-height: 58px;
+    padding: 0.8rem 1.25rem;
+    border: 2px solid var(--roar-blue);
+    border-radius: var(--roar-radius-sm);
+    background: var(--roar-blue);
+    color: var(--roar-white, #ffffff);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.writing-check-button:hover:not(:disabled) {
+    filter: brightness(0.95);
+}
+
+.writing-check-button:focus-visible {
+    outline: 3px solid rgba(45, 97, 163, 0.25);
+    outline-offset: 3px;
+}
+
+.writing-check-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+@media (max-width: 720px) {
+    .writing-game {
+        padding: 1rem;
+    }
+
+    .writing-image-button {
+        min-height: 190px;
+    }
+
+    .writing-image-button .prompt-image {
+        height: min(25vh, 220px);
+    }
+
+    .writing-input,
+    .writing-check-button {
+        min-height: 56px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .writing-image-button,
+    .writing-input {
+        transition: none;
+    }
+}
+
+/* =========================================================
+   JOGO — BANCO DE PALAVRAS
+   ========================================================= */
+
+.word-bank-game {
+    width: min(100%, 940px);
+    min-height: 100%;
+    margin: 0 auto;
+    padding: clamp(1rem, 3vw, 2rem);
+    gap: clamp(1rem, 3vh, 1.8rem);
+}
+
+.word-bank-prompt {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.word-bank-image {
+    display: grid;
+    width: min(100%, 300px);
+    min-height: 200px;
+    padding: 1rem;
+    border: 2px solid var(--roar-border);
+    border-radius: var(--roar-radius-md);
+    background: var(--roar-white, #ffffff);
+    place-items: center;
+    cursor: pointer;
+    transition:
+        border-color 160ms ease,
+        transform 160ms ease;
+}
+
+.word-bank-image:hover {
+    border-color: var(--roar-blue);
+}
+
+.word-bank-image:active {
+    transform: scale(0.98);
+}
+
+.word-bank-image:focus-visible {
+    border-color: var(--roar-blue);
+    outline: 3px solid rgba(45, 97, 163, 0.25);
+    outline-offset: 3px;
+}
+
+.word-bank-image .prompt-image {
+    width: 100%;
+    height: min(25vh, 220px);
+    object-fit: contain;
+}
+
+.word-bank-sentence-area {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.word-bank-sentence {
+    margin: 0;
+    color: var(--roar-text);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.word-bank-blank {
+    display: inline-block;
+    min-width: 140px;
+    margin: 0 0.3rem;
+    padding: 0.15rem 0.6rem;
+    border-bottom: 3px solid var(--roar-blue);
+    color: var(--roar-blue);
+}
+
+.word-bank-blank.is-correct {
+    border-color: var(--roar-success);
+    color: var(--roar-success);
+}
+
+.word-bank-title {
+    margin: 0;
+    color: var(--roar-text);
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.word-bank-options {
+    display: grid;
+    width: min(100%, 820px);
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.word-bank-option {
+    min-height: 62px;
+    padding: 0.8rem;
+    border: 2px solid var(--roar-border);
+    border-radius: var(--roar-radius-sm);
+    background: var(--roar-white, #ffffff);
+    color: var(--roar-text);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        border-color 160ms ease,
+        background-color 160ms ease,
+        transform 160ms ease;
+}
+
+.word-bank-option:hover {
+    border-color: var(--roar-blue);
+}
+
+.word-bank-option:active {
+    transform: scale(0.98);
+}
+
+.word-bank-option.is-selected {
+    border-color: var(--roar-blue);
+    background: rgba(45, 97, 163, 0.12);
+    color: var(--roar-blue);
+}
+
+.word-bank-option.is-wrong {
+    border-color: var(--roar-danger);
+    background: rgba(220, 53, 69, 0.08);
+}
+
+.word-bank-option:focus-visible {
+    border-color: var(--roar-blue);
+    outline: 3px solid rgba(45, 97, 163, 0.25);
+    outline-offset: 3px;
+}
+
+.word-bank-check {
+    width: min(100%, 320px);
+    min-height: 58px;
+    padding: 0.8rem 1.25rem;
+    border: 2px solid var(--roar-blue);
+    border-radius: var(--roar-radius-sm);
+    background: var(--roar-blue);
+    color: var(--roar-white, #ffffff);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.word-bank-check:hover:not(:disabled) {
+    filter: brightness(0.95);
+}
+
+.word-bank-check:focus-visible {
+    outline: 3px solid rgba(45, 97, 163, 0.25);
+    outline-offset: 3px;
+}
+
+.word-bank-check:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+@media (max-width: 900px) {
+    .word-bank-options {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .word-bank-game {
+        padding: 1rem;
+    }
+
+    .word-bank-image {
+        min-height: 170px;
+    }
+
+    .word-bank-image .prompt-image {
+        height: min(22vh, 190px);
+    }
+
+    .word-bank-options {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .word-bank-check {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .word-bank-image,
+    .word-bank-option {
+        transition: none;
+    }
+}
+
+
+
+/* =========================================================
+   CORREÇÃO FINAL — LAYOUT DOS JOGOS
+   Deve permanecer no final do activity.css
+   ========================================================= */
+
+/*
+ * Impede que padding e bordas aumentem
+ * indevidamente o tamanho dos jogos.
+ */
+.activity-stage *,
+.activity-stage *::before,
+.activity-stage *::after {
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   MÚLTIPLA ESCOLHA E ASSOCIAÇÃO — QUATRO OPÇÕES
+   ========================================================= */
+
+/*
+ * Quando houver exatamente quatro alternativas,
+ * organiza em duas colunas e duas linhas.
+ */
+.validation-options:has(> .choice-card:nth-child(4):last-child),
+.association-grid:has(> .choice-card:nth-child(4):last-child) {
+    width: min(100%, 760px);
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-inline: auto;
+}
+
+/*
+ * Padroniza as alternativas.
+ */
+.validation-options:has(> .choice-card:nth-child(4):last-child) .choice-card,
+.association-grid:has(> .choice-card:nth-child(4):last-child) .choice-card {
+    width: 100%;
+    min-height: 64px;
+    padding: 12px 18px;
+}
+
+/*
+ * Mantém imagem e opções centralizadas,
+ * sem espaço vertical exagerado.
+ */
+.validation-game,
+.association-game {
+    align-content: center;
+    justify-items: center;
+    gap: clamp(14px, 2vh, 22px);
+    padding-block: 4px;
+}
+
+.validation-image-button {
+    width: min(280px, 72vw);
+    height: min(230px, 28vh);
+}
+
+.validation-image-button .prompt-image {
+    max-width: 240px;
+    max-height: 195px;
+}
+
+
+/* =========================================================
+   COMPLETAR FRASE — LAYOUT HORIZONTAL
+   ========================================================= */
+
+.complete-sentence-game {
+    width: min(100%, 1000px);
+    height: 100%;
+    min-height: 0;
+    margin: 0 auto;
+    padding: 8px;
+
+    display: grid;
+    grid-template-columns:
+        minmax(240px, 320px) minmax(0, 1fr);
+
+    grid-template-rows:
+        auto auto;
+
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+
+    column-gap: clamp(24px, 4vw, 54px);
+    row-gap: 20px;
+}
+
+.complete-sentence-prompt {
+    grid-column: 1;
+    grid-row: 1 / 3;
+}
+
+.complete-sentence-image {
+    width: 100%;
+    min-height: 0;
+    height: min(320px, 40vh);
+    padding: 14px;
+}
+
+.complete-sentence-image .prompt-image {
+    width: 100%;
+    height: 100%;
+    max-height: 280px;
+}
+
+.complete-sentence-area {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+}
+
+.complete-sentence-options {
+    grid-column: 2;
+    grid-row: 2;
+
+    width: 100%;
+    max-width: 620px;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    align-self: start;
+}
+
+.complete-sentence-option {
+    min-width: 0;
+    min-height: 64px;
+}
+
+
+/* =========================================================
+   ORDENAR FRASE — IMAGEM AO LADO DO JOGO
+   ========================================================= */
+
+.order-sentence-game {
+    width: min(100%, 1120px);
+    height: 100%;
+    min-height: 0;
+    margin: 0 auto;
+    padding: 8px;
+
+    display: grid;
+    grid-template-columns:
+        minmax(230px, 300px) minmax(0, 720px);
+
+    grid-template-rows: auto;
+
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+
+    gap: clamp(24px, 4vw, 54px);
+}
+
+.order-sentence-prompt {
+    grid-column: 1;
+    width: 100%;
+}
+
+.order-sentence-image {
+    width: 100%;
+    min-height: 0;
+    height: min(300px, 38vh);
+    padding: 14px;
+}
+
+.order-sentence-image .prompt-image {
+    width: 100%;
+    height: 100%;
+    max-height: 260px;
+}
+
+.order-sentence-game .sentence-builder {
+    grid-column: 2;
+
+    width: 100%;
+    max-width: 720px;
+    gap: 9px;
+}
+
+.order-sentence-title {
+    font-size: 0.95rem;
+}
+
+.order-sentence-game .sentence-target {
+    min-height: 78px;
+    padding: 12px;
+}
+
+.order-sentence-game .word-bank {
+    min-height: 74px;
+    padding: 12px;
+}
+
+.order-sentence-game .word-token {
+    min-width: 100px;
+    min-height: 50px;
+    padding: 9px 14px;
+}
+
+.order-sentence-actions {
+    margin-top: 2px;
+}
+
+.order-sentence-clear,
+.order-sentence-check {
+    min-height: 50px;
+}
+
+
+/* =========================================================
+   ESCRITA — IMAGEM E FORMULÁRIO LADO A LADO
+   ========================================================= */
+
+.writing-game {
+    width: min(100%, 1050px);
+    height: 100%;
+    min-height: 0;
+    margin: 0 auto;
+    padding: 8px;
+
+    display: grid;
+    grid-template-columns:
+        minmax(250px, 340px) minmax(0, 560px);
+
+    grid-template-rows: auto;
+
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+
+    gap: clamp(28px, 5vw, 64px);
+}
+
+.writing-prompt {
+    grid-column: 1;
+    width: 100%;
+}
+
+.writing-image-button {
+    width: 100%;
+    min-height: 0;
+    height: min(340px, 42vh);
+    padding: 14px;
+}
+
+.writing-image-button .prompt-image {
+    width: 100%;
+    height: 100%;
+    max-height: 300px;
+}
+
+.writing-form-area {
+    grid-column: 2;
+    width: 100%;
+}
+
+.writing-form {
+    width: 100%;
+    max-width: 560px;
+    gap: 10px;
+}
+
+.writing-input {
+    min-height: 58px;
+}
+
+.writing-check-button {
+    min-height: 54px;
+}
+
+
+/* =========================================================
+   BANCO DE PALAVRAS — IMAGEM AO LADO
+   ========================================================= */
+
+.word-bank-game {
+    width: min(100%, 1120px);
+    height: 100%;
+    min-height: 0;
+    margin: 0 auto;
+    padding: 8px;
+
+    display: grid;
+    grid-template-columns:
+        minmax(230px, 300px) minmax(0, 720px);
+
+    grid-template-rows:
+        auto auto auto auto;
+
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+
+    column-gap: clamp(24px, 4vw, 54px);
+    row-gap: 12px;
+}
+
+.word-bank-prompt {
+    grid-column: 1;
+    grid-row: 1 / 5;
+    width: 100%;
+}
+
+.word-bank-image {
+    width: 100%;
+    min-height: 0;
+    height: min(300px, 38vh);
+    padding: 14px;
+}
+
+.word-bank-image .prompt-image {
+    width: 100%;
+    height: 100%;
+    max-height: 260px;
+}
+
+.word-bank-sentence-area {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.word-bank-title {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.word-bank-options {
+    grid-column: 2;
+    grid-row: 3;
+
+    width: 100%;
+    max-width: 720px;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 10px;
+}
+
+.word-bank-option {
+    min-width: 0;
+    min-height: 56px;
+    padding: 10px;
+}
+
+.word-bank-check {
+    grid-column: 2;
+    grid-row: 4;
+
+    width: min(100%, 300px);
+    min-height: 52px;
+    justify-self: center;
+}
+
+
+/* =========================================================
+   TABLETS E TELAS MENORES
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .complete-sentence-game,
+    .order-sentence-game,
+    .writing-game,
+    .word-bank-game {
+        height: auto;
+        min-height: 100%;
+        padding: 12px;
+
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+
+        align-content: start;
+        gap: 16px;
+    }
+
+    .complete-sentence-prompt,
+    .complete-sentence-area,
+    .complete-sentence-options,
+    .order-sentence-prompt,
+    .order-sentence-game .sentence-builder,
+    .writing-prompt,
+    .writing-form-area,
+    .word-bank-prompt,
+    .word-bank-sentence-area,
+    .word-bank-title,
+    .word-bank-options,
+    .word-bank-check {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .complete-sentence-image,
+    .order-sentence-image,
+    .writing-image-button,
+    .word-bank-image {
+        width: min(100%, 280px);
+        height: 220px;
+        margin-inline: auto;
+    }
+
+    .complete-sentence-options {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+    .word-bank-options {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+    .writing-form-area {
+        justify-content: center;
+    }
+}
+
+
+/* =========================================================
+   CELULARES
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .validation-options:has(> .choice-card:nth-child(4):last-child),
+    .association-grid:has(> .choice-card:nth-child(4):last-child) {
+        grid-template-columns: 1fr;
+        gap: 9px;
+    }
+
+    .complete-sentence-options,
+    .word-bank-options {
+        grid-template-columns: 1fr;
+    }
+
+    .complete-sentence-image,
+    .order-sentence-image,
+    .writing-image-button,
+    .word-bank-image {
+        width: min(100%, 240px);
+        height: 180px;
+    }
+
+    .complete-sentence-text,
+    .word-bank-sentence {
+        font-size: 1.3rem;
+    }
+
+    .order-sentence-actions {
+        flex-direction: column;
+    }
+
+    .order-sentence-clear,
+    .order-sentence-check,
+    .writing-check-button,
+    .word-bank-check {
+        width: 100%;
+    }
+}
+
+
+/* =========================================================
+   TELAS COM POUCA ALTURA
+   ========================================================= */
+
+@media (min-width: 901px) and (max-height: 820px) {
+
+    .complete-sentence-image,
+    .order-sentence-image,
+    .writing-image-button,
+    .word-bank-image {
+        height: min(240px, 32vh);
+    }
+
+    .validation-image-button {
+        height: min(200px, 27vh);
+    }
+
+    .complete-sentence-game,
+    .order-sentence-game,
+    .writing-game,
+    .word-bank-game {
+        gap: 20px;
+    }
+
+    .order-sentence-game .sentence-target {
+        min-height: 68px;
+    }
+
+    .order-sentence-game .word-bank {
+        min-height: 64px;
+    }
+}
+
+/* =========================================================
+   CORREÇÃO — IMAGENS DENTRO DOS CARDS
+   ========================================================= */
+
+.complete-sentence-image,
+.order-sentence-image,
+.writing-image-button,
+.word-bank-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+    position: relative;
+}
+
+/*
+ * Impede a imagem de ultrapassar os limites
+ * internos do botão.
+ */
+.complete-sentence-image .prompt-image,
+.order-sentence-image .prompt-image,
+.writing-image-button .prompt-image,
+.word-bank-image .prompt-image {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    max-width: 100%;
+    max-height: 100%;
+
+    margin: 0;
+
+    object-fit: contain;
+    object-position: center;
+
+    pointer-events: none;
+}
+
+
+/* Ajuste específico do jogo Ordenar Frase */
+
+.order-sentence-image {
+    width: 100%;
+    height: 300px;
+    padding: 16px;
+}
+
+.order-sentence-image .prompt-image {
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+}
+
+
+/* Telas com pouca altura */
+
+@media (min-width: 901px) and (max-height: 820px) {
+    .order-sentence-image {
+        height: 240px;
+    }
+}
+
+
+/* Celulares e tablets */
+
+@media (max-width: 900px) {
+    .order-sentence-image {
+        width: min(100%, 280px);
+        height: 220px;
+        margin-inline: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .order-sentence-image {
+        width: min(100%, 240px);
+        height: 180px;
+    }
+}
