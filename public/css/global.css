@@ -280,29 +280,41 @@ textarea {
     margin-top: auto;
 }
 
-/* Sidebar minimizada */
+/* Trava transições na sidebar durante o carregamento inicial da página para evitar flicker */
+html:not(.sidebar-ready) .sidebar,
+html:not(.sidebar-ready) .sidebar * {
+    transition: none !important;
+}
+
+/* Sidebar minimizada (via preferência global antes do render ou classe no elemento) */
+html.sidebar-collapsed .sidebar,
 .sidebar--collapsed {
     width: var(--sidebar-w-min);
     min-width: var(--sidebar-w-min);
 }
 
+html.sidebar-collapsed .sidebar .sidebar__logo,
 .sidebar--collapsed .sidebar__logo {
     display: none;
 }
 
+html.sidebar-collapsed .sidebar .sidebar__logo-wrap,
 .sidebar--collapsed .sidebar__logo-wrap {
     justify-content: center;
 }
 
+html.sidebar-collapsed .sidebar .sidebar__link,
 .sidebar--collapsed .sidebar__link {
     justify-content: center;
     padding: 12px;
 }
 
+html.sidebar-collapsed .sidebar .sidebar__link span,
 .sidebar--collapsed .sidebar__link span {
     display: none;
 }
 
+html.sidebar-collapsed .sidebar .sidebar__link i,
 .sidebar--collapsed .sidebar__link i {
     font-size: 1.2rem;
 }

@@ -16,10 +16,41 @@ function initSidebar() {
     const mobileButton =
         document.getElementById("mobileMenuBtn");
 
+    const savedCollapsed =
+        localStorage.getItem("sidebarCollapsed") === "true";
+
+    if (savedCollapsed) {
+        document.documentElement.classList.add("sidebar-collapsed");
+        if (sidebar) {
+            sidebar.classList.add("sidebar--collapsed");
+        }
+    } else {
+        document.documentElement.classList.remove("sidebar-collapsed");
+        if (sidebar) {
+            sidebar.classList.remove("sidebar--collapsed");
+        }
+    }
+
+    // Libera transições da sidebar apenas após o layout inicial estar pronto
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            document.documentElement.classList.add("sidebar-ready");
+        });
+    });
+
     if (toggle && sidebar) {
         toggle.addEventListener("click", () => {
-            sidebar.classList.toggle(
-                "sidebar--collapsed",
+            const isNowCollapsed =
+                sidebar.classList.toggle("sidebar--collapsed");
+
+            document.documentElement.classList.toggle(
+                "sidebar-collapsed",
+                isNowCollapsed,
+            );
+
+            localStorage.setItem(
+                "sidebarCollapsed",
+                String(isNowCollapsed),
             );
         });
     }
@@ -47,6 +78,23 @@ function initSidebar() {
             },
         );
     }
+
+    function updateActiveSidebarLink() {
+        const currentFile = window.location.pathname.split("/").pop().toLowerCase();
+        if (!currentFile) return;
+
+        const links = document.querySelectorAll(".sidebar__nav .sidebar__link");
+        links.forEach((link) => {
+            const href = link.getAttribute("href");
+            if (!href) return;
+            const targetFile = href.split("/").pop().split("?")[0].split("#")[0].toLowerCase();
+            if (targetFile === currentFile) {
+                link.classList.add("active");
+                link.setAttribute("aria-current", "page");
+            }
+        });
+    }
+    updateActiveSidebarLink();
 
     initLogout();
 }

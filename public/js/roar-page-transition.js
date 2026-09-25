@@ -66,6 +66,11 @@
             return;
         }
 
+        // Trava transições na sidebar para evitar flicker durante a saída
+        if (document.documentElement) {
+            document.documentElement.classList.remove('sidebar-ready');
+        }
+
         /*
          * Impede dois cliques rápidos de criarem
          * duas navegações simultâneas.
@@ -370,50 +375,19 @@
     }
 
 
-    /**
-     * Inicialização.
-     */
-    function initialize() {
-        enhanceInlineRedirects(
-            document,
-        );
+    // Escuta cliques em links
+    document.addEventListener('click', handleLinkClicks);
 
-        initializeObserver();
-    }
+    // Restaura a página visível se restaurada do bfcache do navegador (Back / Forward)
+    window.addEventListener('pageshow', function (event) {
+        if (document.body) {
+            document.body.classList.remove('roar-page-exiting');
+        }
+    });
 
-
-    document.addEventListener(
-        "click",
-        handleLinkClick,
-    );
-
-    if (
-        document.readyState ===
-        "loading"
-    ) {
-        document.addEventListener(
-            "DOMContentLoaded",
-            initialize,
-            {
-                once: true,
-            },
-        );
-    } else {
-        initialize();
-    }
-
-
-    /*
-     * Restaura a página quando o navegador usa
-     * o cache dos botões Voltar e Avançar.
-     */
-    window.addEventListener(
-        "pageshow",
-        restorePage,
-    );
-
-    window.addEventListener(
-        "popstate",
-        restorePage,
-    );
+    window.addEventListener('popstate', function () {
+        if (document.body) {
+            document.body.classList.remove('roar-page-exiting');
+        }
+    });
 })();

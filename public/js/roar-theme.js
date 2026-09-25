@@ -3,6 +3,13 @@
     const KEYS = { theme: "roarTheme", font: "roarFontSize", preferences: "roarPreferences" };
     const SIZES = { small: "15px", medium: "16px", large: "19px" };
 
+    // Restaura o estado da sidebar no <html> antes do primeiro frame de pintura
+    try {
+        if (localStorage.getItem("sidebarCollapsed") === "true") {
+            document.documentElement.classList.add("sidebar-collapsed");
+        }
+    } catch (e) {}
+
     function readJson(key) {
         try { return JSON.parse(localStorage.getItem(key) || "null"); }
         catch { return null; }
@@ -55,6 +62,12 @@
         root.classList.toggle("roar-reduced-stimuli", preferences.reducedStimuli);
         root.dataset.fontSize = preferences.fontSize;
         root.style.fontSize = SIZES[preferences.fontSize] || SIZES.medium;
+
+        try {
+            const isSidebarCollapsed = localStorage.getItem("sidebarCollapsed") === "true";
+            root.classList.toggle("sidebar-collapsed", isSidebarCollapsed);
+        } catch (e) {}
+
         return preferences;
     }
 
