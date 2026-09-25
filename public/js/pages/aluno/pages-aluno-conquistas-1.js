@@ -395,11 +395,8 @@ function createAchievementContext(
         ).length;
 
     return Object.freeze({
-        completed:
-            Math.max(
-                report.summary.completed,
-                uniqueHistory.length,
-            ),
+        completed:  
+           uniqueHistory.length,
 
         xp:
             Math.max(

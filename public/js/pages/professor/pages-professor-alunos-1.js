@@ -794,7 +794,7 @@ function renderModalReport(report) {
 
         <div class="mstat">
             <div class="mstat__val">
-                ${formatInteger(summary.completed)}/${formatInteger(summary.availableActivities)}
+                ${formatInteger(summary.completed)}/${formatInteger(summary.availableActivities)}-
             </div>
 
             <div class="mstat__lbl">

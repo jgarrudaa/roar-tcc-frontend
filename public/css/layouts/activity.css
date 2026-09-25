@@ -445,26 +445,38 @@
 
 .audio-image-game {
     width: 100%;
+    height: 100%;
+    display: grid;
     align-content: center;
+    justify-items: center;
     gap: 24px;
 }
 
 .listen-button {
-    min-width: 210px;
+    min-width: 220px;
     min-height: 58px;
     padding: 12px 24px;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
+
     border: 2px solid var(--roar-blue);
     border-radius: var(--roar-radius-md);
+
     color: white;
     background: var(--roar-blue);
+
+    font-family: inherit;
     font-size: 17px;
     font-weight: 700;
+
     cursor: pointer;
-    box-shadow: 0 6px 16px rgba(15, 79, 125, 0.18);
+
+    box-shadow:
+        0 6px 16px rgba(15, 79, 125, 0.18);
+
     transition:
         transform 160ms ease,
         box-shadow 160ms ease,
@@ -474,13 +486,16 @@
 .listen-button .fi {
     display: flex;
     align-items: center;
+
     font-size: 23px;
     line-height: 1;
 }
 
 .listen-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(15, 79, 125, 0.24);
+
+    box-shadow:
+        0 8px 20px rgba(15, 79, 125, 0.24);
 }
 
 .listen-button:active {
@@ -489,19 +504,32 @@
 
 .listen-button:focus-visible {
     outline: 3px solid var(--roar-blue-light);
+
     outline-offset: 4px;
 }
 
 .audio-image-options {
-    width: min(640px, 100%);
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
+    width: min(900px, 100%);
+
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: clamp(20px, 3vw, 32px);
 }
 
 .audio-image-options .choice-card {
-    min-height: 210px;
-    padding: 18px;
+    width: 100%;
+    min-height: clamp(240px, 32vh, 320px);
+
+    padding: clamp(18px, 2vw, 28px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     cursor: pointer;
+
     transition:
         transform 160ms ease,
         border-color 160ms ease,
@@ -515,12 +543,90 @@
 
 .audio-image-options .choice-card .prompt-image {
     width: 100%;
-    height: min(25vh, 210px);
-    max-width: 260px;
+    height: clamp(210px, 29vh, 280px);
+
+    max-width: 360px;
+    max-height: 280px;
+
     margin: auto;
+
     object-fit: contain;
 }
 
+.audio-image-options .choice-card:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 4px;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 760px) {
+    .audio-image-game {
+        gap: 14px;
+    }
+
+    .listen-button {
+        min-width: 180px;
+        min-height: 50px;
+
+        padding: 10px 18px;
+
+        font-size: 15px;
+    }
+
+    .audio-image-options {
+        width: min(620px, 100%);
+        gap: 12px;
+    }
+
+    .audio-image-options .choice-card {
+        min-height: 170px;
+        padding: 10px;
+    }
+
+    .audio-image-options .choice-card .prompt-image {
+        height: min(22vh, 160px);
+        max-width: 220px;
+        max-height: 160px;
+    }
+}
+
+@media (max-width: 420px) {
+    .audio-image-options {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+    }
+
+    .audio-image-options .choice-card {
+        min-width: 0;
+        min-height: 140px;
+        padding: 8px;
+    }
+
+    .audio-image-options .choice-card .prompt-image {
+        height: min(18vh, 125px);
+        max-width: 150px;
+        max-height: 125px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .listen-button,
+    .audio-image-options .choice-card {
+        transition: none;
+    }
+
+    .listen-button:hover,
+    .audio-image-options .choice-card:hover {
+        transform: none;
+    }
+}
 
 /* =========================================================
    JOGO: VERDADEIRO OU FALSO
@@ -1448,5 +1554,199 @@
     .memory-card:focus-visible {
         outline: 4px solid var(--roar-blue);
         outline-offset: 4px;
+    }
+}
+
+/* =========================================================
+   MÚLTIPLA ESCOLHA COM IMAGENS — NÍVEL 1
+   ========================================================= */
+
+.validation-game {
+    width: 100%;
+    height: 100%;
+    max-width: 1000px;
+
+    margin-inline: auto;
+
+    display: grid;
+    place-content: center;
+    justify-items: center;
+
+    gap: clamp(20px, 3vh, 32px);
+}
+
+.validation-image-options {
+    width: min(900px, 100%);
+    max-width: 900px;
+
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: clamp(20px, 3vw, 32px);
+}
+
+.validation-image-options .choice-card {
+    width: 100%;
+    min-height: clamp(250px, 34vh, 340px);
+
+    padding: clamp(18px, 2vw, 28px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+.validation-image-options .choice-card .prompt-image {
+    width: 100%;
+    height: clamp(220px, 30vh, 300px);
+
+    max-width: 390px;
+    max-height: 300px;
+
+    margin: auto;
+
+    object-fit: contain;
+}
+
+.validation-image-options .choice-card:hover:not(:disabled) {
+    border-color: var(--roar-blue);
+    transform: translateY(-3px);
+}
+
+.validation-image-options .choice-card:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 4px;
+}
+
+@media (max-width: 760px) {
+    .validation-image-options {
+        width: min(620px, 100%);
+        gap: 12px;
+    }
+
+    .validation-image-options .choice-card {
+        min-height: 170px;
+        padding: 10px;
+    }
+
+    .validation-image-options .choice-card .prompt-image {
+        height: min(22vh, 160px);
+        max-width: 230px;
+        max-height: 160px;
+    }
+}
+
+@media (max-width: 420px) {
+    .validation-image-options {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+    }
+
+    .validation-image-options .choice-card {
+        min-width: 0;
+        min-height: 135px;
+        padding: 8px;
+    }
+
+    .validation-image-options .choice-card .prompt-image {
+        height: min(18vh, 120px);
+        max-width: 145px;
+        max-height: 120px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .validation-image-options .choice-card {
+        transition: none;
+    }
+
+    .validation-image-options .choice-card:hover {
+        transform: none;
+    }
+}
+
+/* ==========================================================
+   JOGO DA MEMÓRIA — NÍVEL 1 COM DOIS PARES
+   ========================================================== */
+
+/*
+ * Quando o tabuleiro possui exatamente quatro cartas,
+ * organiza automaticamente em duas colunas.
+ */
+.memory-grid:has(> .memory-card:nth-child(4):last-child) {
+    width: min(100%, 650px);
+    max-width: 600px;
+    grid-template-columns: repeat(2,
+            minmax(190px, 1fr));
+    gap: 18px;
+    margin-inline: auto;
+}
+
+/* Tamanho equilibrado para as quatro cartas */
+.memory-grid:has(> .memory-card:nth-child(4):last-child) .memory-card {
+    width: 100%;
+    min-height: 180px;
+    aspect-ratio: 1.45 / 1;
+}
+
+/* Imagem revelada dentro da carta */
+.memory-grid:has(> .memory-card:nth-child(4):last-child) .memory-card-back .prompt-image {
+    width: 100%;
+    height: 100%;
+    max-width: 170px;
+    max-height: 150px;
+    object-fit: contain;
+}
+
+/* Centraliza o jogo dentro da área disponível */
+.memory-game:has(.memory-grid > .memory-card:nth-child(4):last-child) {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: 100%;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+/* Tablets */
+@media (max-width: 820px) {
+    .memory-grid:has(> .memory-card:nth-child(4):last-child) {
+        width: min(100%, 560px);
+        grid-template-columns: repeat(2,
+                minmax(150px, 1fr));
+        gap: 14px;
+    }
+
+    .memory-grid:has(> .memory-card:nth-child(4):last-child) .memory-card {
+        min-height: 155px;
+    }
+}
+
+/* Celulares */
+@media (max-width: 520px) {
+    .memory-game:has(.memory-grid > .memory-card:nth-child(4):last-child) {
+        padding: 12px;
+    }
+
+    .memory-grid:has(> .memory-card:nth-child(4):last-child) {
+        width: 100%;
+        grid-template-columns: repeat(2,
+                minmax(110px, 1fr));
+        gap: 10px;
+    }
+
+    .memory-grid:has(> .memory-card:nth-child(4):last-child) .memory-card {
+        min-height: 130px;
+        aspect-ratio: 1.2 / 1;
+    }
+
+    .memory-grid:has(> .memory-card:nth-child(4):last-child) .memory-card-back .prompt-image {
+        max-width: 120px;
+        max-height: 105px;
     }
 }

@@ -164,8 +164,6 @@ function normalizeTeacherStudent(student) {
         completed,
         availableActivities,
 
-
-
         completionRate: Math.max(
             0,
             Math.min(
@@ -174,7 +172,7 @@ function normalizeTeacherStudent(student) {
                     student?.taxa_conclusao_pct,
                     calculatePercentage(
                         completed,
-                        attempted,
+                        availableActivities,
                     ),
                 ),
             ),
@@ -212,6 +210,136 @@ function normalizeTeacherStudent(student) {
             student?.ultimo_acesso,
         ),
     });
+}
+
+function formatAttentionNumber(value) {
+    return Number(value ?? 0).toLocaleString(
+        "pt-BR",
+        {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        },
+    );
+}
+
+function evaluateStudentAttention(student) {
+    const hasActivity =
+        student.totalAttempts > 0 ||
+        student.attempted > 0;
+
+    if (!hasActivity) {
+        return null;
+    }
+
+    /*
+     * Erros frequentes:
+     * média mínima de 0,75 erro por atividade
+     * e pelo menos três erros registrados.
+     */
+    if (
+        student.averageErrors >= 0.75 &&
+        student.totalErrors >= 3
+    ) {
+        return Object.freeze({
+            priority: 3,
+            reason:
+                `Média de ${formatAttentionNumber(
+                    student.averageErrors,
+                )} erros por atividade`,
+        });
+    }
+
+    /*
+     * Inatividade após o início da trilha.
+     * Quem nunca iniciou nenhuma atividade não recebe
+     * alerta de inatividade.
+     */
+    if (student.lastAccess) {
+        const millisecondsPerDay =
+            1000 * 60 * 60 * 24;
+
+        const inactiveDays = Math.floor(
+            (
+                Date.now() -
+                student.lastAccess.getTime()
+            ) / millisecondsPerDay,
+        );
+
+        if (inactiveDays >= 14) {
+            return Object.freeze({
+                priority: 2,
+                reason:
+                    `Sem atividade há ${inactiveDays} dias`,
+            });
+        }
+    }
+
+    /*
+     * Muitas tentativas com pouco progresso.
+     */
+    if (
+        student.totalAttempts >= 3 &&
+        student.completionRate < 50
+    ) {
+        return Object.freeze({
+            priority: 2,
+            reason:
+                `${student.completionRate}% das atividades concluídas`,
+        });
+    }
+
+    /*
+     * Tentou todas as atividades disponíveis,
+     * mas concluiu menos de 70%.
+     */
+    if (
+        student.availableActivities > 0 &&
+        student.attempted >=
+            student.availableActivities &&
+        student.completionRate < 70
+    ) {
+        return Object.freeze({
+            priority: 1,
+            reason:
+                "Possui atividades tentadas ainda não concluídas",
+        });
+    }
+
+    return null;
+}
+
+function buildAttentionStudents(students) {
+    return students
+        .map((student) => {
+            const attention =
+                evaluateStudentAttention(student);
+
+            if (!attention) {
+                return null;
+            }
+
+            return Object.freeze({
+                ...student,
+                attentionPriority:
+                    attention.priority,
+                attentionReason:
+                    attention.reason,
+            });
+        })
+        .filter(Boolean)
+        .sort(
+            (
+                firstStudent,
+                secondStudent,
+            ) =>
+                secondStudent.attentionPriority -
+                    firstStudent.attentionPriority ||
+                secondStudent.averageErrors -
+                    firstStudent.averageErrors ||
+                firstStudent.completionRate -
+                    secondStudent.completionRate,
+        )
+        .slice(0, 5);
 }
 
 function normalizeTeacherDashboard(
@@ -265,18 +393,8 @@ function normalizeTeacherDashboard(
                 firstStudent.xp,
         );
 
-    const attentionStudents = Array.isArray(
-        payload.alunos_com_possivel_dificuldade,
-    )
-        ? payload
-            .alunos_com_possivel_dificuldade
-            .map((student) =>
-                studentsById.get(
-                    Number(student.aluno_id),
-                ),
-            )
-            .filter(Boolean)
-        : [];
+    const attentionStudents =
+        buildAttentionStudents(students);
 
     const totalStudents = Math.max(
         0,
@@ -302,22 +420,42 @@ function normalizeTeacherDashboard(
         0,
     );
 
-    const totalActivities = Math.max(
-        0,
-        toSafeNumber(
-            statistics?.total_atividades,
-        ),
-    );
+    const availableTotals = students
+        .map(
+            (student) =>
+                student.availableActivities,
+        )
+        .filter((total) => total > 0);
 
-    const classAverage = Math.max(
-        0,
-        Math.min(
-            100,
-            toSafeNumber(
-                statistics?.media_turma,
-            ),
-        ),
-    );
+    /*
+     * O dashboard mostra a quantidade da trilha disponível,
+     * e não todas as linhas existentes na tabela.
+     */
+    const totalActivities =
+        availableTotals.length > 0
+            ? Math.max(...availableTotals)
+            : Math.max(
+                0,
+                toSafeNumber(
+                    statistics?.total_atividades,
+                ),
+            );
+
+    /*
+     * Média real do progresso da turma.
+     * Cada aluno pode possuir uma quantidade diferente
+     * de atividades conforme o nível.
+     */
+    const classAverage = students.length
+        ? Math.round(
+            students.reduce(
+                (total, student) =>
+                    total +
+                    student.completionRate,
+                0,
+            ) / students.length,
+        )
+        : 0;
 
     const averageErrors = students.length
         ? Number(
@@ -397,8 +535,7 @@ function normalizeHistoryRecord(record) {
         ),
 
         activityOrder: toSafeNumber(
-            record?.atividade
-                ?.ordem_sequencia,
+            record?.atividade?.ordem_sequencia,
         ),
 
         moduleId: toSafeNumber(
@@ -454,7 +591,7 @@ function normalizeDailyEvolution(day) {
             0,
             toSafeNumber(
                 day?.conclusoes ??
-                day?.concluidas,
+                    day?.concluidas,
             ),
         ),
 
@@ -555,16 +692,14 @@ function normalizeModulePerformance(module) {
         totalTimeSeconds: Math.max(
             0,
             toSafeNumber(
-                module
-                    ?.tempo_total_segundos,
+                module?.tempo_total_segundos,
             ),
         ),
 
         averageTimeSeconds: Math.max(
             0,
             toSafeNumber(
-                module
-                    ?.media_tempo_segundos,
+                module?.media_tempo_segundos,
             ),
         ),
     });
@@ -604,24 +739,21 @@ function normalizeStudentReport(payload) {
     const attempted = Math.max(
         0,
         toSafeNumber(
-            summaryPayload
-                .atividades_tentadas,
+            summaryPayload.atividades_tentadas,
         ),
     );
 
     const completed = Math.max(
         0,
         toSafeNumber(
-            summaryPayload
-                .atividades_concluidas,
+            summaryPayload.atividades_concluidas,
         ),
     );
 
     const availableActivities = Math.max(
         completed,
         toSafeNumber(
-            summaryPayload
-                .atividades_disponiveis,
+            summaryPayload.atividades_disponiveis,
         ),
     );
 
@@ -632,6 +764,10 @@ function normalizeStudentReport(payload) {
             normalizeHistoryRecord,
         )
         : [];
+
+    const learningMode = getLearningMode(
+        studentPayload.modo_aprendizagem,
+    );
 
     return Object.freeze({
         student: Object.freeze({
@@ -647,27 +783,17 @@ function normalizeStudentReport(payload) {
                 "A",
 
             schoolYear: normalizeText(
-                studentPayload
-                    .ano_escolar,
+                studentPayload.ano_escolar,
                 "Não informado",
             ),
 
-            learningMode:
-                getLearningMode(
-                    studentPayload
-                        .modo_aprendizagem,
-                ),
-
-            level: getLearningMode(
-                studentPayload
-                    .modo_aprendizagem,
-            ),
+            learningMode,
+            level: learningMode,
 
             xp: Math.max(
                 0,
                 toSafeNumber(
-                    studentPayload
-                        .xp_total,
+                    studentPayload.xp_total,
                 ),
             ),
         }),
@@ -676,8 +802,7 @@ function normalizeStudentReport(payload) {
             totalAttempts: Math.max(
                 0,
                 toSafeNumber(
-                    summaryPayload
-                        .tentativas_totais,
+                    summaryPayload.tentativas_totais,
                 ),
             ),
 
@@ -694,7 +819,7 @@ function normalizeStudentReport(payload) {
                             .taxa_conclusao_pct,
                         calculatePercentage(
                             completed,
-                            attempted,
+                            availableActivities,
                         ),
                     ),
                 ),
@@ -703,16 +828,14 @@ function normalizeStudentReport(payload) {
             totalErrors: Math.max(
                 0,
                 toSafeNumber(
-                    summaryPayload
-                        .total_erros,
+                    summaryPayload.total_erros,
                 ),
             ),
 
             averageErrors: Math.max(
                 0,
                 toSafeNumber(
-                    summaryPayload
-                        .media_erros,
+                    summaryPayload.media_erros,
                 ),
             ),
 
@@ -796,28 +919,24 @@ function normalizeModuleActivity(activity) {
         participants: Math.max(
             0,
             toSafeNumber(
-                activity
-                    ?.alunos_participantes,
+                activity?.alunos_participantes,
             ),
         ),
 
         totalAttempts,
-
         completions,
 
         attemptedActivities: Math.max(
             0,
             toSafeNumber(
-                activity
-                    ?.atividades_tentadas,
+                activity?.atividades_tentadas,
             ),
         ),
 
         completedActivities: Math.max(
             0,
             toSafeNumber(
-                activity
-                    ?.atividades_concluidas,
+                activity?.atividades_concluidas,
             ),
         ),
 
@@ -833,8 +952,7 @@ function normalizeModuleActivity(activity) {
         averageTimeSeconds: Math.max(
             0,
             toSafeNumber(
-                activity
-                    ?.media_tempo_segundos,
+                activity?.media_tempo_segundos,
             ),
         ),
 
@@ -860,9 +978,7 @@ function normalizeModuleReport(payload) {
         payload.atividades,
     )
         ? payload.atividades
-            .map(
-                normalizeModuleActivity,
-            )
+            .map(normalizeModuleActivity)
             .sort(
                 (
                     firstActivity,
@@ -930,16 +1046,14 @@ function normalizeModuleReport(payload) {
         accuracy: calculatePercentage(
             totalCompletions,
             totalCompletions +
-            totalErrors,
+                totalErrors,
         ),
 
         activities,
     });
 }
 
-async function getTeacherDashboard(
-    teacherId,
-) {
+async function getTeacherDashboard(teacherId) {
     const validTeacherId =
         requirePositiveInteger(
             teacherId,
@@ -948,10 +1062,9 @@ async function getTeacherDashboard(
 
     const [payload, statistics] =
         await Promise.all([
-            relatoriosApi
-                .getTeacherReport(
-                    validTeacherId,
-                ),
+            relatoriosApi.getTeacherReport(
+                validTeacherId,
+            ),
 
             relatoriosApi
                 .getTeacherStatistics(
@@ -974,14 +1087,11 @@ async function getStudentReport(studentId) {
         );
 
     const payload =
-        await relatoriosApi
-            .getStudentReport(
-                validStudentId,
-            );
+        await relatoriosApi.getStudentReport(
+            validStudentId,
+        );
 
-    return normalizeStudentReport(
-        payload,
-    );
+    return normalizeStudentReport(payload);
 }
 
 async function getModuleReport(moduleId) {
@@ -992,19 +1102,15 @@ async function getModuleReport(moduleId) {
         );
 
     const payload =
-        await relatoriosApi
-            .getModuleReport(
-                validModuleId,
-            );
+        await relatoriosApi.getModuleReport(
+            validModuleId,
+        );
 
-    return normalizeModuleReport(
-        payload,
-    );
+    return normalizeModuleReport(payload);
 }
 
-export const relatoriosService =
-    Object.freeze({
-        getTeacherDashboard,
-        getStudentReport,
-        getModuleReport,
-    });
+export const relatoriosService = Object.freeze({
+    getTeacherDashboard,
+    getStudentReport,
+    getModuleReport,
+});

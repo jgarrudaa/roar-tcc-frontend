@@ -1,165 +1,419 @@
 /* ============================================================
    ROAR — roar-page-transition.js
-   Controle inteligente de transição suave entre páginas HTML
+   Navegação suave e segura entre páginas HTML
    ============================================================ */
 
 (function () {
-    'use strict';
+    "use strict";
+
+    const EXIT_DURATION_MS = 120;
+
+    let navigationInProgress = false;
+    let navigationTimer = null;
+
 
     /**
-     * Verifica se o usuário prefere redução de movimento (acessibilidade)
+     * Verifica se o usuário prefere reduzir movimentos.
      */
-    function isReducedMotion() {
-        return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function prefersReducedMotion() {
+        return Boolean(
+            window.matchMedia &&
+            window.matchMedia(
+                "(prefers-reduced-motion: reduce)",
+            ).matches
+        );
     }
 
+
     /**
-     * Navegação programática suave entre páginas
-     * @param {string} url - Destino da página
+     * Remove o estado visual de saída.
+     */
+    function restorePage() {
+        navigationInProgress = false;
+
+        if (navigationTimer !== null) {
+            window.clearTimeout(
+                navigationTimer,
+            );
+
+            navigationTimer = null;
+        }
+
+        if (document.body) {
+            document.body.classList.remove(
+                "roar-page-exiting",
+            );
+        }
+    }
+
+
+    /**
+     * Realiza a navegação nativa.
+     */
+    function performNavigation(url) {
+        window.location.assign(url);
+    }
+
+
+    /**
+     * Navega aplicando uma transição curta de saída.
      */
     window.roarNavigate = function (url) {
-        if (!url || typeof url !== 'string') return;
-
-        // Se o usuário tem preferência por reduzir movimento, navega diretamente
-        if (isReducedMotion()) {
-            window.location.href = url;
-            return;
-        }
-
-        // Adiciona classe de saída suave ao body
-        if (document.body) {
-            document.body.classList.add('roar-page-exiting');
-        }
-
-        // Executa a transição antes de alterar a URL
-        window.setTimeout(function () {
-            window.location.href = url;
-        }, 120);
-
-        // Trava de segurança: remove a classe se a página não descarregar em 2.5s
-        window.setTimeout(function () {
-            if (document.body) {
-                document.body.classList.remove('roar-page-exiting');
-            }
-        }, 2500);
-    };
-
-    /**
-     * Intercepta cliques em links internos para aplicar a transição suave
-     */
-    function handleLinkClicks(event) {
-        const link = event.target.closest('a');
-        if (!link) return;
-
-        if (event.defaultPrevented) return;
-
-        const href = link.getAttribute('href');
-        if (!href) return;
-
-        // Ignora âncoras locais da mesma página (#topo, #como-funciona, etc.)
-        if (href.startsWith('#')) return;
-
-        // Ignora protocolos especiais
         if (
-            href.startsWith('javascript:') ||
-            href.startsWith('mailto:') ||
-            href.startsWith('tel:')
+            !url ||
+            typeof url !== "string"
         ) {
             return;
         }
 
-        // Ignora novas abas, downloads ou teclas de atalho (Ctrl, Shift, Cmd)
+        /*
+         * Impede dois cliques rápidos de criarem
+         * duas navegações simultâneas.
+         */
+        if (navigationInProgress) {
+            return;
+        }
+
+        navigationInProgress = true;
+
+        /*
+         * Quando o usuário prefere redução de movimento,
+         * a navegação acontece imediatamente.
+         */
         if (
-            link.target === '_blank' ||
-            link.hasAttribute('download') ||
+            prefersReducedMotion() ||
+            !document.body
+        ) {
+            performNavigation(url);
+            return;
+        }
+
+        document.body.classList.add(
+            "roar-page-exiting",
+        );
+
+        navigationTimer =
+            window.setTimeout(
+                function () {
+                    performNavigation(url);
+                },
+                EXIT_DURATION_MS,
+            );
+    };
+
+
+    /**
+     * Verifica se o clique deve manter
+     * o comportamento normal do navegador.
+     */
+    function shouldIgnoreLink(
+        event,
+        link,
+    ) {
+        if (
+            !link ||
+            event.defaultPrevented
+        ) {
+            return true;
+        }
+
+        const href =
+            link.getAttribute("href");
+
+        if (!href) {
+            return true;
+        }
+
+        if (
+            href.startsWith("#") ||
+            href.startsWith("javascript:") ||
+            href.startsWith("mailto:") ||
+            href.startsWith("tel:")
+        ) {
+            return true;
+        }
+
+        if (
+            link.target === "_blank" ||
+            link.hasAttribute("download") ||
+            link.hasAttribute(
+                "data-no-transition",
+            )
+        ) {
+            return true;
+        }
+
+        if (
+            event.button !== 0 ||
             event.ctrlKey ||
             event.metaKey ||
             event.shiftKey ||
             event.altKey
         ) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Intercepta somente links internos.
+     */
+    function handleLinkClick(event) {
+        const link =
+            event.target.closest("a");
+
+        if (
+            shouldIgnoreLink(
+                event,
+                link,
+            )
+        ) {
             return;
         }
 
-        // Ignora se o elemento tiver atributo data-no-transition
-        if (link.dataset.noTransition !== undefined) return;
-
         try {
-            const targetUrl = new URL(link.href, window.location.href);
+            const destination =
+                new URL(
+                    link.href,
+                    window.location.href,
+                );
 
-            // Ignora links externos (domínio diferente)
-            if (targetUrl.origin !== window.location.origin) return;
-
-            // Ignora se for a mesma página com apenas uma âncora
+            /*
+             * Links externos continuam usando
+             * o comportamento normal.
+             */
             if (
-                targetUrl.pathname === window.location.pathname &&
-                targetUrl.search === window.location.search &&
-                targetUrl.hash
+                destination.origin !==
+                window.location.origin
             ) {
                 return;
             }
 
-            // Cancela o carregamento abrupto nativo e aplica a transição suave
+            /*
+             * Não intercepta âncora da própria página.
+             */
+            const isSameDocument =
+                destination.pathname ===
+                window.location.pathname &&
+                destination.search ===
+                window.location.search;
+
+            if (
+                isSameDocument &&
+                destination.hash
+            ) {
+                return;
+            }
+
+            /*
+             * Não faz nada ao clicar em um link
+             * que representa exatamente a página atual.
+             */
+            if (
+                destination.href ===
+                window.location.href
+            ) {
+                event.preventDefault();
+                return;
+            }
+
             event.preventDefault();
-            window.roarNavigate(targetUrl.href);
-        } catch (e) {
-            // Se falhar o parse da URL, permite comportamento padrão
+
+            window.roarNavigate(
+                destination.href,
+            );
+        } catch (error) {
+            /*
+             * Se a URL for inválida, o navegador
+             * mantém seu comportamento padrão.
+             */
         }
     }
+
 
     /**
-     * Converte elementos com onclick inline de redirecionamento para transição suave
+     * Adapta redirecionamentos simples escritos
+     * diretamente no atributo onclick.
      */
-    function enhanceInlineRedirects() {
-        const elementsWithClick = document.querySelectorAll('*[onclick]');
-        elementsWithClick.forEach(function (el) {
-            const onclickAttr = el.getAttribute('onclick');
-            if (!onclickAttr) return;
+    function enhanceInlineRedirects(root) {
+        const scope =
+            root instanceof Element ||
+                root instanceof Document
+                ? root
+                : document;
 
-            const match = onclickAttr.match(/(?:window\.)?location\.href\s*=\s*['"`]([^'"`]+)['"`]/);
-            if (match && match[1]) {
-                const targetUrl = match[1];
-                el.removeAttribute('onclick');
-                el.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    window.roarNavigate(targetUrl);
-                });
-            }
-        });
+        const elements =
+            scope.querySelectorAll(
+                "[onclick]",
+            );
+
+        elements.forEach(
+            function (element) {
+                if (
+                    element.dataset
+                        .roarTransitionReady ===
+                    "true"
+                ) {
+                    return;
+                }
+
+                const inlineCode =
+                    element.getAttribute(
+                        "onclick",
+                    );
+
+                if (!inlineCode) {
+                    return;
+                }
+
+                const match =
+                    inlineCode.match(
+                        /(?:window\.)?location\.href\s*=\s*['"`]([^'"`]+)['"`]/,
+                    );
+
+                if (
+                    !match ||
+                    !match[1]
+                ) {
+                    return;
+                }
+
+                const destination =
+                    match[1];
+
+                element.dataset
+                    .roarTransitionReady =
+                    "true";
+
+                element.removeAttribute(
+                    "onclick",
+                );
+
+                element.addEventListener(
+                    "click",
+                    function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        window.roarNavigate(
+                            destination,
+                        );
+                    },
+                );
+            },
+        );
     }
 
-    // Inicialização quando o DOM estiver pronto
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function () {
-            enhanceInlineRedirects();
-            initObserver();
-        });
+
+    /**
+     * Observa elementos inseridos dinamicamente.
+     */
+    function initializeObserver() {
+        if (
+            typeof MutationObserver !==
+            "function" ||
+            !document.body
+        ) {
+            return;
+        }
+
+        const observer =
+            new MutationObserver(
+                function (mutations) {
+                    mutations.forEach(
+                        function (mutation) {
+                            mutation.addedNodes
+                                .forEach(
+                                    function (
+                                        node,
+                                    ) {
+                                        if (
+                                            !(
+                                                node instanceof
+                                                Element
+                                            )
+                                        ) {
+                                            return;
+                                        }
+
+                                        if (
+                                            node.matches(
+                                                "[onclick]",
+                                            )
+                                        ) {
+                                            enhanceInlineRedirects(
+                                                node.parentElement ||
+                                                document,
+                                            );
+                                            return;
+                                        }
+
+                                        enhanceInlineRedirects(
+                                            node,
+                                        );
+                                    },
+                                );
+                        },
+                    );
+                },
+            );
+
+        observer.observe(
+            document.body,
+            {
+                childList: true,
+                subtree: true,
+            },
+        );
+    }
+
+
+    /**
+     * Inicialização.
+     */
+    function initialize() {
+        enhanceInlineRedirects(
+            document,
+        );
+
+        initializeObserver();
+    }
+
+
+    document.addEventListener(
+        "click",
+        handleLinkClick,
+    );
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+        document.addEventListener(
+            "DOMContentLoaded",
+            initialize,
+            {
+                once: true,
+            },
+        );
     } else {
-        enhanceInlineRedirects();
-        initObserver();
+        initialize();
     }
 
-    function initObserver() {
-        if (!window.MutationObserver || !document.body) return;
-        var observer = new MutationObserver(function () {
-            enhanceInlineRedirects();
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
-    }
 
-    // Escuta cliques em links
-    document.addEventListener('click', handleLinkClicks);
+    /*
+     * Restaura a página quando o navegador usa
+     * o cache dos botões Voltar e Avançar.
+     */
+    window.addEventListener(
+        "pageshow",
+        restorePage,
+    );
 
-    // Restaura a página visível se restaurada do bfcache do navegador (Back / Forward)
-    window.addEventListener('pageshow', function (event) {
-        if (document.body) {
-            document.body.classList.remove('roar-page-exiting');
-        }
-    });
-
-    window.addEventListener('popstate', function () {
-        if (document.body) {
-            document.body.classList.remove('roar-page-exiting');
-        }
-    });
+    window.addEventListener(
+        "popstate",
+        restorePage,
+    );
 })();

@@ -305,7 +305,9 @@ export function createValidateActivity(
             "Toque na imagem para ouvir.";
 
         optionsContainer.className =
-            "choice-grid validation-options";
+            student.supportLevel === 1
+                ? "choice-grid validation-options validation-image-options"
+                : "choice-grid validation-options";
 
         if (student.supportLevel !== 1) {
             promptArea.append(

@@ -362,7 +362,7 @@ function renderStudents(elements, students) {
         return;
     }
 
-    students.slice(0, 5).forEach((student) => {
+    students.forEach((student) => {
         elements.studentsList.append(
             createStudentRow(student),
         );
@@ -380,19 +380,31 @@ function createAttentionRow(student) {
         "notif-icon",
     );
 
-    icon.style.background = "rgba(239, 68, 68, 0.15)";
+    icon.style.background =
+        "rgba(239, 68, 68, 0.15)";
 
-    const iconElement = createElement(
-        "i",
-        "fi fi-br-exclamation",
+    const iconElement =
+        createElement(
+            "i",
+            "fi fi-br-exclamation",
+        );
+
+    iconElement.style.color =
+        "#b91c1c";
+
+    iconElement.setAttribute(
+        "aria-hidden",
+        "true",
     );
-
-    iconElement.style.color = "#b91c1c";
-    iconElement.setAttribute("aria-hidden", "true");
 
     icon.append(iconElement);
 
-    const content = createElement("div");
+    const content =
+        createElement(
+            "div",
+            "attention-content",
+        );
+
     const title = createElement(
         "div",
         "notif-text",
@@ -402,13 +414,19 @@ function createAttentionRow(student) {
     const description = createElement(
         "div",
         "notif-time",
-        `Média de ${formatDecimal(
-            student.averageErrors,
-        )} erros por atividade`,
+        student.attentionReason ??
+        "Necessita de acompanhamento",
     );
 
-    content.append(title, description);
-    row.append(icon, content);
+    content.append(
+        title,
+        description,
+    );
+
+    row.append(
+        icon,
+        content,
+    );
 
     return row;
 }

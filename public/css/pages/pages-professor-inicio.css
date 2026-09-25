@@ -1,94 +1,379 @@
 /* Estilos exclusivos de inicio.html. */
 
 /* Sidebar do professor: azul escuro */
-        .sidebar { background: #1e3a5f; border-right-color: rgba(255,255,255,0.10); }
-        .sidebar__logo { filter: brightness(10); }
-        .sidebar__toggle { color: rgba(255,255,255,0.6); }
-        .sidebar__toggle:hover { color: #fff; }
-        .sidebar__link { color: rgba(255,255,255,0.75); }
-        .sidebar__link:hover { background: rgba(255,255,255,0.10); color: #fff; }
-        .sidebar__link.active { background: rgba(133,199,242,0.30); color: #fff; font-weight: 600; }
-        .sidebar__link i { color: inherit; }
+.sidebar {
+    background: #1e3a5f;
+    border-right-color: rgba(255, 255, 255, 0.10);
+}
 
-        /* Tabela de alunos */
-        .student-row {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-            padding: var(--space-sm) var(--space-md);
-            border-radius: var(--r-md);
-            transition: background var(--t-fast);
-        }
-        .student-row:hover { background: rgba(133,199,242,0.10); cursor: pointer; }
-        .student-row + .student-row { border-top: 1px solid rgba(0,0,0,0.05); }
-        .student-row__name { flex: 1; font-size: 0.88rem; font-weight: 600; color: var(--c-text); }
-        .student-row__meta { font-size: 0.78rem; color: var(--c-text-soft); }
+.sidebar__logo {
+    filter: brightness(10);
+}
 
-        /* Badges de nível */
-        .nivel-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
-        .nivel-1 { background: rgba(68,246,152,0.20); color: #1a7c49; }
-        .nivel-2 { background: rgba(133,199,242,0.25); color: #1e5a9e; }
-        .nivel-3 { background: rgba(168,85,247,0.18); color: #7c3aed; }
+.sidebar__toggle {
+    color: rgba(255, 255, 255, 0.6);
+}
 
-        /* Notificações */
-        .notif-item { display: flex; gap: var(--space-md); padding: var(--space-sm) 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .notif-item:last-child { border-bottom: none; }
-        .notif-icon { width: 36px; height: 36px; border-radius: var(--r-md); display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0; }
-        .notif-text { font-size: 0.82rem; color: var(--c-text); }
-        .notif-time { font-size: 0.74rem; color: var(--c-text-soft); margin-top:2px; }
+.sidebar__toggle:hover {
+    color: #fff;
+}
 
-        /* Histórico grid */
-        .hist-row { display: grid; grid-template-columns: 1fr 80px 80px; gap: var(--space-sm); padding: var(--space-sm) 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 0.84rem; align-items: center; }
-        .hist-row:last-child { border-bottom: none; }
-        .hist-header { font-weight: 700; color: var(--c-text-soft); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-        .acertos { color: #15803d; font-weight: 700; }
-        .erros { color: #b91c1c; font-weight: 700; }
+.sidebar__link {
+    color: rgba(255, 255, 255, 0.75);
+}
 
-        /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        .modal-overlay.open { opacity: 1; pointer-events: auto; }
-        .modal-box { background: var(--c-card); border-radius: var(--r-xl); padding: var(--space-xl); max-width: 600px; width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,0.3); }
+.sidebar__link:hover {
+    background: rgba(255, 255, 255, 0.10);
+    color: #fff;
+}
+
+.sidebar__link.active {
+    background: rgba(133, 199, 242, 0.30);
+    color: #fff;
+    font-weight: 600;
+}
+
+.sidebar__link i {
+    color: inherit;
+}
+
+/* Tabela de alunos */
+.student-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--r-md);
+    transition: background var(--t-fast);
+}
+
+.student-row:hover {
+    background: rgba(133, 199, 242, 0.10);
+    cursor: pointer;
+}
+
+.student-row+.student-row {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.student-row__name {
+    flex: 1;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--c-text);
+}
+
+.student-row__meta {
+    font-size: 0.78rem;
+    color: var(--c-text-soft);
+}
+
+/* Badges de nível */
+.nivel-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.nivel-1 {
+    background: rgba(68, 246, 152, 0.20);
+    color: #1a7c49;
+}
+
+.nivel-2 {
+    background: rgba(133, 199, 242, 0.25);
+    color: #1e5a9e;
+}
+
+.nivel-3 {
+    background: rgba(168, 85, 247, 0.18);
+    color: #7c3aed;
+}
+
+/* Notificações */
+.notif-item {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.notif-item:last-child {
+    border-bottom: none;
+}
+
+.notif-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.notif-text {
+    font-size: 0.82rem;
+    color: var(--c-text);
+}
+
+.notif-time {
+    font-size: 0.74rem;
+    color: var(--c-text-soft);
+    margin-top: 2px;
+}
+
+/* Histórico grid */
+.hist-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px;
+    gap: var(--space-sm);
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 0.84rem;
+    align-items: center;
+}
+
+.hist-row:last-child {
+    border-bottom: none;
+}
+
+.hist-header {
+    font-weight: 700;
+    color: var(--c-text-soft);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.acertos {
+    color: #15803d;
+    font-weight: 700;
+}
+
+.erros {
+    color: #b91c1c;
+    font-weight: 700;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-box {
+    background: var(--c-card);
+    border-radius: var(--r-xl);
+    padding: var(--space-xl);
+    max-width: 600px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+}
 
 /* Classes geradas a partir dos antigos estilos inline. */
-.u-pages-professor-inicio-001 { display:flex;align-items:center;gap:var(--space-md); }
-.u-pages-professor-inicio-002 { color:var(--c-blue-dark); }
-.u-pages-professor-inicio-003 { height: 42px; padding: 0 var(--space-lg); font-size: 0.95rem; display: inline-flex; align-items: center; justify-content: center; }
-.u-pages-professor-inicio-004 { margin-right: 8px; }
-.u-pages-professor-inicio-005 { position:relative; }
-.u-pages-professor-inicio-006 { position:absolute;top:8px;right:8px;width:8px;height:8px;background:#ef4444;border-radius:50%; }
-.u-pages-professor-inicio-007 { background:#1e3a5f;color:#fff; }
-.u-pages-professor-inicio-008 { margin-bottom:var(--space-xl); }
-.u-pages-professor-inicio-009 { background:rgba(133,199,242,0.30);color:var(--c-blue-dark); }
-.u-pages-professor-inicio-010 { background:rgba(68,246,152,0.25);color:#1a7c49; }
-.u-pages-professor-inicio-011 { background:rgba(245,158,11,0.20);color:#b07000; }
-.u-pages-professor-inicio-012 { background:rgba(168,85,247,0.15);color:#7c3aed; }
-.u-pages-professor-inicio-013 { width:100%;padding:var(--space-sm) var(--space-md);border:1px solid var(--c-border);border-radius:var(--r-md);margin-bottom:var(--space-md);font-size:0.88rem;background:var(--c-card); }
-.u-pages-professor-inicio-014 { text-align:center; }
-.u-pages-professor-inicio-015 { display:flex;flex-direction:column; }
-.u-pages-professor-inicio-016 { font-size:0.85rem;color:var(--c-text-soft);margin-bottom:var(--space-md); }
-.u-pages-professor-inicio-017 { margin-top:auto; }
-.u-pages-professor-inicio-018 { margin-right:6px; }
-.u-pages-professor-inicio-019 { display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-lg); }
-.u-pages-professor-inicio-020 { font-size:1.1rem;font-weight:700; }
-.u-pages-professor-inicio-021 { background:none;border:none;cursor:pointer;font-size:1rem;color:var(--c-text-soft); }
-.u-pages-professor-inicio-022 { width:100%;min-height:280px;padding:var(--space-md);border:1px solid var(--c-border);border-radius:var(--r-md);font-family:inherit;font-size:0.85rem;line-height:1.7;resize:vertical;background:var(--c-bg);color:var(--c-text); }
-.u-pages-professor-inicio-023 { display:flex;gap:var(--space-md);margin-top:var(--space-md);justify-content:flex-end; }
-.u-pages-professor-inicio-024 { margin-right:4px; }
-.u-pages-professor-inicio-025 { width:34px;height:34px;font-size:0.85rem; }
-.u-pages-professor-inicio-026 { width:100px; }
-.u-pages-professor-inicio-027 { display:flex;justify-content:space-between;font-size:0.72rem;color:var(--c-text-soft);margin-bottom:2px; }
-.u-pages-professor-inicio-028 { height:6px; }
-.u-pages-professor-inicio-029 { font-weight:500; }
+.u-pages-professor-inicio-001 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.u-pages-professor-inicio-002 {
+    color: var(--c-blue-dark);
+}
+
+.u-pages-professor-inicio-003 {
+    height: 42px;
+    padding: 0 var(--space-lg);
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.u-pages-professor-inicio-004 {
+    margin-right: 8px;
+}
+
+.u-pages-professor-inicio-005 {
+    position: relative;
+}
+
+.u-pages-professor-inicio-006 {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+}
+
+.u-pages-professor-inicio-007 {
+    background: #1e3a5f;
+    color: #fff;
+}
+
+.u-pages-professor-inicio-008 {
+    margin-bottom: var(--space-xl);
+}
+
+.u-pages-professor-inicio-009 {
+    background: rgba(133, 199, 242, 0.30);
+    color: var(--c-blue-dark);
+}
+
+.u-pages-professor-inicio-010 {
+    background: rgba(68, 246, 152, 0.25);
+    color: #1a7c49;
+}
+
+.u-pages-professor-inicio-011 {
+    background: rgba(245, 158, 11, 0.20);
+    color: #b07000;
+}
+
+.u-pages-professor-inicio-012 {
+    background: rgba(168, 85, 247, 0.15);
+    color: #7c3aed;
+}
+
+.u-pages-professor-inicio-013 {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-md);
+    margin-bottom: var(--space-md);
+    font-size: 0.88rem;
+    background: var(--c-card);
+}
+
+.u-pages-professor-inicio-014 {
+    text-align: center;
+}
+
+.u-pages-professor-inicio-015 {
+    display: flex;
+    flex-direction: column;
+}
+
+.u-pages-professor-inicio-016 {
+    font-size: 0.85rem;
+    color: var(--c-text-soft);
+    margin-bottom: var(--space-md);
+}
+
+.u-pages-professor-inicio-017 {
+    margin-top: auto;
+}
+
+.u-pages-professor-inicio-018 {
+    margin-right: 6px;
+}
+
+.u-pages-professor-inicio-019 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.u-pages-professor-inicio-020 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.u-pages-professor-inicio-021 {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--c-text-soft);
+}
+
+.u-pages-professor-inicio-022 {
+    width: 100%;
+    min-height: 280px;
+    padding: var(--space-md);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-md);
+    font-family: inherit;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    resize: vertical;
+    background: var(--c-bg);
+    color: var(--c-text);
+}
+
+.u-pages-professor-inicio-023 {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+    justify-content: flex-end;
+}
+
+.u-pages-professor-inicio-024 {
+    margin-right: 4px;
+}
+
+.u-pages-professor-inicio-025 {
+    width: 34px;
+    height: 34px;
+    font-size: 0.85rem;
+}
+
+.u-pages-professor-inicio-026 {
+    width: 100px;
+}
+
+.u-pages-professor-inicio-027 {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--c-text-soft);
+    margin-bottom: 2px;
+}
+
+.u-pages-professor-inicio-028 {
+    height: 6px;
+}
+
+.u-pages-professor-inicio-029 {
+    font-weight: 500;
+}
 
 @media (max-width: 520px) {
     .hist-row {
         grid-template-columns: 1fr 65px 65px;
         font-size: 0.78rem;
     }
+
     .student-row {
         flex-wrap: wrap;
         gap: var(--space-xs);
     }
+
     .u-pages-professor-inicio-003 {
         padding: 0 12px;
         font-size: 0.85rem;
@@ -99,10 +384,505 @@
     .student-row {
         padding: var(--space-md) var(--space-lg);
     }
+
     .student-row__name {
         font-size: 1.05rem;
     }
+
     .hist-row {
         font-size: 0.95rem;
+    }
+}
+
+/* Estilos exclusivos de inicio.html. */
+
+/* ==========================================================
+   SIDEBAR DO PROFESSOR
+   ========================================================== */
+
+.sidebar {
+    background: #1e3a5f;
+    border-right-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar__logo {
+    filter: brightness(10);
+}
+
+.sidebar__toggle {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.sidebar__toggle:hover {
+    color: #ffffff;
+}
+
+.sidebar__link {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.sidebar__link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar__link.active {
+    color: #ffffff;
+    background: rgba(133, 199, 242, 0.3);
+    font-weight: 600;
+}
+
+.sidebar__link i {
+    color: inherit;
+}
+
+
+/* ==========================================================
+   LISTA DE ALUNOS
+   ========================================================== */
+
+.student-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--r-md);
+    transition: background var(--t-fast);
+}
+
+.student-row:hover {
+    cursor: pointer;
+    background: rgba(133, 199, 242, 0.1);
+}
+
+.student-row+.student-row {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.student-row__name {
+    flex: 1;
+    min-width: 0;
+    color: var(--c-text);
+    font-size: 0.88rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.student-row__meta {
+    color: var(--c-text-soft);
+    font-size: 0.78rem;
+}
+
+
+/* ==========================================================
+   SCROLL INTERNO DAS LISTAS
+   ========================================================== */
+
+#alunosNivelList,
+#attentionList {
+    max-height: 360px;
+    padding-right: 6px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+}
+
+#alunosNivelList::-webkit-scrollbar,
+#attentionList::-webkit-scrollbar {
+    width: 8px;
+}
+
+#alunosNivelList::-webkit-scrollbar-thumb,
+#attentionList::-webkit-scrollbar-thumb {
+    background: rgba(30, 90, 158, 0.3);
+    border-radius: 999px;
+}
+
+#alunosNivelList::-webkit-scrollbar-track,
+#attentionList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+/* ==========================================================
+   BADGES DE NÍVEL
+   ========================================================== */
+
+.nivel-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.nivel-1 {
+    color: #1a7c49;
+    background: rgba(68, 246, 152, 0.2);
+}
+
+.nivel-2 {
+    color: #1e5a9e;
+    background: rgba(133, 199, 242, 0.25);
+}
+
+.nivel-3 {
+    color: #7c3aed;
+    background: rgba(168, 85, 247, 0.18);
+}
+
+
+/* ==========================================================
+   NOTIFICAÇÕES E ALERTAS
+   ========================================================== */
+
+.notif-item {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.notif-item:last-child {
+    border-bottom: none;
+}
+
+.notif-icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-md);
+    font-size: 0.9rem;
+}
+
+.attention-content {
+    min-width: 0;
+}
+
+.notif-text {
+    color: var(--c-text);
+    font-size: 0.82rem;
+    overflow-wrap: anywhere;
+}
+
+.notif-time {
+    margin-top: 2px;
+    color: var(--c-text-soft);
+    font-size: 0.74rem;
+}
+
+
+/* ==========================================================
+   HISTÓRICO
+   ========================================================== */
+
+.hist-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 80px 80px;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 0.84rem;
+}
+
+.hist-row:last-child {
+    border-bottom: none;
+}
+
+.hist-header {
+    color: var(--c-text-soft);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.acertos {
+    color: #15803d;
+    font-weight: 700;
+}
+
+.erros {
+    color: #b91c1c;
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   MODAL
+   ========================================================== */
+
+.modal-overlay {
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-box {
+    width: 90%;
+    max-width: 600px;
+    max-height: 85vh;
+    padding: var(--space-xl);
+    overflow-y: auto;
+
+    background: var(--c-card);
+    border-radius: var(--r-xl);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+}
+
+
+/* ==========================================================
+   CLASSES AUXILIARES DA PÁGINA
+   ========================================================== */
+
+.u-pages-professor-inicio-001 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.u-pages-professor-inicio-002 {
+    color: var(--c-blue-dark);
+}
+
+.u-pages-professor-inicio-003 {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    padding: 0 var(--space-lg);
+    font-size: 0.95rem;
+}
+
+.u-pages-professor-inicio-004 {
+    margin-right: 8px;
+}
+
+.u-pages-professor-inicio-005 {
+    position: relative;
+}
+
+.u-pages-professor-inicio-006 {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+}
+
+.u-pages-professor-inicio-007 {
+    color: #ffffff;
+    background: #1e3a5f;
+}
+
+.u-pages-professor-inicio-008 {
+    margin-bottom: var(--space-xl);
+}
+
+.u-pages-professor-inicio-009 {
+    color: var(--c-blue-dark);
+    background: rgba(133, 199, 242, 0.3);
+}
+
+.u-pages-professor-inicio-010 {
+    color: #1a7c49;
+    background: rgba(68, 246, 152, 0.25);
+}
+
+.u-pages-professor-inicio-011 {
+    color: #b07000;
+    background: rgba(245, 158, 11, 0.2);
+}
+
+.u-pages-professor-inicio-012 {
+    color: #7c3aed;
+    background: rgba(168, 85, 247, 0.15);
+}
+
+.u-pages-professor-inicio-013 {
+    width: 100%;
+    margin-bottom: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+
+    color: var(--c-text);
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-md);
+
+    font-size: 0.88rem;
+}
+
+.u-pages-professor-inicio-014 {
+    text-align: center;
+}
+
+.u-pages-professor-inicio-015 {
+    display: flex;
+    flex-direction: column;
+}
+
+.u-pages-professor-inicio-016 {
+    margin-bottom: var(--space-md);
+    color: var(--c-text-soft);
+    font-size: 0.85rem;
+}
+
+.u-pages-professor-inicio-017 {
+    margin-top: auto;
+}
+
+.u-pages-professor-inicio-018 {
+    margin-right: 6px;
+}
+
+.u-pages-professor-inicio-019 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
+}
+
+.u-pages-professor-inicio-020 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.u-pages-professor-inicio-021 {
+    color: var(--c-text-soft);
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.u-pages-professor-inicio-022 {
+    width: 100%;
+    min-height: 280px;
+    padding: var(--space-md);
+
+    color: var(--c-text);
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-md);
+
+    font-family: inherit;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    resize: vertical;
+}
+
+.u-pages-professor-inicio-023 {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.u-pages-professor-inicio-024 {
+    margin-right: 4px;
+}
+
+.u-pages-professor-inicio-025 {
+    width: 34px;
+    height: 34px;
+    font-size: 0.85rem;
+}
+
+.u-pages-professor-inicio-026 {
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.u-pages-professor-inicio-027 {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+    color: var(--c-text-soft);
+    font-size: 0.72rem;
+}
+
+.u-pages-professor-inicio-028 {
+    height: 6px;
+}
+
+.u-pages-professor-inicio-029 {
+    font-weight: 500;
+}
+
+
+/* ==========================================================
+   RESPONSIVIDADE
+   ========================================================== */
+
+@media (max-width: 768px) {
+
+    #alunosNivelList,
+    #attentionList {
+        max-height: 300px;
+    }
+
+    .student-row {
+        flex-wrap: wrap;
+    }
+
+    .student-row__name {
+        flex-basis: calc(100% - 52px);
+    }
+
+    .nivel-badge {
+        margin-left: 42px;
+    }
+
+    .u-pages-professor-inicio-026 {
+        width: calc(100% - 42px);
+        margin-left: 42px;
+    }
+}
+
+@media (max-width: 520px) {
+    .hist-row {
+        grid-template-columns: minmax(0, 1fr) 65px 65px;
+        font-size: 0.78rem;
+    }
+
+    .student-row {
+        gap: var(--space-xs);
+    }
+
+    .u-pages-professor-inicio-003 {
+        padding: 0 12px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (min-width: 1921px) {
+    .student-row {
+        padding: var(--space-sm) var(--space-md);
     }
 }

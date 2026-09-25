@@ -3,40 +3,7 @@
    Transições suaves e elegantes entre páginas HTML
    ============================================================ */
 
-/* 1. Cross-Document View Transitions (Padrão W3C para navegadores modernos) */
-@view-transition {
-    navigation: auto;
-}
 
-::view-transition-old(root) {
-    animation: 120ms cubic-bezier(0.4, 0, 1, 1) both roarViewFadeOut;
-}
-
-::view-transition-new(root) {
-    animation: 160ms cubic-bezier(0.16, 1, 0.3, 1) both roarViewFadeIn;
-}
-
-@keyframes roarViewFadeOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-}
-
-@keyframes roarViewFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
 /* 2. Animação de Entrada de Página (Universal) */
 @keyframes roarBodyEnter {
