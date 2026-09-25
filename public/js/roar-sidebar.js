@@ -79,6 +79,23 @@ function initSidebar() {
         );
     }
 
+    function updateActiveSidebarLink() {
+        const currentFile = window.location.pathname.split("/").pop().toLowerCase();
+        if (!currentFile) return;
+
+        const links = document.querySelectorAll(".sidebar__nav .sidebar__link");
+        links.forEach((link) => {
+            const href = link.getAttribute("href");
+            if (!href) return;
+            const targetFile = href.split("/").pop().split("?")[0].split("#")[0].toLowerCase();
+            if (targetFile === currentFile) {
+                link.classList.add("active");
+                link.setAttribute("aria-current", "page");
+            }
+        });
+    }
+    updateActiveSidebarLink();
+
     initLogout();
 }
 
