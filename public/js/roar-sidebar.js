@@ -16,10 +16,41 @@ function initSidebar() {
     const mobileButton =
         document.getElementById("mobileMenuBtn");
 
+    const savedCollapsed =
+        localStorage.getItem("sidebarCollapsed") === "true";
+
+    if (savedCollapsed) {
+        document.documentElement.classList.add("sidebar-collapsed");
+        if (sidebar) {
+            sidebar.classList.add("sidebar--collapsed");
+        }
+    } else {
+        document.documentElement.classList.remove("sidebar-collapsed");
+        if (sidebar) {
+            sidebar.classList.remove("sidebar--collapsed");
+        }
+    }
+
+    // Libera transições da sidebar apenas após o layout inicial estar pronto
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            document.documentElement.classList.add("sidebar-ready");
+        });
+    });
+
     if (toggle && sidebar) {
         toggle.addEventListener("click", () => {
-            sidebar.classList.toggle(
-                "sidebar--collapsed",
+            const isNowCollapsed =
+                sidebar.classList.toggle("sidebar--collapsed");
+
+            document.documentElement.classList.toggle(
+                "sidebar-collapsed",
+                isNowCollapsed,
+            );
+
+            localStorage.setItem(
+                "sidebarCollapsed",
+                String(isNowCollapsed),
             );
         });
     }

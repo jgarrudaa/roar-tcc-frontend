@@ -64,14 +64,6 @@ function toggleMission(id) {
 const now = new Date();
 document.getElementById('dateLabel').textContent = now.toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long' });
 
-const sidebar  = document.getElementById('sidebar');
-const toggle   = document.getElementById('sidebarToggle');
-const backdrop = document.getElementById('sidebarBackdrop');
-const mobileBtn= document.getElementById('mobileMenuBtn');
-toggle.addEventListener('click', () => sidebar.classList.toggle('sidebar--collapsed'));
-mobileBtn.addEventListener('click', () => { sidebar.classList.add('open'); backdrop.classList.add('open'); });
-backdrop.addEventListener('click', () => { sidebar.classList.remove('open'); backdrop.classList.remove('open'); });
-
 function showToast(msg, type='') {
     const c = document.getElementById('toast-container');
     const t = document.createElement('div');

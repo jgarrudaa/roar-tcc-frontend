@@ -68,16 +68,4 @@ async function renderModules() {
     }
 }
 
-const sidebar = document.querySelector("#sidebar");
-const backdrop = document.querySelector("#sidebarBackdrop");
-document.querySelector("#sidebarToggle")?.addEventListener("click", () => sidebar.classList.toggle("sidebar--collapsed"));
-document.querySelector("#mobileMenuBtn")?.addEventListener("click", () => {
-    sidebar.classList.add("open");
-    backdrop.classList.add("open");
-});
-backdrop?.addEventListener("click", () => {
-    sidebar.classList.remove("open");
-    backdrop.classList.remove("open");
-});
-
 renderModules();

@@ -26,6 +26,11 @@
             return;
         }
 
+        // Trava transições na sidebar para evitar flicker durante a saída
+        if (document.documentElement) {
+            document.documentElement.classList.remove('sidebar-ready');
+        }
+
         // Adiciona classe de saída suave ao body
         if (document.body) {
             document.body.classList.add('roar-page-exiting');
@@ -155,11 +160,17 @@
         if (document.body) {
             document.body.classList.remove('roar-page-exiting');
         }
+        if (document.documentElement) {
+            document.documentElement.classList.add('sidebar-ready');
+        }
     });
 
     window.addEventListener('popstate', function () {
         if (document.body) {
             document.body.classList.remove('roar-page-exiting');
+        }
+        if (document.documentElement) {
+            document.documentElement.classList.add('sidebar-ready');
         }
     });
 })();
