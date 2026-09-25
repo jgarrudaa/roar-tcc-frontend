@@ -164,6 +164,27 @@
     color: var(--roar-muted);
 }
 
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--roar-border);
+    border-bottom-color: var(--roar-blue);
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    margin: auto;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 .activity-content {
     height: 100%;
     display: grid;

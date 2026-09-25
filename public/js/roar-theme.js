@@ -34,18 +34,32 @@
         const style = document.createElement("style");
         style.id = "roar-global-preferences";
         style.textContent = `
-            html.roar-high-contrast { filter: contrast(1.18); }
-            html.roar-reduced-motion *, html.roar-reduced-motion *::before,
-            html.roar-reduced-motion *::after {
-                animation-duration: .01ms !important;
+            html.roar-high-contrast, html.high-contrast { filter: contrast(1.18); }
+            html.roar-reduced-motion,
+            html.roar-reduced-motion *,
+            html.roar-reduced-motion *::before,
+            html.roar-reduced-motion *::after,
+            html.reduced-motion,
+            html.reduced-motion *,
+            html.reduced-motion *::before,
+            html.reduced-motion *::after {
+                animation: none !important;
+                animation-duration: 0s !important;
+                animation-delay: 0s !important;
                 animation-iteration-count: 1 !important;
+                transition: none !important;
+                transition-duration: 0s !important;
+                transition-delay: 0s !important;
                 scroll-behavior: auto !important;
-                transition-duration: .01ms !important;
             }
             html.roar-reduced-stimuli .card,
+            html.reduced-stimuli .card,
             html.roar-reduced-stimuli .stat-card,
-            html.roar-reduced-stimuli .profile-hero { box-shadow: none !important; }
-            html.roar-reduced-stimuli .fade-in { animation: none !important; }
+            html.reduced-stimuli .stat-card,
+            html.roar-reduced-stimuli .profile-hero,
+            html.reduced-stimuli .profile-hero { box-shadow: none !important; }
+            html.roar-reduced-stimuli .fade-in,
+            html.reduced-stimuli .fade-in { animation: none !important; }
         `;
         document.head.append(style);
     }
@@ -58,8 +72,11 @@
         else root.removeAttribute("data-theme");
         root.classList.toggle("dark-theme", dark);
         root.classList.toggle("roar-high-contrast", preferences.highContrast);
+        root.classList.toggle("high-contrast", preferences.highContrast);
         root.classList.toggle("roar-reduced-motion", !preferences.animationsEnabled);
+        root.classList.toggle("reduced-motion", !preferences.animationsEnabled);
         root.classList.toggle("roar-reduced-stimuli", preferences.reducedStimuli);
+        root.classList.toggle("reduced-stimuli", preferences.reducedStimuli);
         root.dataset.fontSize = preferences.fontSize;
         root.style.fontSize = SIZES[preferences.fontSize] || SIZES.medium;
 
