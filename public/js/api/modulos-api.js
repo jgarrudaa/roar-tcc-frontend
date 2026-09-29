@@ -17,6 +17,27 @@ export const modulosApi = Object.freeze({
         return apiClient.get("/atividades/modulos");
     },
 
+    setAvailability(moduleId, active) {
+        const validModuleId =
+            requirePositiveInteger(
+                moduleId,
+                "moduleId",
+            );
+
+        if (typeof active !== "boolean") {
+            throw new TypeError(
+                "O status do módulo deve ser booleano.",
+            );
+        }
+
+        return apiClient.patch(
+            `/atividades/professor/modulos/${validModuleId}`,
+            {
+                ativo: active,
+            },
+        );
+    },
+
     getActivities(moduleId, studentId) {
         const validModuleId = requirePositiveInteger(
             moduleId,
@@ -39,4 +60,6 @@ export const modulosApi = Object.freeze({
             progressData,
         );
     },
+
+
 });

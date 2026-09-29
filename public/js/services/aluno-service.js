@@ -23,13 +23,16 @@ const TRIAGE_OPTIONS = Object.freeze({
 const LEVEL_BY_MODE = Object.freeze({
     "visual guiado": 1,
     "suporte visual puro": 1,
+    "nível 1 - suporte visual puro": 1,
 
     "interativo visual": 2,
     "aprendiz guiado": 2,
+    "nível 2 - aprendiz guiado": 2,
 
     verbal: 3,
     "autonomia contextual": 3,
     "autonomia contextural": 3,
+    "nível 3 - autonomia contextual": 3,
 });
 
 function normalizeEmail(email) {
@@ -41,6 +44,13 @@ function normalizeEmail(email) {
 function normalizeText(value) {
     return String(value ?? "").trim();
 }
+
+function normalizeCpf(cpf) {
+    return String(cpf ?? "")
+        .replace(/\D/g, "")
+        .slice(0, 11);
+}
+
 
 function normalizePin(pin) {
     return String(pin ?? "")
@@ -307,7 +317,60 @@ async function update(studentId, data) {
         );
     }
 
-    return alunosApi.update(studentId, data);
+    const normalizedData = {
+        nome: normalizeText(data?.name),
+        email: normalizeEmail(data?.email),
+        cpf_aluno: normalizeCpf(data?.cpf),
+        ano_escolar: normalizeText(
+            data?.schoolYear,
+        ),
+        nivel: Number(data?.level),
+    };
+
+    if (!required(normalizedData.nome)) {
+        throw new Error(
+            "Informe o nome do aluno.",
+        );
+    }
+
+    if (!isValidEmail(normalizedData.email)) {
+        throw new Error(
+            "Informe um e-mail válido.",
+        );
+    }
+
+    if (!isValidCpf(normalizedData.cpf_aluno)) {
+        throw new Error(
+            "Informe um CPF válido.",
+        );
+    }
+
+    if (!required(normalizedData.ano_escolar)) {
+        throw new Error(
+            "Selecione o ano escolar.",
+        );
+    }
+
+    if (
+        !Number.isInteger(normalizedData.nivel) ||
+        normalizedData.nivel < 1 ||
+        normalizedData.nivel > 3
+    ) {
+        throw new Error(
+            "Selecione um nível válido.",
+        );
+    }
+
+    const response = await alunosApi.update(
+        studentId,
+        normalizedData,
+    );
+
+    if (response?.erro) {
+        throw new Error(response.erro);
+    }
+
+    return response;
 }
 
 
@@ -357,7 +420,14 @@ async function remove(studentId) {
         );
     }
 
-    return alunosApi.remove(studentId);
+    const response =
+        await alunosApi.remove(studentId);
+
+    if (response?.erro) {
+        throw new Error(response.erro);
+    }
+
+    return response;
 }
 
 export const alunoService = Object.freeze({

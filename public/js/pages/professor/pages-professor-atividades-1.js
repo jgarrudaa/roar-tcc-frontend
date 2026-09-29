@@ -327,6 +327,8 @@ function renderFilters() {
     });
 }
 
+
+
 function renderModuleCard(module) {
     const report = module.report;
     const totalStudents =
@@ -335,31 +337,63 @@ function renderModuleCard(module) {
     const isPreparation =
         report.totalActivities === 0;
 
-    const actions = isPreparation
-        ? `
-            <span class="badge">
-                Em preparação
-            </span>
-        `
-        : `
-            <button
-                class="btn btn--ghost btn--sm"
-                type="button"
-                data-action="details"
-                data-module-id="${module.id}"
-            >
-                Ver detalhes
-            </button>
 
-            <button
-                class="btn btn--primary btn--sm"
-                type="button"
-                data-action="manage"
-                data-module-id="${module.id}"
-            >
-                Gerenciar
-            </button>
-        `;
+    const availabilityButton = `
+    <button
+        class="
+            btn
+            btn--sm
+            ${module.active
+            ? "btn--danger-outline"
+            : "btn--success"
+        }
+        "
+        type="button"
+        data-action="toggle-availability"
+        data-module-id="${module.id}"
+        data-active="${module.active}"
+        aria-pressed="${module.active}"
+    >
+        <i
+            class="
+                fi
+                ${module.active
+            ? "fi-br-eye-crossed"
+            : "fi-br-eye"
+        }
+            "
+            aria-hidden="true"
+        ></i>
+
+        ${module.active
+            ? "Desativar"
+            : "Ativar"
+        }
+    </button>
+`;
+
+    const actions = `
+    ${isPreparation
+            ? `
+                <span class="badge">
+                    Em preparação
+                </span>
+            `
+            : `
+                <button
+                    class="btn btn--ghost btn--sm"
+                    type="button"
+                    data-action="details"
+                    data-module-id="${module.id}"
+                >
+                    Ver detalhes
+                </button>
+            `
+        }
+
+    ${availabilityButton}
+`;
+
 
     const activityLabel =
         report.totalActivities === 1
@@ -381,21 +415,26 @@ function renderModuleCard(module) {
             </div>
 
             <div class="cat-grid">
-                <article
-                    class="act-card module-card"
-                >
+                <article class="act-card module-card">
                     <div class="act-card__top">
-                        <div
-                            class="act-card__info"
-                        >
-                            <div
-                                class="act-card__name"
-                            >
-                                ${escapeHtml(
-                                    module.title,
-                                )}
-                            </div>
+                    <div class="act-card__info">
+                    <div class="act-card__name">
+                    ${escapeHtml(module.title,)}</div>
 
+                        <span
+                            class="
+                                module-status
+                                ${module.active
+            ? "module-status--active"
+            : "module-status--inactive"
+        }
+                            "
+                        >
+                            ${module.active
+            ? "Disponível para a turma"
+            : "Desativado para a turma"
+        }
+                        </span> 
                             <div
                                 class="
                                     act-card__meta-row
@@ -418,8 +457,8 @@ function renderModuleCard(module) {
                                     "
                                 >
                                     ${formatInteger(
-                                        report.totalAttempts,
-                                    )}
+            report.totalAttempts,
+        )}
                                     tentativas
                                 </span>
                             </div>
@@ -458,8 +497,8 @@ function renderModuleCard(module) {
                                         class="
                                             progress-bar
                                             ${getProgressClass(
-                                                report.accuracy,
-                                            )}
+            report.accuracy,
+        )}
                                         "
                                         style="
                                             width:
@@ -499,8 +538,8 @@ function renderModuleCard(module) {
                                 "
                             >
                                 ${formatInteger(
-                                    report.totalAttempts,
-                                )}
+            report.totalAttempts,
+        )}
                             </div>
 
                             <div
@@ -515,12 +554,12 @@ function renderModuleCard(module) {
                                 class="act-stat__val"
                             >
                                 ${formatInteger(
-                                    report.completedStudents,
-                                )}
+            report.completedStudents,
+        )}
                                 /
                                 ${formatInteger(
-                                    totalStudents,
-                                )}
+            totalStudents,
+        )}
                             </div>
 
                             <div
@@ -538,12 +577,12 @@ function renderModuleCard(module) {
                             class="unlock-count"
                         >
                             ${formatInteger(
-                                report.participants,
-                            )}
+            report.participants,
+        )}
                             /
                             ${formatInteger(
-                                totalStudents,
-                            )}
+            totalStudents,
+        )}
                             alunos participaram
                         </span>
 
@@ -559,6 +598,98 @@ function renderModuleCard(module) {
             </div>
         </section>
     `;
+}
+
+async function toggleModuleAvailability(
+    moduleId,
+) {
+    const module = state.modules.find(
+        (item) => item.id === moduleId,
+    );
+
+    if (!module) {
+        showToast(
+            "Módulo não encontrado.",
+            "error",
+        );
+
+        return;
+    }
+
+    const newActiveStatus =
+        !module.active;
+
+    if (
+        module.active &&
+        !window.confirm(
+            (
+                `Desativar "${module.title}"? ` +
+                "Os alunos desta professora não poderão " +
+                "abrir o módulo, mas o progresso será mantido."
+            ),
+        )
+    ) {
+        return;
+    }
+
+    const button =
+        elements.container.querySelector(
+            (
+                "[data-action='toggle-availability']" +
+                `[data-module-id='${moduleId}']`
+            ),
+        );
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Salvando...";
+    }
+
+    try {
+        const result =
+            await moduloService
+                .setAvailability(
+                    moduleId,
+                    newActiveStatus,
+                );
+
+        state.modules = state.modules.map(
+            (item) => (
+                item.id === moduleId
+                    ? {
+                        ...item,
+                        active: result.active,
+                    }
+                    : item
+            ),
+        );
+
+        applyFilters();
+
+        showToast(
+            result.message || (
+                result.active
+                    ? "Módulo ativado para a turma."
+                    : "Módulo desativado para a turma."
+            ),
+            "success",
+        );
+    } catch (error) {
+        console.error(
+            "Erro ao atualizar módulo:",
+            error,
+        );
+
+        showToast(
+            (
+                error?.message ??
+                "Não foi possível atualizar o módulo."
+            ),
+            "error",
+        );
+
+        applyFilters();
+    }
 }
 
 function renderModules() {
@@ -607,21 +738,19 @@ function renderModules() {
         );
     });
 
-    const managementButtons =
+    const availabilityButtons =
         elements.container.querySelectorAll(
-            "[data-action='manage']",
+            "[data-action='toggle-availability']",
         );
 
-    managementButtons.forEach((button) => {
+    availabilityButtons.forEach((button) => {
         button.addEventListener(
             "click",
             () => {
-                showToast(
-                    (
-                        "A liberação individual de módulos " +
-                        "ainda não está disponível."
+                toggleModuleAvailability(
+                    Number(
+                        button.dataset.moduleId,
                     ),
-                    "info",
                 );
             },
         );
@@ -640,7 +769,7 @@ function applyFilters() {
             const matchesFilter =
                 state.activeFilter === "all" ||
                 String(module.id) ===
-                    state.activeFilter;
+                state.activeFilter;
 
             const matchesModuleName =
                 module.title
@@ -709,47 +838,47 @@ function renderActivityTable(module) {
                 <tr>
                     <th scope="row">
                         ${escapeHtml(
-                            activity.name,
-                        )}
+                activity.name,
+            )}
 
                         <br>
 
                         <small>
                             Etapa
                             ${formatInteger(
-                                activity.order,
-                            )}
+                activity.order,
+            )}
                         </small>
                     </th>
 
                     <td>
                         ${formatInteger(
-                            activity.participants,
-                        )}
+                activity.participants,
+            )}
                     </td>
 
                     <td>
                         ${formatInteger(
-                            activity.totalAttempts,
-                        )}
+                activity.totalAttempts,
+            )}
                     </td>
 
                     <td>
                         ${formatInteger(
-                            activity.completions,
-                        )}
+                activity.completions,
+            )}
                     </td>
 
                     <td>
                         ${formatInteger(
-                            activity.totalErrors,
-                        )}
+                activity.totalErrors,
+            )}
                     </td>
 
                     <td>
                         ${formatDecimal(
-                            activity.averageTimeSeconds,
-                        )}s
+                activity.averageTimeSeconds,
+            )}s
                     </td>
 
                     <td>
@@ -777,9 +906,8 @@ function renderActivityTable(module) {
             </thead>
 
             <tbody>
-                ${
-                    rows ||
-                    `
+                ${rows ||
+        `
                         <tr>
                             <td colspan="7">
                                 Nenhuma atividade
@@ -787,7 +915,7 @@ function renderActivityTable(module) {
                             </td>
                         </tr>
                     `
-                }
+        }
             </tbody>
         </table>
     `;
@@ -841,8 +969,8 @@ function openModuleDetails(moduleId) {
                 "
             >
                 ${formatInteger(
-                    report.totalErrors,
-                )}
+        report.totalErrors,
+    )}
             </div>
 
             <div class="mstat__lbl">
@@ -858,8 +986,8 @@ function openModuleDetails(moduleId) {
                 "
             >
                 ${formatInteger(
-                    report.participants,
-                )}
+        report.participants,
+    )}
             </div>
 
             <div class="mstat__lbl">
@@ -870,12 +998,12 @@ function openModuleDetails(moduleId) {
         <div class="mstat">
             <div class="mstat__val">
                 ${formatInteger(
-                    report.completedStudents,
-                )}
+        report.completedStudents,
+    )}
                 /
                 ${formatInteger(
-                    state.dashboard.totalStudents,
-                )}
+        state.dashboard.totalStudents,
+    )}
             </div>
 
             <div class="mstat__lbl">
@@ -1016,7 +1144,7 @@ async function loadPage() {
                 const isEmptyModule =
                     error?.status === 404 ||
                     error?.code ===
-                        "MODULE_WITHOUT_ACTIVITIES";
+                    "MODULE_WITHOUT_ACTIVITIES";
 
                 if (isEmptyModule) {
                     return createEmptyModuleReport(

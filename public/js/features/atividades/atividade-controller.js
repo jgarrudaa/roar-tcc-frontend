@@ -7,7 +7,7 @@ import { createAudioImageActivity, } from "./audio-imagem.js";
 import { createTrueFalseActivity, } from "./verdadeiro-falso.js";
 import { createMemoryActivity, } from "./memoria.js?v=2";
 import { createCompleteSentenceActivity,} from "./completar-frase.js";
-import { createOrderSentenceActivity,} from "./ordenar-frase.js";
+import { createOrderSentenceActivity,} from "./ordenar-frase.js?v=1";
 import { createWritingActivity,} from "./escrita.js";
 import { createWordBankActivity,} from "./banco-palavras.js";
 

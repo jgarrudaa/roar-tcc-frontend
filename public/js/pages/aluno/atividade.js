@@ -1,5 +1,5 @@
 import { showToast } from "../../components/toast.js";
-import { createActivityController } from "../../features/atividades/atividade-controller.js?v=2";
+import { createActivityController } from "../../features/atividades/atividade-controller.js?v=3";
 
 const parameters =
     new URLSearchParams(

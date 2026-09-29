@@ -192,6 +192,95 @@
 
             <div class="modal-stats" id="modalStats"></div>
 
+            <section class="student-management" aria-labelledby="studentManagementTitle">
+                <div class="student-management__heading">
+                    <div>
+                        <h2 id="studentManagementTitle">
+                            Dados do aluno
+                        </h2>
+
+                        <p>
+                            Edite os dados e o nível de aprendizagem.
+                        </p>
+                    </div>
+
+                    <i class="fi fi-br-user-pen" aria-hidden="true"></i>
+                </div>
+
+                <form id="formEditarAluno" class="student-edit-form">
+                    <div class="student-edit-grid">
+                        <label class="student-edit-field">
+                            <span>Nome</span>
+
+                            <input id="editarAlunoNome" name="nome" type="text" minlength="3" maxlength="120"
+                                autocomplete="name" required>
+                        </label>
+
+                        <label class="student-edit-field">
+                            <span>E-mail</span>
+
+                            <input id="editarAlunoEmail" name="email" type="email" maxlength="150" autocomplete="email"
+                                required>
+                        </label>
+
+                        <label class="student-edit-field">
+                            <span>CPF</span>
+
+                            <input id="editarAlunoCpf" name="cpf" type="text" inputmode="numeric" maxlength="14"
+                                autocomplete="off" required>
+                        </label>
+
+                        <label class="student-edit-field">
+                            <span>Ano escolar</span>
+
+                            <select id="editarAlunoAno" name="ano_escolar" required>
+                                <option value="6º Ano">6º Ano</option>
+                                <option value="7º Ano">7º Ano</option>
+                                <option value="8º Ano">8º Ano</option>
+                                <option value="9º Ano">9º Ano</option>
+                                <option value="1º Ano E.M">1º Ano E.M.</option>
+                                <option value="2º Ano E.M">2º Ano E.M.</option>
+                                <option value="3º Ano E.M">3º Ano E.M.</option>
+                            </select>
+                        </label>
+
+                        <label class="student-edit-field student-edit-field--full">
+                            <span>Nível de aprendizagem</span>
+
+                            <select id="editarAlunoNivel" name="nivel" required>
+                                <option value="1">
+                                    Nível 1 — Suporte Visual Puro
+                                </option>
+
+                                <option value="2">
+                                    Nível 2 — Aprendiz Guiado
+                                </option>
+
+                                <option value="3">
+                                    Nível 3 — Autonomia Contextual
+                                </option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <p id="editarAlunoMensagem" class="student-management__message" aria-live="polite"></p>
+
+                    <div class="student-management__actions">
+                        <button class="btn btn--danger" id="btnDesativarAluno" type="button">
+                            <i class="fi fi-br-trash" aria-hidden="true"></i>
+
+                            Desativar aluno
+                        </button>
+
+                        <button class="btn btn--primary" id="btnSalvarAluno" type="submit">
+                            <i class="fi fi-br-disk" aria-hidden="true"></i>
+
+                            Salvar alterações
+                        </button>
+                    </div>
+                </form>
+            </section>
+
             <div class="section-header mb-md">
                 <h2 class="u-pages-professor-alunos-012">
                     Desempenho por atividade
@@ -320,7 +409,7 @@
     <script src="../../public/js/roar-sidebar.js"></script>
     <script src="../../public/js/roar-theme.js"></script>
 
-    <script type="module" src="../../public/js/pages/professor/pages-professor-alunos-1.js?v=4"></script>
+    <script type="module" src="../../public/js/pages/professor/pages-professor-alunos-1.js?v=5"></script>
 </body>
 
 </html>

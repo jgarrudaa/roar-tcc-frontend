@@ -241,10 +241,53 @@ function normalizeModules(payload) {
 
     return payload
         .map(normalizeModule)
-        .filter(Boolean)
-        .filter((module) => module.active);
+        .filter(Boolean);
 }
 
+async function setAvailability(
+    moduleId,
+    active,
+) {
+    const validModuleId = Number(
+        moduleId,
+    );
+
+    if (
+        !Number.isInteger(validModuleId) ||
+        validModuleId <= 0
+    ) {
+        throw new TypeError(
+            "Selecione um módulo válido.",
+        );
+    }
+
+    if (typeof active !== "boolean") {
+        throw new TypeError(
+            "O status do módulo é inválido.",
+        );
+    }
+
+    const response =
+        await modulosApi.setAvailability(
+            validModuleId,
+            active,
+        );
+
+    return Object.freeze({
+        moduleId: Number(
+            response?.modulo_id ??
+            validModuleId,
+        ),
+
+        active:
+            response?.ativo === true,
+
+        message:
+            String(
+                response?.mensagem ?? "",
+            ).trim(),
+    });
+}
 
 export const moduloService = Object.freeze({
     async listJourney() {
@@ -253,6 +296,8 @@ export const moduloService = Object.freeze({
 
         return normalizeModules(payload);
     },
+
+    setAvailability,
 
     async getActivities(
         moduleId,

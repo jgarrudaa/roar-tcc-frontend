@@ -735,7 +735,7 @@
     line-height: 1.5;
 }
 
-.student-pin-panel__heading > i {
+.student-pin-panel__heading>i {
     flex-shrink: 0;
     color: var(--c-blue-dark);
     font-size: 1.25rem;
@@ -744,8 +744,7 @@
 .student-pin-fields {
     display: grid;
     grid-template-columns:
-        repeat(2, minmax(0, 1fr))
-        auto;
+        repeat(2, minmax(0, 1fr)) auto;
     align-items: end;
     gap: var(--space-md);
 }
@@ -786,8 +785,7 @@
 .student-pin-fields input:focus {
     border-color: var(--c-blue-dark);
     box-shadow:
-        0 0 0 3px
-        rgba(133, 199, 242, 0.2);
+        0 0 0 3px rgba(133, 199, 242, 0.2);
 }
 
 .student-pin-fields input:disabled {
@@ -914,6 +912,153 @@
     }
 
     .generated-pin__copy {
+        width: 100%;
+    }
+}
+
+
+/* ============================================================
+   Gerenciamento dos dados do aluno
+   ============================================================ */
+
+.student-management {
+    margin-bottom: var(--space-xl);
+    padding: var(--space-lg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-lg);
+    background: rgba(133, 199, 242, 0.08);
+}
+
+.student-management__heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.student-management__heading h2 {
+    margin: 0 0 4px;
+    color: var(--c-text);
+    font-size: 1rem;
+}
+
+.student-management__heading p {
+    margin: 0;
+    color: var(--c-text-soft);
+    font-size: 0.8rem;
+}
+
+.student-management__heading>i {
+    color: var(--c-blue-dark);
+    font-size: 1.25rem;
+}
+
+.student-edit-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: var(--space-md);
+}
+
+.student-edit-field {
+    min-width: 0;
+    display: grid;
+    gap: 6px;
+}
+
+.student-edit-field--full {
+    grid-column: 1 / -1;
+}
+
+.student-edit-field span {
+    color: var(--c-text);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.student-edit-field input,
+.student-edit-field select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-md);
+    outline: none;
+    background: var(--c-card);
+    color: var(--c-text);
+    font-family: "Poppins", sans-serif;
+    font-size: 0.86rem;
+}
+
+.student-edit-field input:focus,
+.student-edit-field select:focus {
+    border-color: var(--c-blue-dark);
+    box-shadow:
+        0 0 0 3px rgba(133, 199, 242, 0.22);
+}
+
+.student-edit-field input:disabled,
+.student-edit-field select:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.student-management__message {
+    min-height: 22px;
+    margin: var(--space-sm) 0 0;
+    color: var(--c-text-soft);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.student-management__actions {
+    margin-top: var(--space-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+}
+
+.student-management__actions .btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn--danger {
+    border: 1px solid #dc2626;
+    background: transparent;
+    color: #b91c1c;
+}
+
+.btn--danger:hover {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.btn--danger:focus-visible {
+    outline: 3px solid rgba(220, 38, 38, 0.3);
+    outline-offset: 2px;
+}
+
+@media (max-width: 620px) {
+    .student-edit-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .student-edit-field--full {
+        grid-column: auto;
+    }
+
+    .student-management__actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .student-management__actions .btn {
         width: 100%;
     }
 }

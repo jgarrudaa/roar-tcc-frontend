@@ -127,6 +127,43 @@ const elements = {
         "btnNotif",
     ),
 
+    editForm: document.getElementById(
+        "formEditarAluno",
+    ),
+
+    editName: document.getElementById(
+        "editarAlunoNome",
+    ),
+
+    editEmail: document.getElementById(
+        "editarAlunoEmail",
+    ),
+
+    editCpf: document.getElementById(
+        "editarAlunoCpf",
+    ),
+
+    editSchoolYear: document.getElementById(
+        "editarAlunoAno",
+    ),
+
+    editLevel: document.getElementById(
+        "editarAlunoNivel",
+    ),
+
+    editMessage: document.getElementById(
+        "editarAlunoMensagem",
+    ),
+
+    saveStudentButton: document.getElementById(
+        "btnSalvarAluno",
+    ),
+
+    deactivateStudentButton:
+        document.getElementById(
+            "btnDesativarAluno",
+        ),
+
     profileAvatar: document.querySelector(
         ".navbar__avatar",
     ),
@@ -148,6 +185,8 @@ const state = {
     loadingReport: false,
     resettingPin: false,
     generatedPin: "",
+    savingStudent: false,
+    deactivatingStudent: false,
 };
 
 function escapeHtml(value) {
@@ -157,6 +196,27 @@ function escapeHtml(value) {
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+}
+
+
+function formatCpf(value) {
+    const digits = String(value ?? "")
+        .replace(/\D/g, "")
+        .slice(0, 11);
+
+    return digits
+        .replace(
+            /^(\d{3})(\d)/,
+            "$1.$2",
+        )
+        .replace(
+            /^(\d{3})\.(\d{3})(\d)/,
+            "$1.$2.$3",
+        )
+        .replace(
+            /\.(\d{3})(\d)/,
+            ".$1-$2",
+        );
 }
 
 function clampPercentage(value) {
@@ -746,6 +806,25 @@ function prepareModal(student) {
     elements.modalChart.innerHTML = "";
     elements.modalTable.innerHTML = "";
 
+    elements.editName.value =
+        student.name ?? "";
+
+    elements.editEmail.value =
+        student.email ?? "";
+
+    elements.editCpf.value =
+        formatCpf(student.cpf);
+
+    elements.editSchoolYear.value =
+        student.schoolYear ?? "";
+
+    elements.editLevel.value =
+        String(
+            student.level?.number ?? 1,
+        );
+
+    elements.editMessage.textContent = "";
+
     clearGeneratedPin();
 }
 
@@ -1025,8 +1104,15 @@ function clearGeneratedPin() {
 }
 
 
-function closeStudentModal() {
-    if (state.resettingPin) {
+function closeStudentModal(force = false) {
+    if (
+        !force &&
+        (
+            state.resettingPin ||
+            state.savingStudent ||
+            state.deactivatingStudent
+        )
+    ) {
         return;
     }
 
@@ -1043,6 +1129,156 @@ function closeStudentModal() {
     state.report = null;
 
     clearGeneratedPin();
+}
+
+function setStudentManagementDisabled(disabled) {
+    elements.editName.disabled = disabled;
+    elements.editEmail.disabled = disabled;
+    elements.editCpf.disabled = disabled;
+    elements.editSchoolYear.disabled = disabled;
+    elements.editLevel.disabled = disabled;
+    elements.saveStudentButton.disabled = disabled;
+    elements.deactivateStudentButton.disabled = disabled;
+}
+
+async function saveSelectedStudent(event) {
+    event.preventDefault();
+
+    const student = state.selectedStudent;
+
+    if (
+        !student ||
+        state.savingStudent ||
+        state.deactivatingStudent
+    ) {
+        return;
+    }
+
+    const newLevel = Number(
+        elements.editLevel.value,
+    );
+
+    if (
+        newLevel !== student.level?.number
+    ) {
+        const confirmed = window.confirm(
+            `Alterar o nível de ${student.name}?\n\n` +
+            "O histórico e o XP serão preservados.",
+        );
+
+        if (!confirmed) {
+            elements.editLevel.value =
+                String(
+                    student.level?.number ?? 1,
+                );
+
+            return;
+        }
+    }
+
+    state.savingStudent = true;
+    setStudentManagementDisabled(true);
+
+    elements.editMessage.textContent =
+        "Salvando alterações...";
+
+    try {
+        await alunoService.update(
+            student.id,
+            {
+                name: elements.editName.value,
+                email: elements.editEmail.value,
+                cpf: elements.editCpf.value,
+                schoolYear:
+                    elements.editSchoolYear.value,
+                level: newLevel,
+            },
+        );
+
+        const studentName =
+            elements.editName.value.trim();
+
+        closeStudentModal(true);
+
+        await loadStudents();
+
+        showToast(
+            `${studentName} foi atualizado com sucesso.`,
+            "success",
+        );
+    } catch (error) {
+        elements.editMessage.textContent =
+            error?.message ||
+            "Não foi possível atualizar o aluno.";
+
+        showToast(
+            elements.editMessage.textContent,
+            "error",
+        );
+    } finally {
+        state.savingStudent = false;
+        setStudentManagementDisabled(false);
+    }
+}
+
+async function deactivateSelectedStudent() {
+    const student = state.selectedStudent;
+
+    if (
+        !student ||
+        state.savingStudent ||
+        state.deactivatingStudent
+    ) {
+        return;
+    }
+
+    const confirmation = window.prompt(
+        `Desativar ${student.name}?\n\n` +
+        "O aluno perderá o acesso, mas o histórico " +
+        "será preservado.\n\n" +
+        "Digite EXCLUIR para confirmar.",
+    );
+
+    if (
+        String(confirmation ?? "")
+            .trim()
+            .toUpperCase() !== "EXCLUIR"
+    ) {
+        return;
+    }
+
+    state.deactivatingStudent = true;
+    setStudentManagementDisabled(true);
+
+    elements.editMessage.textContent =
+        "Desativando aluno...";
+
+    try {
+        await alunoService.remove(student.id);
+
+        const studentName = student.name;
+
+        closeStudentModal(true);
+
+        await loadStudents();
+
+        showToast(
+            `${studentName} foi desativado.`,
+            "success",
+        );
+    } catch (error) {
+        elements.editMessage.textContent =
+            error?.message ||
+            "Não foi possível desativar o aluno.";
+
+        showToast(
+            elements.editMessage.textContent,
+            "error",
+        );
+    } finally {
+        state.deactivatingStudent = false;
+        setStudentManagementDisabled(false);
+    }
 }
 
 
@@ -1135,9 +1371,6 @@ async function resetSelectedStudentPin() {
 }
 
 
-
-
-
 async function copyGeneratedPin() {
     const pin =
         state.generatedPin;
@@ -1215,9 +1448,6 @@ async function copyGeneratedPin() {
 
 
 
-
-
-
 function showReportSummary() {
     if (!state.report) {
         showToast(
@@ -1286,6 +1516,25 @@ function bindEvents() {
         showReportSummary,
     );
 
+    elements.editForm.addEventListener(
+        "submit",
+        saveSelectedStudent,
+    );
+
+    elements.deactivateStudentButton.addEventListener(
+        "click",
+        deactivateSelectedStudent,
+    );
+
+    elements.editCpf.addEventListener(
+        "input",
+        () => {
+            elements.editCpf.value =
+                formatCpf(
+                    elements.editCpf.value,
+                );
+        },
+    );
 
     elements.resetPinButton.addEventListener(
         "click",
@@ -1356,20 +1605,62 @@ async function loadStudents() {
 
     renderLoading();
 
-    state.dashboard =
-        await relatoriosService
-            .getTeacherDashboard(
-                teacherId,
-            );
+    const [
+        dashboard,
+        studentDetails,
+    ] = await Promise.all([
+        relatoriosService.getTeacherDashboard(
+            teacherId,
+        ),
 
-    state.students = [
-        ...state.dashboard.students,
-    ];
+        alunoService.listByTeacher(
+            teacherId,
+        ),
+    ]);
+
+    const detailsById = new Map(
+        studentDetails.map(
+            (student) => [
+                student.id,
+                student,
+            ],
+        ),
+    );
+
+    state.dashboard = dashboard;
+
+    state.students =
+        dashboard.students.map(
+            (student) => {
+                const details =
+                    detailsById.get(
+                        student.id,
+                    );
+
+                return {
+                    ...student,
+
+                    email:
+                        details?.email ?? "",
+
+                    cpf:
+                        String(
+                            details?.cpf ?? "",
+                        ),
+
+                    mode:
+                        details?.mode ??
+                        student.learningMode?.label ??
+                        "",
+                };
+            },
+        );
 
     renderStatistics();
     renderSchoolYearOptions();
     applyFilters();
 }
+
 
 async function initialize() {
     try {
