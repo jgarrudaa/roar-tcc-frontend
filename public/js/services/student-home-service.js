@@ -11,10 +11,11 @@ function normalizeProfile(payload) {
         id,
         name,
         initial: name.charAt(0).toLocaleUpperCase("pt-BR"),
-        email: String(payload.email ?? "").trim(),
-        schoolYear: String(payload.schoolYear ?? "Não informado").trim(),
-        learningMode: String(payload.supportLevel ?? "Não informado").trim(),
-        xpTotal: Math.max(0, Number(payload.xpTotal) || 0),
+        email: String(payload.email ?? "",).trim(),
+        schoolYear: String(payload.schoolYear ?? "Não informado",).trim(),
+        learningMode: String(payload.supportLevel ?? "Não informado",).trim(),
+        xpTotal: Math.max(0,Number(payload.xpTotal) || 0,),
+        currentStreak: Math.max(0, Number(payload.currentStreak) || 0,),
     });
 }
 

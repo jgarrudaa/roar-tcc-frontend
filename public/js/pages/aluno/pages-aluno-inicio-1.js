@@ -21,8 +21,8 @@ const elements = {
     xpTotal:
         document.querySelector("#xpTotal"),
 
-    learningMode:
-        document.querySelector("#learningMode"),
+    currentStreak:
+        document.querySelector("#currentStreak"),
 
     availableModules:
         document.querySelector("#availableModules"),
@@ -119,8 +119,19 @@ function renderProfile(profile, modulesCount) {
     elements.xpTotal.textContent =
         profile.xpTotal.toLocaleString("pt-BR");
 
-    elements.learningMode.textContent =
-        profile.learningMode;
+    const streak = profile.currentStreak;
+
+    elements.currentStreak.textContent =
+        streak === 1
+            ? "1 dia"
+            : `${streak} dias`;
+
+    elements.currentStreak.setAttribute(
+        "aria-label",
+        streak === 1
+            ? "Ofensiva de 1 dia"
+            : `Ofensiva de ${streak} dias`,
+    );
 
     elements.availableModules.textContent =
         String(modulesCount);
@@ -378,7 +389,7 @@ function bindMascotInteraction() {
 
             setMascotMessage(
                 MASCOT_MESSAGES[
-                    mascotMessageIndex
+                mascotMessageIndex
                 ],
             );
         },
