@@ -142,8 +142,10 @@ export async function createActivityController({
     elements.title.textContent =
         module.title;
 
-    elements.levelBadge.textContent =
-        student.supportMode;
+    if (elements.levelBadge) {
+        elements.levelBadge.textContent =
+            student.supportMode;
+    }
 
     elements.setInstruction(
         activity.instruction,

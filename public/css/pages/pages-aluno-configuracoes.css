@@ -130,8 +130,8 @@
             gap: var(--space-xl);
         }
 
-        @media (max-width: 768px) {
-            .config-grid { grid-template-columns: 1fr; }
+        @media (max-width: 1024px) {
+            .config-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
         }
 
         @media (max-width: 480px) {

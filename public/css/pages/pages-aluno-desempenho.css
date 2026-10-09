@@ -167,9 +167,12 @@
         .cat-progress-info { flex: 1; min-width: 0; }
         .cat-progress-name { font-size: 0.88rem; font-weight: 600; color: var(--c-text); margin-bottom: 4px; }
 
+        @media (max-width: 1024px) {
+            .stats-overview { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md); }
+            .charts-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
+        }
+
         @media (max-width: 768px) {
-            .stats-overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .charts-grid { grid-template-columns: 1fr; }
             .donut-wrap { flex-direction: column; align-items: flex-start; }
         }
 
