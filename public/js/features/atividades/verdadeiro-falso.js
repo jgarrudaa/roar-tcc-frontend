@@ -9,6 +9,7 @@ import {
 } from "./activity-helpers.js";
 
 
+
 function normalizeAnswer(value) {
     return String(value ?? "")
         .trim()
@@ -166,13 +167,15 @@ export function createTrueFalseActivity(
 
         const yesButton =
             createButton(
-                "Sim",
+                "Yes",
                 "truth-button truth-yes",
             );
 
         const noButton =
+
+        
             createButton(
-                "Não",
+                "Not",
                 "truth-button truth-no",
             );
 

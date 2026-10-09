@@ -27,6 +27,10 @@
                 <a href="inicio.html" class="sidebar__link"><i class="fi fi-br-home"></i><span>Início</span></a>
                 <a href="atividades.html" class="sidebar__link"><i
                         class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a>
+                <a href="missoes.html" class="sidebar__link">
+                    <i class="fi fi-br-list-check"></i>
+                    <span>Missões</span>
+                </a>
                 <a href="desempenho.html" class="sidebar__link"><i
                         class="fi fi-br-chart-simple"></i><span>Desempenho</span></a>
                 <a href="perfil.html" class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
@@ -34,8 +38,12 @@
                         class="fi fi-br-settings"></i><span>Configurações</span></a>
             </nav>
             <div class="sidebar__footer">
-                <a href="../auth/login-aluno.html" class="sidebar__link"><i
-                        class="fi fi-br-exit"></i><span>Sair</span></a>
+                <a href="../auth/login-aluno.html" id="nav-logout" class="sidebar__link" data-action="logout"
+                    data-no-transition>
+                    <i class="fi fi-br-exit" aria-hidden="true"></i>
+
+                    <span>Sair</span>
+                </a>
             </div>
         </aside>
         <div class="main-content">
@@ -57,17 +65,20 @@
                 <!-- Banner de progresso do dia -->
                 <div class="day-banner">
                     <div class="day-banner__left">
-                        <h2>Bom dia, Leandro!</h2>
-                        <p>Você completou <strong id="doneCount">1</strong> de <strong>5</strong> missões hoje.</p>
+                        <h2 id="studentGreeting">Olá!</h2>
+                        <p class="day-banner__summary">
+                            Você completou <strong id="doneCount">0</strong> de <strong id="totalCount">0</strong>
+                            missões hoje.
+                        </p>
                         <div class="progress-wrap progress-wrap--lg u-pages-aluno-missoes-002">
-                            <div class="progress-bar u-pages-aluno-missoes-003" id="dayProgress"></div>
+                            <div class="progress-bar" id="dayProgress" role="progressbar"
+                                aria-label="Progresso das missões do dia" aria-valuemin="0" aria-valuemax="100"
+                                aria-valuenow="0"></div>
                         </div>
                     </div>
-                    <div class="day-banner__prog">
-                        <div class="day-banner__prog-label">Recompensa total do dia</div>
-                        <div class="day-banner__prog-val"><i class="fi fi-br-star u-pages-aluno-missoes-004"></i> 200 XP
-                        </div>
-
+                    <div class="day-banner__prog-val" id="totalReward">
+                        <i class="fi fi-br-star u-pages-aluno-missoes-004"></i>
+                        0 XP
                     </div>
                 </div>
 
@@ -83,7 +94,8 @@
                     <div class="u-pages-aluno-missoes-006">
                         <i class="fi fi-br-calendar u-pages-aluno-missoes-007"></i>
                         <p class="u-pages-aluno-missoes-008">As missões de amanhã estarão disponíveis às
-                            <strong>00:00</strong></p>
+                            <strong>00:00</strong>
+                        </p>
                     </div>
                 </div>
 
@@ -96,7 +108,7 @@
     <script src="../../public/js/roar-storage.js"></script>
     <script src="../../public/js/roar-page-transition.js"></script>
     <script src="../../public/js/roar-sidebar.js"></script>
-    <script src="../../public/js/pages/aluno/pages-aluno-missoes-1.js"></script>
+    <script type="module" src="../../public/js/pages/aluno/pages-aluno-missoes-1.js"></script>
 </body>
 
 </html>

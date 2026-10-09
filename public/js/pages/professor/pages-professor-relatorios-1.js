@@ -1,7 +1,7 @@
 import { showToast } from "../../components/toast.js";
 import { relatoriosService } from "../../services/relatorios-service.js";
 import { sessionService } from "../../services/session-service.js";
-
+import { assistenteService } from "../../services/assistente-service.js";
 
 const AVATAR_COLORS = Object.freeze([
     "#244D8C",
@@ -866,6 +866,265 @@ function createHistorySection(report) {
 }
 
 
+
+function showAiMessage(
+    container,
+    message,
+    isError = false,
+) {
+    container.replaceChildren();
+
+    container.classList.toggle(
+        "ai-assistant-result--error",
+        isError,
+    );
+
+    const paragraph =
+        createElement(
+            "p",
+            null,
+            message,
+        );
+
+    container.append(paragraph);
+}
+
+
+function renderAiAnalysis(
+    container,
+    analysis,
+) {
+    container.replaceChildren();
+
+    container.classList.remove(
+        "ai-assistant-result--error",
+    );
+
+    const summary =
+        createElement(
+            "p",
+            "ai-analysis-summary",
+            analysis.summary,
+        );
+
+    const grid =
+        createElement(
+            "div",
+            "ai-analysis-grid",
+        );
+
+    grid.append(
+        createAiList(
+            "Pontos positivos",
+            analysis.positivePoints,
+        ),
+
+        createAiList(
+            "Pontos de atenção",
+            analysis.difficulties,
+        ),
+
+        createAiList(
+            "Sugestões para o professor",
+            analysis.suggestions,
+        ),
+    );
+
+    const warning =
+        createElement(
+            "p",
+            "ai-analysis-warning",
+            analysis.warning,
+        );
+
+    container.append(
+        summary,
+        grid,
+        warning,
+    );
+}
+
+
+function createAiAssistantSection(report) {
+    const section =
+        createElement(
+            "section",
+            "simple-report-card ai-assistant-card",
+        );
+
+    section.setAttribute(
+        "aria-labelledby",
+        "aiAssistantTitle",
+    );
+
+    const header =
+        createElement(
+            "div",
+            "ai-assistant-header",
+        );
+
+    const information =
+        createElement(
+            "div",
+            "ai-assistant-heading",
+        );
+
+    const title =
+        createElement(
+            "h2",
+            null,
+            "Assistente ROAR",
+        );
+
+    title.id = "aiAssistantTitle";
+
+    const description =
+        createElement(
+            "p",
+            "simple-section-help",
+            (
+                "Gere sugestões pedagógicas com base "
+                + "nas métricas de aprendizagem do aluno."
+            ),
+        );
+
+    information.append(
+        title,
+        description,
+    );
+
+    const button =
+        createElement(
+            "button",
+            "btn btn--primary ai-assistant-button",
+            "Gerar análise",
+        );
+
+    button.type = "button";
+
+    const result =
+        createElement(
+            "div",
+            "ai-assistant-result",
+        );
+
+    result.setAttribute(
+        "aria-live",
+        "polite",
+    );
+
+    result.setAttribute(
+        "aria-atomic",
+        "true",
+    );
+
+    showAiMessage(
+        result,
+        (
+            "A análise será gerada somente quando "
+            + "você pressionar o botão."
+        ),
+    );
+
+    if (!report.history.length) {
+        button.disabled = true;
+
+        showAiMessage(
+            result,
+            (
+                "Este aluno ainda não possui histórico "
+                + "suficiente para gerar uma análise."
+            ),
+        );
+    }
+
+    button.addEventListener(
+        "click",
+        async () => {
+            button.disabled = true;
+            button.textContent = "Analisando...";
+
+            section.setAttribute(
+                "aria-busy",
+                "true",
+            );
+
+            showAiMessage(
+                result,
+                (
+                    "O Assistente ROAR está analisando "
+                    + "as métricas do aluno."
+                ),
+            );
+
+            try {
+                const response =
+                    await relatoriosService
+                        .generateStudentAiAnalysis(
+                            report.student.id,
+                        );
+
+                if (!response.available) {
+                    showAiMessage(
+                        result,
+                        response.message,
+                        true,
+                    );
+
+                    button.textContent =
+                        "Tentar novamente";
+
+                    return;
+                }
+
+                renderAiAnalysis(
+                    result,
+                    response.analysis,
+                );
+
+                button.textContent =
+                    "Gerar novamente";
+            } catch (error) {
+                console.error(
+                    "Erro ao gerar análise:",
+                    error,
+                );
+
+                showAiMessage(
+                    result,
+                    (
+                        "Não foi possível gerar a análise. "
+                        + "O restante do relatório continua "
+                        + "funcionando normalmente."
+                    ),
+                    true,
+                );
+
+                button.textContent =
+                    "Tentar novamente";
+            } finally {
+                button.disabled = false;
+
+                section.removeAttribute(
+                    "aria-busy",
+                );
+            }
+        },
+    );
+
+    header.append(
+        information,
+        button,
+    );
+
+    section.append(
+        header,
+        result,
+    );
+
+    return section;
+}
+
 function createGuidanceSection(report) {
     const section =
         createElement(
@@ -918,6 +1177,34 @@ function createGuidanceSection(report) {
     return section;
 }
 
+function createAiList(title, items) {
+    const section = document.createElement("section");
+    section.className = "ai-analysis-group";
+
+    const heading = document.createElement("h3");
+    heading.textContent = title;
+
+    const list = document.createElement("ul");
+
+    if (!items.length) {
+        const emptyItem = document.createElement("li");
+        emptyItem.textContent =
+            "Nenhuma observação disponível.";
+
+        list.append(emptyItem);
+    } else {
+        items.forEach((item) => {
+            const listItem = document.createElement("li");
+            listItem.textContent = item;
+            list.append(listItem);
+        });
+    }
+
+    section.append(heading, list);
+
+    return section;
+}
+
 
 function renderStudentReport(report) {
     elements.dashboard.replaceChildren(
@@ -925,9 +1212,12 @@ function renderStudentReport(report) {
         createSummarySection(report),
         createModulesSection(report),
         createHistorySection(report),
+        createAiAssistantSection(report),
         createGuidanceSection(report),
     );
 }
+
+
 
 
 async function getStudentReport(studentId) {

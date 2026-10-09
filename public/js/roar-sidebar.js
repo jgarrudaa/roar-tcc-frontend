@@ -188,12 +188,9 @@ function initLogout() {
         logoutLink.addEventListener(
             "click",
             (event) => {
-                /*
-                 * Impede que o href leve primeiro
-                 * para a home ou para outra página.
-                 */
                 event.preventDefault();
                 event.stopPropagation();
+                event.stopImmediatePropagation();
 
                 const session =
                     getCurrentSession();
@@ -205,21 +202,32 @@ function initLogout() {
                     );
 
                 /*
-                 * Encerra efetivamente a sessão.
+                 * Limpa exclusivamente a sessão.
+                 * As preferências pessoais continuam
+                 * salvas para o próximo login.
                  */
                 localStorage.removeItem(
                     "roarSession",
                 );
 
-                /*
-                 * replace evita que o botão Voltar
-                 * restaure a página protegida.
-                 */
+                if (
+                    "speechSynthesis" in window
+                ) {
+                    window.speechSynthesis.cancel();
+                }
+
                 window.location.replace(
                     loginUrl,
                 );
             },
+
+            /*
+             * Captura o clique antes do controlador
+             * global de transições.
+             */
+            true,
         );
+
     });
 }
 

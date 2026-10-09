@@ -1,127 +1,391 @@
-/* Estilos exclusivos de missoes.html. */
+/* =========================================================
+   MISSÕES DO DIA
+   ========================================================= */
 
 .mission-card {
-            display: flex;
-            align-items: center;
-            gap: var(--space-lg);
-            padding: var(--space-lg);
-            border-radius: var(--r-lg);
-            border: 1.5px solid var(--c-border);
-            background: var(--c-secondary);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: var(--space-md);
-            transition: all var(--t-fast);
-        }
-        .mission-card.done {
-            background: rgba(68,246,152,0.08);
-            border-color: rgba(68,246,152,0.30);
-        }
-        .mission-card.done .mission-card__name { text-decoration: line-through; color: var(--c-text-soft); }
-        .mission-card__icon {
-            width: 56px; height: 56px;
-            border-radius: var(--r-md);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.4rem;
-            flex-shrink: 0;
-        }
-        .mission-card__body { flex: 1; min-width: 0; }
-        .mission-card__name { font-size: 0.95rem; font-weight: 700; color: var(--c-text); margin-bottom: 4px; }
-        .mission-card__desc { font-size: 0.8rem; color: var(--c-text-soft); margin-bottom: var(--space-sm); }
-        .mission-card__reward {
-            display: flex;
-            gap: var(--space-md);
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .mission-card__reward span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--c-text-soft);
-        }
-        .mission-card__check {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            border: 2px solid var(--c-border);
-            background: var(--c-secondary);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all var(--t-fast);
-            flex-shrink: 0;
-            color: transparent;
-        }
-        .mission-card.done .mission-card__check {
-            background: var(--c-primary);
-            border-color: var(--c-primary);
-            color: #1a7c49;
-        }
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+    border: 1.5px solid var(--c-border);
+    border-radius: var(--r-lg);
+    background: var(--c-secondary);
+    box-shadow: var(--shadow-sm);
+    transition:
+        border-color var(--t-fast),
+        background-color var(--t-fast),
+        transform var(--t-fast);
+}
 
-        /* Banner do dia */
-        .day-banner {
-            background: rgba(133,199,242,0.18);
-            border: 1.5px solid rgba(133,199,242,0.35);
-            border-radius: var(--r-xl);
-            padding: var(--space-lg) var(--space-xl);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: var(--space-xl);
-            flex-wrap: wrap;
-            gap: var(--space-md);
-        }
-        .day-banner__left h2 { font-size: 1.3rem; font-weight: 800; color: var(--c-blue-dark); }
-        .day-banner__left p  { font-size: 0.85rem; color: var(--c-text-soft); }
-        .day-banner__prog {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 6px;
-            min-width: 160px;
-        }
-        .day-banner__prog-label { font-size: 0.8rem; font-weight: 600; color: var(--c-text-soft); }
-        .day-banner__prog-val   { font-size: 1.4rem; font-weight: 800; color: var(--c-blue-dark); }
+.mission-card:hover {
+    transform: translateY(-1px);
+}
 
-@media (max-width: 480px) {
+.mission-card--completed {
+    border-color: rgba(68, 246, 152, 0.45);
+    background: rgba(68, 246, 152, 0.08);
+}
+
+.mission-card--claimed {
+    border-color: rgba(68, 246, 152, 0.65);
+}
+
+.mission-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    border-radius: var(--r-md);
+    font-size: 1.4rem;
+}
+
+.mission-card__icon--blue {
+    color: var(--c-blue-dark);
+    background: rgba(133, 199, 242, 0.25);
+}
+
+.mission-card__icon--green {
+    color: #176b43;
+    background: rgba(68, 246, 152, 0.18);
+}
+
+.mission-card__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.mission-card__name {
+    margin: 0 0 4px;
+    color: var(--c-text);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.mission-card--claimed .mission-card__name {
+    color: var(--c-text-soft);
+}
+
+.mission-card__desc {
+    margin: 0 0 var(--space-sm);
+    color: var(--c-text-soft);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.mission-card__details {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.mission-card__reward,
+.mission-card__progress-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--c-text-soft);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.mission-card__progress-text {
+    padding-left: var(--space-md);
+    border-left: 1px solid var(--c-border);
+}
+
+.mission-card__action-wrap {
+    display: flex;
+    justify-content: flex-end;
+    min-width: 150px;
+}
+
+.mission-card__action,
+.mission-card__status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: var(--r-md);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.mission-card__action {
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition:
+        background-color var(--t-fast),
+        border-color var(--t-fast),
+        transform var(--t-fast);
+}
+
+.mission-card__action--claim {
+    color: #ffffff;
+    background: var(--c-blue-dark);
+}
+
+.mission-card__action--claim:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+}
+
+.mission-card__action--claim:focus-visible,
+.missions-state__retry:focus-visible {
+    outline: 3px solid rgba(47, 100, 170, 0.35);
+    outline-offset: 3px;
+}
+
+.mission-card__action--claim:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
+
+.mission-card__action--claimed {
+    color: #176b43;
+    border-color: rgba(68, 246, 152, 0.4);
+    background: rgba(68, 246, 152, 0.16);
+    cursor: default;
+}
+
+.mission-card__status {
+    color: var(--c-text-soft);
+    border: 1.5px solid var(--c-border);
+    background: var(--c-secondary);
+}
+
+
+/* =========================================================
+   BANNER DO DIA
+   ========================================================= */
+
+.day-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    padding: var(--space-lg) var(--space-xl);
+    margin-bottom: var(--space-xl);
+    border: 1.5px solid rgba(133, 199, 242, 0.35);
+    border-radius: var(--r-xl);
+    background: rgba(133, 199, 242, 0.18);
+}
+
+.day-banner__left h2 {
+    margin: 0;
+    color: var(--c-blue-dark);
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+.day-banner__summary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin: 4px 0 0;
+    color: var(--c-text-soft);
+    font-size: 0.88rem;
+}
+
+.day-banner__summary strong {
+    color: var(--c-text);
+    font-weight: 800;
+}
+
+.day-banner__prog {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    min-width: 160px;
+}
+
+.day-banner__prog-label {
+    color: var(--c-text-soft);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.day-banner__prog-val {
+    color: var(--c-blue-dark);
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   ESTADOS DA PÁGINA
+   ========================================================= */
+
+.missions-state {
+    padding: calc(var(--space-xl) * 2);
+    border: 1.5px dashed var(--c-border);
+    border-radius: var(--r-lg);
+    color: var(--c-text-soft);
+    text-align: center;
+}
+
+.missions-state > i {
+    display: block;
+    margin-bottom: var(--space-md);
+    font-size: 2rem;
+}
+
+.missions-state h2 {
+    margin: 0 0 var(--space-sm);
+    color: var(--c-text);
+    font-size: 1.1rem;
+}
+
+.missions-state p {
+    margin: 0;
+}
+
+.missions-state--error {
+    border-color: rgba(210, 53, 69, 0.35);
+}
+
+.missions-state--error > i {
+    color: #b42332;
+}
+
+.missions-state__retry {
+    min-height: 44px;
+    margin-top: var(--space-lg);
+    padding: 10px 20px;
+    border: 0;
+    border-radius: var(--r-md);
+    color: #ffffff;
+    background: var(--c-blue-dark);
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.missions-state__spinner {
+    animation: missions-spin 0.9s linear infinite;
+}
+
+@keyframes missions-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   CLASSES AUXILIARES
+   ========================================================= */
+
+.u-pages-aluno-missoes-001 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.u-pages-aluno-missoes-002 {
+    width: 200px;
+    margin-top: var(--space-sm);
+}
+
+.u-pages-aluno-missoes-004 {
+    color: #b07000;
+}
+
+.u-pages-aluno-missoes-005 {
+    margin-top: var(--space-xl);
+}
+
+.u-pages-aluno-missoes-006 {
+    padding: var(--space-xl);
+    border: 1.5px dashed var(--c-border);
+    border-radius: var(--r-lg);
+    color: var(--c-text-soft);
+    text-align: center;
+}
+
+.u-pages-aluno-missoes-007 {
+    display: block;
+    margin-bottom: var(--space-sm);
+    font-size: 2rem;
+    opacity: 0.4;
+}
+
+.u-pages-aluno-missoes-008 {
+    font-size: 0.88rem;
+}
+
+
+
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 700px) {
     .mission-card {
+        align-items: flex-start;
+        flex-wrap: wrap;
         padding: var(--space-md);
         gap: var(--space-md);
     }
+
     .mission-card__icon {
-        width: 44px;
-        height: 44px;
-        font-size: 1.1rem;
+        width: 48px;
+        height: 48px;
+        font-size: 1.2rem;
     }
+
+    .mission-card__body {
+        width: calc(100% - 64px);
+    }
+
+    .mission-card__action-wrap {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .mission-card__action,
+    .mission-card__status {
+        width: 100%;
+    }
+
     .day-banner {
-        flex-direction: column;
         align-items: flex-start;
+        flex-direction: column;
     }
+
     .day-banner__prog {
         align-items: flex-start;
         width: 100%;
     }
-}
 
-@media (min-width: 1921px) {
-    .mission-card {
-        padding: var(--space-xl);
-    }
-    .mission-card__name {
-        font-size: 1.25rem;
-    }
-    .mission-card__icon {
-        width: 68px;
-        height: 68px;
-        font-size: 1.8rem;
+    .u-pages-aluno-missoes-002 {
+        width: 100%;
     }
 }
 
-/* Classes geradas a partir dos antigos estilos inline. */
-.u-pages-aluno-missoes-001 { display:flex;align-items:center;gap:var(--space-md); }
-.u-pages-aluno-missoes-002 { width:200px;margin-top:var(--space-sm); }
-.u-pages-aluno-missoes-003 { width:20%; }
-.u-pages-aluno-missoes-004 { color:#b07000; }
-.u-pages-aluno-missoes-005 { margin-top:var(--space-xl); }
-.u-pages-aluno-missoes-006 { padding:var(--space-xl);text-align:center;border-radius:var(--r-lg);border:1.5px dashed var(--c-border);color:var(--c-text-soft); }
-.u-pages-aluno-missoes-007 { font-size:2rem;display:block;margin-bottom:var(--space-sm);opacity:0.4; }
-.u-pages-aluno-missoes-008 { font-size:0.88rem; }
+@media (prefers-reduced-motion: reduce) {
+    .mission-card,
+    .mission-card__action {
+        transition: none;
+    }
+
+    .mission-card:hover,
+    .mission-card__action--claim:hover {
+        transform: none;
+    }
+
+    .missions-state__spinner {
+        animation: none;
+    }
+}

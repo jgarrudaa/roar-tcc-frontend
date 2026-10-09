@@ -7,7 +7,7 @@
     <title>ROAR — Atividades</title>
     <meta name="description" content="Explore todas as atividades e categorias de aprendizado no ROAR.">
     <link rel="icon" href="../../public/assets/imagens/favicon-v2.png?v=4" type="image/png" sizes="32x32">
-    <script src="../../public/js/roar-theme.js"></script> 
+    <script src="../../public/js/roar-theme.js"></script>
     <link rel="stylesheet" href="../../public/css/global.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
     <link rel="stylesheet" href="../../public/css/pages/pages-aluno-atividades.css">
@@ -31,16 +31,27 @@
                 <a href="inicio.html" class="sidebar__link"><i class="fi fi-br-home"></i><span>Início</span></a>
                 <a href="atividades.html" class="sidebar__link active"><i
                         class="fi fi-br-puzzle-pieces"></i><span>Atividades</span></a>
+
+                <a href="missoes.html" class="sidebar__link">
+                    <i class="fi fi-br-list-check"></i>
+                    <span>Missões</span>
+                </a>
                 <a href="desempenho.html" class="sidebar__link"><i
                         class="fi fi-br-chart-simple"></i><span>Desempenho</span></a>
                 <a href="perfil.html" class="sidebar__link"><i class="fi fi-br-user"></i><span>Perfil</span></a>
-                <a href="conquistas.html" class="sidebar__link"><i class="fi fi-br-trophy"></i><span>Conquistas</span></a>
+                <a href="conquistas.html" class="sidebar__link"><i
+                        class="fi fi-br-trophy"></i><span>Conquistas</span></a>
                 <a href="configuracoes.html" class="sidebar__link"><i
                         class="fi fi-br-settings"></i><span>Configurações</span></a>
             </nav>
+
             <div class="sidebar__footer">
-                <a href="../auth/login-aluno.html" class="sidebar__link"><i
-                        class="fi fi-br-exit"></i><span>Sair</span></a>
+                <a href="../auth/login-aluno.html" id="nav-logout" class="sidebar__link" data-action="logout"
+                    data-no-transition>
+                    <i class="fi fi-br-exit" aria-hidden="true"></i>
+
+                    <span>Sair</span>
+                </a>
             </div>
         </aside>
 

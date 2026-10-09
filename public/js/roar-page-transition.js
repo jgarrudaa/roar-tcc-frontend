@@ -129,6 +129,19 @@
             return true;
         }
 
+        const isLogoutLink =
+            link.matches(
+                [
+                    '[data-action="logout"]',
+                    "#logoutButton",
+                    "#nav-logout",
+                ].join(", "),
+            );
+
+        if (isLogoutLink) {
+            return true;
+        }
+
         if (
             href.startsWith("#") ||
             href.startsWith("javascript:") ||
@@ -157,6 +170,7 @@
         ) {
             return true;
         }
+
 
         return false;
     }

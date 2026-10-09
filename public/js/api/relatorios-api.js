@@ -48,6 +48,18 @@ export const relatoriosApi = Object.freeze({
         );
     },
 
+    generateStudentAiAnalysis(studentId) {
+        const validStudentId = requirePositiveInteger(
+            studentId,
+            "studentId",
+        );
+
+        return apiClient.post(
+            `/relatorios/aluno/${validStudentId}/analise-ia`,
+            {},
+        );
+    },
+
     getModuleReport(moduleId) {
         const validModuleId = requirePositiveInteger(
             moduleId,

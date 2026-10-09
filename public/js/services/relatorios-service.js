@@ -295,7 +295,7 @@ function evaluateStudentAttention(student) {
     if (
         student.availableActivities > 0 &&
         student.attempted >=
-            student.availableActivities &&
+        student.availableActivities &&
         student.completionRate < 70
     ) {
         return Object.freeze({
@@ -333,11 +333,11 @@ function buildAttentionStudents(students) {
                 secondStudent,
             ) =>
                 secondStudent.attentionPriority -
-                    firstStudent.attentionPriority ||
+                firstStudent.attentionPriority ||
                 secondStudent.averageErrors -
-                    firstStudent.averageErrors ||
+                firstStudent.averageErrors ||
                 firstStudent.completionRate -
-                    secondStudent.completionRate,
+                secondStudent.completionRate,
         )
         .slice(0, 5);
 }
@@ -591,7 +591,7 @@ function normalizeDailyEvolution(day) {
             0,
             toSafeNumber(
                 day?.conclusoes ??
-                    day?.concluidas,
+                day?.concluidas,
             ),
         ),
 
@@ -1046,12 +1046,84 @@ function normalizeModuleReport(payload) {
         accuracy: calculatePercentage(
             totalCompletions,
             totalCompletions +
-                totalErrors,
+            totalErrors,
         ),
 
         activities,
     });
 }
+
+function normalizeStringList(value) {
+    if (!Array.isArray(value)) {
+        return [];
+    }
+
+    return value
+        .map((item) => normalizeText(item))
+        .filter(Boolean)
+        .slice(0, 4);
+}
+
+
+function normalizeAiAnalysis(payload) {
+    if (!payload?.disponivel) {
+        return Object.freeze({
+            available: false,
+
+            code: normalizeText(
+                payload?.codigo,
+                "AI_UNAVAILABLE",
+            ),
+
+            message: normalizeText(
+                payload?.mensagem,
+                (
+                    "O Assistente ROAR está "
+                    + "indisponível neste momento."
+                ),
+            ),
+
+            analysis: null,
+        });
+    }
+
+    const analysis = payload.analise ?? {};
+
+    return Object.freeze({
+        available: true,
+        code: null,
+        message: "",
+
+        analysis: Object.freeze({
+            summary: normalizeText(
+                analysis.resumo,
+                "Não foi possível gerar um resumo.",
+            ),
+
+            positivePoints: normalizeStringList(
+                analysis.pontos_positivos,
+            ),
+
+            difficulties: normalizeStringList(
+                analysis.dificuldades,
+            ),
+
+            suggestions: normalizeStringList(
+                analysis.sugestoes,
+            ),
+
+            warning: normalizeText(
+                analysis.aviso,
+                (
+                    "Esta análise é apenas um apoio "
+                    + "pedagógico e não substitui a "
+                    + "avaliação do professor."
+                ),
+            ),
+        }),
+    });
+}
+
 
 async function getTeacherDashboard(teacherId) {
     const validTeacherId =
@@ -1094,6 +1166,22 @@ async function getStudentReport(studentId) {
     return normalizeStudentReport(payload);
 }
 
+async function generateStudentAiAnalysis(studentId) {
+    const validStudentId =
+        requirePositiveInteger(
+            studentId,
+            "studentId",
+        );
+
+    const payload =
+        await relatoriosApi
+            .generateStudentAiAnalysis(
+                validStudentId,
+            );
+
+    return normalizeAiAnalysis(payload);
+}
+
 async function getModuleReport(moduleId) {
     const validModuleId =
         requirePositiveInteger(
@@ -1112,5 +1200,6 @@ async function getModuleReport(moduleId) {
 export const relatoriosService = Object.freeze({
     getTeacherDashboard,
     getStudentReport,
+    generateStudentAiAnalysis,
     getModuleReport,
 });
