@@ -40,6 +40,7 @@ input {
 }
 
 .auth-card {
+    position: relative;
     width: min(90vw, 1200px);
     height: min(72vh, 560px);
     min-height: 500px;
