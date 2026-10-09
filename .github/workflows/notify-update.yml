@@ -1,0 +1,82 @@
+```yaml
+name: Avisar sobre atualização do projeto
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Criar notificação na minha cópia
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PERSONAL_REPO_TOKEN }}
+
+          script: |
+            const personalOwner = 'jgarrudaa';
+            const personalRepo = 'roar-vercel';
+
+            const commitSha = context.sha;
+            const commitUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/commit/${commitSha}`;
+
+            const commit = await github.rest.repos.getCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: commitSha
+            });
+
+            const commitMessage = commit.data.commit.message.split('\n')[0];
+            const author = commit.data.author?.login || commit.data.commit.author?.name || 'Desconhecido';
+
+            const title = `🔄 Nova atualização disponível — ${commitSha.substring(0, 7)}`;
+
+            const body = `
+## 🔄 Nova atualização disponível
+
+O projeto colaborativo recebeu uma nova atualização na branch \`main\`.
+
+### Commit
+
+**Mensagem:**
+> ${commitMessage}
+
+**Autor:** ${author}
+
+**Commit:** [${commitSha.substring(0, 7)}](${commitUrl})
+
+---
+
+## 📥 Para atualizar minha cópia
+
+Execute no terminal:
+
+\`\`\`bash
+git fetch upstream
+git merge upstream/main
+git push origin main
+\`\`\`
+
+Depois do \`push\`, a Vercel fará o deploy da nova versão automaticamente.
+
+> ⚠️ Esta Issue é apenas uma notificação. A sua cópia **não foi atualizada automaticamente**.
+
+### Repositórios
+
+**Projeto colaborativo:**  
+https://github.com/${context.repo.owner}/${context.repo.repo}
+
+**Minha cópia:**  
+https://github.com/${personalOwner}/${personalRepo}
+`;
+
+            await github.rest.issues.create({
+              owner: personalOwner,
+              repo: personalRepo,
+              title: title,
+              body: body
+            });
+```
