@@ -82,16 +82,19 @@
 
         if (isVisible && sources.peeking) {
             elements.mascot.src = sources.peeking;
+            elements.mascot.dataset.dinoState = "peeking";
             return;
         }
 
         if (hasValue && sources.hiding) {
             elements.mascot.src = sources.hiding;
+            elements.mascot.dataset.dinoState = "hiding";
             return;
         }
 
         if (sources.neutral) {
             elements.mascot.src = sources.neutral;
+            elements.mascot.dataset.dinoState = "neutral";
         }
     }
 

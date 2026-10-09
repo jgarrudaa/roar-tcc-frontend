@@ -4,4 +4,100 @@
 
 .auth-page--student .auth-visual {
     background-image: url("../../assets/imagens/bg1.png");
+    overflow: hidden; /* Mantém o mascote 100% contido dentro do quadrante azul */
+}
+
+/* Palco de posicionamento do mascote na área do aluno */
+.auth-page--student .auth-mascot-stage {
+    position: absolute;
+    right: 20px;
+    bottom: 0;
+    width: 220px;
+    height: 190px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* 1. Mascote neutro (dinooriginal.png)
+   A imagem original possui margem/respiro transparente na parte inferior dos pés (~25px).
+   Com bottom: -32px e height: 180px, o personagem visível tem ~140px de altura e pousa na base. */
+.auth-page--student .auth-dino,
+.auth-page--student .auth-dino[data-dino-state="neutral"] {
+    position: absolute;
+    right: 12px;
+    left: auto;
+    bottom: 0;
+    width: auto;
+    height: 180px;
+    max-width: 220px;
+    object-fit: contain;
+    object-position: center bottom;
+    transform: none;
+    transition: opacity 0.15s ease;
+}
+
+/* 2. Mascote cobrindo os olhos / digitando senha (dinosenha.png)
+   Esta imagem é recortada rente aos pés (0px de respiro inferior) e ao topo da cabeça.
+   - height: 144px garante proporção visual IDÊNTICA ao mascote neutro (não amplia!).
+   - bottom: 0 alinha os pés perfeitamente sobre a linha inferior do card.
+   - right: 18px garante respiro interno sem invadir o formulário nem sair do quadrante. */
+.auth-page--student .auth-dino[data-dino-state="hiding"],
+.auth-page--student .auth-dino[src*="dinosenha.png"] {
+    position: absolute;
+    right: 18px;
+    left: auto;
+    bottom: 0;
+    width: auto;
+    height: 144px;
+    max-width: 190px;
+    object-fit: contain;
+    object-position: center bottom;
+    transform: none;
+}
+
+/* 3. Mascote espiando ao revelar senha (dino espiando.png)
+   Possui o mesmo recorte rente aos pés e topo que a imagem dinosenha. */
+.auth-page--student .auth-dino[data-dino-state="peeking"],
+.auth-page--student .auth-dino[src*="dino%20espiando.png"],
+.auth-page--student .auth-dino[src*="dino espiando.png"] {
+    position: absolute;
+    right: 18px;
+    left: auto;
+    bottom: 0;
+    width: auto;
+    height: 144px;
+    max-width: 190px;
+    object-fit: contain;
+    object-position: center bottom;
+    transform: none;
+}
+
+/* Adaptação para telas menores */
+@media (max-width: 520px) {
+    .auth-page--student .auth-mascot-stage {
+        width: 180px;
+        height: 160px;
+        right: 12px;
+        bottom: 0;
+    }
+
+    .auth-page--student .auth-dino,
+    .auth-page--student .auth-dino[data-dino-state="neutral"] {
+        height: 160px;
+        bottom: -28px;
+        right: 8px;
+    }
+
+    .auth-page--student .auth-dino[data-dino-state="hiding"],
+    .auth-page--student .auth-dino[src*="dinosenha.png"],
+    .auth-page--student .auth-dino[data-dino-state="peeking"],
+    .auth-page--student .auth-dino[src*="dino%20espiando.png"],
+    .auth-page--student .auth-dino[src*="dino espiando.png"] {
+        height: 128px;
+        bottom: 0;
+        right: 12px;
+    }
 }
