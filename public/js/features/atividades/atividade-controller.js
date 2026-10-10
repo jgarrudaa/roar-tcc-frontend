@@ -10,6 +10,7 @@ import { createCompleteSentenceActivity,} from "./completar-frase.js";
 import { createOrderSentenceActivity,} from "./ordenar-frase.js?v=1";
 import { createWritingActivity,} from "./escrita.js";
 import { createWordBankActivity,} from "./banco-palavras.js";
+import { createShadowActivity } from "./sombra.js";
 
 
 
@@ -24,6 +25,7 @@ const ACTIVITY_FACTORIES = Object.freeze({
     orderSentence:createOrderSentenceActivity,
     writing:createWritingActivity,
     wordBank:createWordBankActivity,
+    shadow: createShadowActivity,
 });
 
 function navigateTo(url) {
