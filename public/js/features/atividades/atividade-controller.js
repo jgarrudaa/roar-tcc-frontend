@@ -14,6 +14,7 @@ import { createShadowActivity } from "./sombra.js";
 
 
 
+
 const ACTIVITY_FACTORIES = Object.freeze({
    recognize: createRecognizeActivity,
     associate: createAssociateActivity,
