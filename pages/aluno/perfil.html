@@ -60,6 +60,12 @@
                     <span>Desempenho</span>
                 </a>
 
+                <a href="loja.html" class="sidebar__link" id="nav-loja">
+                    <i class="fi fi-br-shop" aria-hidden="true"></i>
+
+                    <span>Loja de Dinos</span>
+                </a>
+
                 <a href="perfil.html" class="sidebar__link active" aria-current="page">
                     <i class="fi fi-br-user" aria-hidden="true"></i>
 
@@ -111,10 +117,13 @@
 
             <main class="page-body fade-in">
                 <section class="profile-hero" aria-labelledby="studentName">
-                    <div class="profile-hero__avatar-wrap">
+                    <div class="profile-hero__avatar-wrap" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                         <div class="avatar avatar--xl u-pages-aluno-perfil-002" id="profileAvatar" aria-hidden="true">
                             A
                         </div>
+                        <a href="loja.html" class="btn btn--secondary btn--sm" style="font-size: 0.78rem; padding: 4px 10px; border-radius: var(--r-full);">
+                            <i class="fi fi-br-shop"></i> Trocar Mascote
+                        </a>
                     </div>
 
                     <div class="profile-hero__info">
@@ -327,6 +336,7 @@
     <script src="../../public/js/roar-page-transition.js"></script>
 
     <script type="module" src="../../public/js/roar-sidebar.js"></script>
+    <script src="../../public/js/roar-avatar.js"></script>
 
     <script type="module" src="../../public/js/pages/aluno/pages-aluno-perfil-1.js"></script>
 </body>
