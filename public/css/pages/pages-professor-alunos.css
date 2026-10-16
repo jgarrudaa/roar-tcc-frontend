@@ -510,6 +510,13 @@
     gap: var(--space-sm);
 }
 
+@media (max-width: 1024px) {
+    .students-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: var(--space-md);
+    }
+}
+
 @media (max-width: 640px) {
     .modal-stats {
         grid-template-columns: repeat(2, 1fr);

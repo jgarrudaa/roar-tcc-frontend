@@ -90,6 +90,13 @@
     gap: var(--space-md);
 }
 
+@media (max-width: 1024px) {
+    .modules-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; }
+    .module-card { min-height: 240px; padding: 20px 14px 16px; }
+    .module-card__icon { width: 96px; height: 96px; font-size: 38px; }
+    .module-card strong { font-size: 1rem; }
+}
+
 @media (max-width: 720px) {
     .modules-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
     .module-card { min-height: 220px; padding: 18px 12px 14px; }

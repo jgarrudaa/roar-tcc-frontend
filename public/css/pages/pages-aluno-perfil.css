@@ -151,9 +151,13 @@
         }
         .conq-mini__name { font-size: 0.72rem; font-weight: 600; color: var(--c-text); line-height: 1.2; }
 
+        @media (max-width: 1024px) {
+            .info-grid { grid-template-columns: 1fr; gap: var(--space-md); }
+            .u-pages-aluno-perfil-007 { width: 100% !important; }
+        }
+
         @media (max-width: 768px) {
             .profile-hero { flex-direction: column; align-items: flex-start; }
-            .info-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 480px) {

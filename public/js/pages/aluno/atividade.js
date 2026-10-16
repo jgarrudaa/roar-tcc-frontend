@@ -89,7 +89,6 @@ function validateElements() {
     const requiredElements = [
         "title",
         "instruction",
-        "levelBadge",
         "stage",
         "message",
         "nextButton",

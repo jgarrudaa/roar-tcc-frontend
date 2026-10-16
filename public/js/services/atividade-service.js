@@ -36,6 +36,11 @@ const INTERACTION_TYPES = Object.freeze({
     associação: "associate",
     draganddrop: "associate",
 
+    sombra: "shadow",
+    shadow: "shadow",
+    quebracabeca: "shadow",
+    "quebracabeça": "shadow",
+
     multiplaescolha: "validate",
     múltiplaescolha: "validate",
 
