@@ -6,16 +6,17 @@
       "titleEn": "Human Body",
       "status": "active",
       "items": [
-        { "id": "head", "pt": "cabeça", "en": "HEAD", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/Cabeça.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/Cabeça.png" },
-        { "id": "arm", "pt": "braço", "en": "ARM", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/Braço.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/Braço.png" },
-        { "id": "belly", "pt": "barriga", "en": "BELLY", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/Barriga.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/Barriga.png" },
-        { "id": "leg", "pt": "perna", "en": "LEG", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/Perna.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/Perna.png" },
-        { "id": "foot", "pt": "pé", "en": "FOOT", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/Pé.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/Pé.png" }
+        { "id": "head", "pt": "cabeça", "en": "HEAD", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/head.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/head.png" },
+        { "id": "arm", "pt": "braço", "en": "ARM", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/arm.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/arm.png" },
+        { "id": "belly", "pt": "barriga", "en": "BELLY", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/belly.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/belly.png" },
+        { "id": "leg", "pt": "perna", "en": "LEG", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/leg.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/leg.png" },
+        { "id": "foot", "pt": "pé", "en": "FOOT", "realImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/foot.png", "vectorImage": "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/foot.png" }
       ],
       "activities": [
         { "id": "corpo-humano-1", "stage": 1, "type": "recognize", "status": "active" },
         { "id": "corpo-humano-2", "stage": 2, "type": "associate", "status": "active" },
-        { "id": "corpo-humano-3", "stage": 3, "type": "validate", "status": "active" }
+        { "id": "corpo-humano-3", "stage": 3, "type": "validate", "status": "active" },
+        { "id": "corpo-humano-4", "stage": 4, "type": "shadowPuzzle", "status": "active" }
       ]
     },
     {
