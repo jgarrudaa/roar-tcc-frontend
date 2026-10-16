@@ -16,6 +16,19 @@ function initSidebar() {
     const mobileButton =
         document.getElementById("mobileMenuBtn");
 
+
+    const responsiveMenu = window.matchMedia("(max-width: 1024px)");
+
+    function setMenuOpen(isOpen) {
+        if (!sidebar || !backdrop) return;
+        sidebar.classList.toggle("open", isOpen);
+        backdrop.classList.toggle("open", isOpen);
+        document.body.classList.toggle("sidebar-menu-open", isOpen);
+        mobileButton?.setAttribute("aria-expanded", String(isOpen));
+        toggle?.setAttribute("aria-expanded", String(isOpen));
+        toggle?.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
+    }
+
     const savedCollapsed =
         localStorage.getItem("sidebarCollapsed") === "true";
 
@@ -40,6 +53,11 @@ function initSidebar() {
 
     if (toggle && sidebar) {
         toggle.addEventListener("click", () => {
+            if (responsiveMenu.matches) {
+                setMenuOpen(!sidebar.classList.contains("open"));
+                return;
+            }
+
             const isNowCollapsed =
                 sidebar.classList.toggle("sidebar--collapsed");
 
@@ -55,29 +73,30 @@ function initSidebar() {
         });
     }
 
-    if (
-        mobileButton &&
-        sidebar &&
-        backdrop
-    ) {
-        mobileButton.addEventListener(
-            "click",
-            () => {
-                sidebar.classList.add("open");
-                backdrop.classList.add("open");
-            },
-        );
+    if (mobileButton && sidebar && backdrop) {
+        mobileButton.addEventListener("click", () => {
+            setMenuOpen(!sidebar.classList.contains("open"));
+        });
     }
 
     if (backdrop && sidebar) {
-        backdrop.addEventListener(
-            "click",
-            () => {
-                sidebar.classList.remove("open");
-                backdrop.classList.remove("open");
-            },
-        );
+        backdrop.addEventListener("click", () => setMenuOpen(false));
     }
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && sidebar?.classList.contains("open")) {
+            setMenuOpen(false);
+            mobileButton?.focus();
+        }
+    });
+
+    responsiveMenu.addEventListener("change", () => setMenuOpen(false));
+
+    sidebar?.querySelectorAll(".sidebar__link").forEach((link) => {
+        link.addEventListener("click", () => {
+            if (responsiveMenu.matches) setMenuOpen(false);
+        });
+    });
 
     function updateActiveSidebarLink() {
         const currentFile = window.location.pathname.split("/").pop().toLowerCase();
