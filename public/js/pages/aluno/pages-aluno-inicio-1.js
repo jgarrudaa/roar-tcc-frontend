@@ -110,14 +110,19 @@ function renderProfile(profile, modulesCount) {
     elements.userName.textContent =
         profile.name;
 
-    elements.navAvatar.textContent =
-        profile.initial;
+    if (window.ROAR_SYNC_AVATAR) {
+        window.ROAR_SYNC_AVATAR();
+    } else {
+        elements.navAvatar.textContent =
+            profile.initial;
+    }
 
     elements.navAvatar.title =
         `Abrir perfil de ${profile.name}`;
 
+    const currentXp = window.ROARAvatar ? window.ROARAvatar.getXp() : profile.xpTotal;
     elements.xpTotal.textContent =
-        profile.xpTotal.toLocaleString("pt-BR");
+        currentXp.toLocaleString("pt-BR");
 
     const streak = profile.currentStreak;
 
