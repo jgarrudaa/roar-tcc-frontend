@@ -1,7 +1,6 @@
 import { alunosApi } from "../api/alunos-api.js";
 import { APP_CONFIG } from "../config/app-config.js";
 import {
-    isValidCpf,
     isValidEmail,
     required,
 } from "../utils/validators.js";
@@ -45,11 +44,6 @@ function normalizeText(value) {
     return String(value ?? "").trim();
 }
 
-function normalizeCpf(cpf) {
-    return String(cpf ?? "")
-        .replace(/\D/g, "")
-        .slice(0, 11);
-}
 
 
 function normalizePin(pin) {
@@ -119,12 +113,6 @@ function validateStudentData(data) {
         );
     }
 
-    if (!isValidCpf(data.cpf)) {
-        throw new Error(
-            "Informe um CPF válido para o aluno.",
-        );
-    }
-
     if (!isValidEmail(data.email)) {
         throw new Error(
             "Informe um e-mail válido para o aluno.",
@@ -154,7 +142,6 @@ function mapStudentCreationPayload(data, pin) {
         professor_id: Number(data.teacherId),
         nome: normalizeText(data.name),
         email: normalizeEmail(data.email),
-        cpf_aluno: normalizeText(data.cpf),
         ano_escolar: normalizeText(data.schoolYear),
         pergunta_a: data.communication,
         pergunta_b: data.reading,
@@ -216,15 +203,9 @@ function normalizeStudent(student) {
         teacherId: Number(student?.professor_id),
         name: student?.nome ?? "Aluno sem nome",
         email: student?.email ?? "",
-        cpf: student?.cpf_aluno ?? "",
-        schoolYear:
-            student?.ano_escolar ?? "Não informado",
-        mode:
-            student?.modo_aprendizagem ??
-            "Não informado",
-        level: getLevelFromMode(
-            student?.modo_aprendizagem,
-        ),
+        schoolYear:student?.ano_escolar ?? "Não informado",
+        mode:student?.modo_aprendizagem ??"Não informado",
+        level: getLevelFromMode(student?.modo_aprendizagem,),
         xp: Number(student?.xp_total ?? 0),
         createdAt: student?.criado_em ?? null,
     };
@@ -234,11 +215,8 @@ async function create(data) {
     const normalizedData = {
         teacherId: Number(data?.teacherId),
         name: normalizeText(data?.name),
-        cpf: normalizeText(data?.cpf),
         email: normalizeEmail(data?.email),
-        schoolYear: normalizeText(
-            data?.schoolYear,
-        ),
+        schoolYear: normalizeText(data?.schoolYear,),
         communication: data?.communication,
         reading: data?.reading,
         audioSupport: Boolean(
@@ -320,7 +298,6 @@ async function update(studentId, data) {
     const normalizedData = {
         nome: normalizeText(data?.name),
         email: normalizeEmail(data?.email),
-        cpf_aluno: normalizeCpf(data?.cpf),
         ano_escolar: normalizeText(
             data?.schoolYear,
         ),
@@ -336,12 +313,6 @@ async function update(studentId, data) {
     if (!isValidEmail(normalizedData.email)) {
         throw new Error(
             "Informe um e-mail válido.",
-        );
-    }
-
-    if (!isValidCpf(normalizedData.cpf_aluno)) {
-        throw new Error(
-            "Informe um CPF válido.",
         );
     }
 
