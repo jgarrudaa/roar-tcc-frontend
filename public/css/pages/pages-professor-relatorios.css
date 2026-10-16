@@ -852,7 +852,12 @@
     gap: var(--space-sm);
 }
 
-/* Seletor mobile */
+/* Seletor mobile/tablet */
+.mobile-student-selector {
+    display: none;
+    margin-bottom: var(--space-lg);
+}
+
 .mobile-student-sel {
     display: none;
     padding: 10px var(--space-md);
@@ -868,6 +873,10 @@
 }
 
 @media (max-width: 1100px) {
+    .mobile-student-selector {
+        display: block;
+    }
+
     .mobile-student-sel {
         display: block;
     }

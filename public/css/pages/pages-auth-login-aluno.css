@@ -22,17 +22,17 @@
 }
 
 /* 1. Mascote neutro (dinooriginal.png)
-   A imagem original possui margem/respiro transparente na parte inferior dos pés (~25px).
-   Com bottom: -32px e height: 180px, o personagem visível tem ~140px de altura e pousa na base. */
+   Mesma escala visual e posicionamento que o mascote cobrindo os olhos (144px).
+   Alinhado à base (bottom: 0) e com right: 18px idêntico para transição suave sem saltos. */
 .auth-page--student .auth-dino,
 .auth-page--student .auth-dino[data-dino-state="neutral"] {
     position: absolute;
-    right: 12px;
+    right: 18px;
     left: auto;
     bottom: 0;
     width: auto;
-    height: 180px;
-    max-width: 220px;
+    height: 144px;
+    max-width: 190px;
     object-fit: contain;
     object-position: center bottom;
     transform: none;
@@ -40,10 +40,9 @@
 }
 
 /* 2. Mascote cobrindo os olhos / digitando senha (dinosenha.png)
-   Esta imagem é recortada rente aos pés (0px de respiro inferior) e ao topo da cabeça.
-   - height: 144px garante proporção visual IDÊNTICA ao mascote neutro (não amplia!).
-   - bottom: 0 alinha os pés perfeitamente sobre a linha inferior do card.
-   - right: 18px garante respiro interno sem invadir o formulário nem sair do quadrante. */
+   - height: 144px garante proporção visual idêntica ao mascote neutro.
+   - bottom: 0 alinha os pés perfeitamente sobre a base do card.
+   - right: 18px mantém o enquadramento estável no quadrante. */
 .auth-page--student .auth-dino[data-dino-state="hiding"],
 .auth-page--student .auth-dino[src*="dinosenha.png"] {
     position: absolute;
@@ -59,7 +58,7 @@
 }
 
 /* 3. Mascote espiando ao revelar senha (dino espiando.png)
-   Possui o mesmo recorte rente aos pés e topo que a imagem dinosenha. */
+   Mesma posição e escala que os estados neutro e hiding para manter consistência visual. */
 .auth-page--student .auth-dino[data-dino-state="peeking"],
 .auth-page--student .auth-dino[src*="dino%20espiando.png"],
 .auth-page--student .auth-dino[src*="dino espiando.png"] {
@@ -85,12 +84,7 @@
     }
 
     .auth-page--student .auth-dino,
-    .auth-page--student .auth-dino[data-dino-state="neutral"] {
-        height: 160px;
-        bottom: -28px;
-        right: 8px;
-    }
-
+    .auth-page--student .auth-dino[data-dino-state="neutral"],
     .auth-page--student .auth-dino[data-dino-state="hiding"],
     .auth-page--student .auth-dino[src*="dinosenha.png"],
     .auth-page--student .auth-dino[data-dino-state="peeking"],

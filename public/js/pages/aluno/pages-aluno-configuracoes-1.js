@@ -53,7 +53,11 @@ function render() {
     elements.name.readOnly = true;
     elements.language.value = "Português";
     elements.language.disabled = true;
-    elements.avatar.textContent = name.charAt(0).toLocaleUpperCase("pt-BR") || "A";
+    if (window.ROAR_SYNC_AVATAR) {
+        window.ROAR_SYNC_AVATAR();
+    } else {
+        elements.avatar.textContent = name.charAt(0).toLocaleUpperCase("pt-BR") || "A";
+    }
 }
 
 function readForm() {
@@ -84,7 +88,11 @@ function registerEvents() {
 function initialize() {
     preferences = normalize(storage.getPreferences());
     render(); apply(preferences);
-    document.getElementById("btnFoto")?.setAttribute("disabled", "");
+    const btnFoto = document.getElementById("btnFoto");
+    if (btnFoto) {
+        btnFoto.removeAttribute("disabled");
+        btnFoto.addEventListener("click", () => window.location.href = "loja.html");
+    }
     document.getElementById("btnDados")?.setAttribute("disabled", "");
     document.querySelectorAll('button[aria-label="Alterar e-mail"], button[aria-label="Alterar senha"]').forEach((button) => button.setAttribute("disabled", ""));
     registerEvents();

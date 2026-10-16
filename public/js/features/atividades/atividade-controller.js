@@ -11,6 +11,8 @@ import { createOrderSentenceActivity,} from "./ordenar-frase.js?v=1";
 import { createWritingActivity,} from "./escrita.js";
 import { createWordBankActivity,} from "./banco-palavras.js";
 import { createShadowPuzzleActivity } from "./quebra-cabeca-sombra.js";
+import { createShadowActivity } from "./sombra.js";
+
 
 
 
@@ -26,6 +28,7 @@ const ACTIVITY_FACTORIES = Object.freeze({
     writing:createWritingActivity,
     wordBank:createWordBankActivity,
     shadowPuzzle: createShadowPuzzleActivity,
+    shadow: createShadowActivity,
 });
 
 function navigateTo(url) {
@@ -144,8 +147,10 @@ export async function createActivityController({
     elements.title.textContent =
         module.title;
 
-    elements.levelBadge.textContent =
-        student.supportMode;
+    if (elements.levelBadge) {
+        elements.levelBadge.textContent =
+            student.supportMode;
+    }
 
     elements.setInstruction(
         activity.instruction,

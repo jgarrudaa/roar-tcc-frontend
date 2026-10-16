@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROAR — Loja de Dinos</title>
+    <meta name="description" content="Loja de avatares de dinossauro do sistema ROAR. Compre e equipe novos visuais usando seus pontos de XP.">
+    <script src="../../public/js/roar-theme.js"></script>
+    <link rel="icon" href="../../public/assets/imagens/favicon-v2.png?v=4" type="image/png" sizes="32x32">
+    <link rel="stylesheet" href="../../public/css/global.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
+    <link rel="stylesheet" href="../../public/css/pages/pages-aluno-loja.css">
+</head>
+
+<body data-auth-role="student">
+    <div class="app-shell">
+
+        <!-- Overlay backdrop para mobile -->
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+        <!-- ============================================================
+             SIDEBAR
+             ============================================================ -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar__logo-wrap">
+                <img src="../../public/assets/imagens/logo.svg" alt="Logo ROAR" class="sidebar__logo"
+                    onclick="window.location.href='inicio.html'">
+                <button class="sidebar__toggle" id="sidebarToggle" title="Minimizar menu" aria-label="Minimizar menu">
+                    <i class="fi fi-br-menu-burger"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar__nav">
+                <a href="inicio.html" class="sidebar__link" id="nav-inicio">
+                    <i class="fi fi-br-home"></i>
+                    <span>Início</span>
+                </a>
+                <a href="atividades.html" class="sidebar__link" id="nav-atividades">
+                    <i class="fi fi-br-puzzle-pieces"></i>
+                    <span>Atividades</span>
+                </a>
+                <a href="missoes.html" class="sidebar__link">
+                    <i class="fi fi-br-list-check"></i>
+                    <span>Missões</span>
+                </a>
+                <a href="desempenho.html" class="sidebar__link" id="nav-desempenho">
+                    <i class="fi fi-br-chart-simple"></i>
+                    <span>Desempenho</span>
+                </a>
+                <a href="loja.html" class="sidebar__link active" id="nav-loja">
+                    <i class="fi fi-br-shop"></i>
+                    <span>Loja de Dinos</span>
+                </a>
+                <a href="perfil.html" class="sidebar__link" id="nav-perfil">
+                    <i class="fi fi-br-user"></i>
+                    <span>Perfil</span>
+                </a>
+                <a href="conquistas.html" class="sidebar__link">
+                    <i class="fi fi-br-trophy"></i>
+                    <span>Conquistas</span>
+                </a>
+                <a href="configuracoes.html" class="sidebar__link" id="nav-config">
+                    <i class="fi fi-br-settings"></i>
+                    <span>Configurações</span>
+                </a>
+            </nav>
+
+            <div class="sidebar__footer">
+                <a href="../auth/login-aluno.html" id="nav-logout" class="sidebar__link" data-action="logout"
+                    data-no-transition>
+                    <i class="fi fi-br-exit" aria-hidden="true"></i>
+                    <span>Sair</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- ============================================================
+             CONTEÚDO PRINCIPAL
+             ============================================================ -->
+        <div class="main-content">
+
+            <!-- Navbar -->
+            <header class="navbar">
+                <div class="u-pages-aluno-inicio-001">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menu">
+                        <i class="fi fi-br-menu-burger"></i>
+                    </button>
+                    <div class="navbar__page-title">
+                        <h1>Loja de Dinos</h1>
+                        <p>Adote e equipe novos visuais para seu mascote usando XP!</p>
+                    </div>
+                </div>
+                <div class="navbar__right">
+                    <button class="navbar__icon-btn" data-tooltip="Notificações" id="btnNotif"
+                        aria-label="Notificações">
+                        <i class="fi fi-br-bell"></i>
+                    </button>
+                    <a href="perfil.html" class="navbar__avatar" id="navAvatar" title="Perfil"
+                        aria-label="Abrir perfil">L</a>
+                </div>
+            </header>
+
+            <!-- Page Body -->
+            <div class="page-body fade-in">
+
+                <!-- Hero Section: Saldo de XP + Mascote Atual -->
+                <section class="store-hero" aria-label="Apresentação da Loja">
+                    <div class="store-hero__left">
+                        <div class="store-hero__badge">
+                            <i class="fi fi-br-sparkles"></i> Coleção de Dinos
+                        </div>
+                        <h2 class="store-hero__title">Vista o Lex com o seu estilo!</h2>
+                        <p class="store-hero__subtitle">
+                            Complete atividades e missões de inglês para acumular XP e desbloquear novos visuais para seu mascote.
+                        </p>
+
+                        <div class="store-hero__stats">
+                            <!-- Card de Saldo de XP -->
+                            <div class="store-xp-card" title="Seu saldo atual de XP conquistado">
+                                <div class="store-xp-card__icon" aria-hidden="true">
+                                    <i class="fi fi-br-star"></i>
+                                </div>
+                                <div>
+                                    <div class="store-xp-card__label">Seu Saldo Atual</div>
+                                    <div class="store-xp-card__val">
+                                        <span id="storeUserXp">1.240</span> <span>XP</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card de Mascote Ativo -->
+                            <div class="store-active-mascot-card" id="storeActiveCard" title="Mascote atualmente equipado">
+                                <div class="store-active-mascot-card__img-wrap">
+                                    <img src="../../public/assets/imagens/dinooriginal.png" alt="Mascote Ativo"
+                                        id="storeActiveMascotImg" class="store-active-mascot-card__img">
+                                </div>
+                                <div class="store-active-mascot-card__info">
+                                    <span class="store-active-mascot-card__tag">
+                                        <i class="fi fi-br-check"></i> Mascote em Uso
+                                    </span>
+                                    <strong class="store-active-mascot-card__name" id="storeActiveMascotName">Lex Clássico</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lado Direito: Ilustração do Mascote em Destaque -->
+                    <div class="store-hero__right" aria-hidden="true">
+                        <img src="../../public/assets/imagens/dinooriginal.png" alt="" id="storeHeroPreviewImg"
+                            class="store-hero__mascot-img">
+                    </div>
+                </section>
+
+                <!-- Barra de Ferramentas / Categorias / Filtros -->
+                <div class="store-toolbar">
+                    <div class="store-tabs" role="tablist" aria-label="Filtro de raridade dos dinos">
+                        <button class="store-tab-btn active" data-filter="all" type="button" role="tab" aria-selected="true">
+                            <i class="fi fi-br-apps"></i> Todos <span class="badge-count" id="countAll">13</span>
+                        </button>
+                        <button class="store-tab-btn" data-filter="comum" type="button" role="tab" aria-selected="false">
+                            <i class="fi fi-br-star"></i> Comuns <span class="badge-count" id="countComum">4</span>
+                        </button>
+                        <button class="store-tab-btn" data-filter="raro" type="button" role="tab" aria-selected="false">
+                            <i class="fi fi-br-diamond"></i> Raros <span class="badge-count" id="countRaro">3</span>
+                        </button>
+                        <button class="store-tab-btn" data-filter="lendario" type="button" role="tab" aria-selected="false">
+                            <i class="fi fi-br-crown"></i> Lendários <span class="badge-count" id="countLendario">6</span>
+                        </button>
+                        <button class="store-tab-btn" data-filter="owned" type="button" role="tab" aria-selected="false">
+                            <i class="fi fi-br-backpack"></i> Meus Dinos <span class="badge-count" id="countOwned">1</span>
+                        </button>
+                    </div>
+
+                    <!-- Botão amigável de prática/treino para ganhar XP de teste -->
+                    <button class="store-quick-xp-btn" id="btnTreinoXp" title="Complete um exercício rápido de treino e ganhe +200 XP!">
+                        <i class="fi fi-br-bolt"></i> +200 XP Treino
+                    </button>
+                </div>
+
+                <!-- Grid de Dinos -->
+                <div class="dino-grid" id="dinoGrid" aria-live="polite">
+                    <!-- Cards populados dinamicamente via pages-aluno-loja.js -->
+                </div>
+
+            </div><!-- /page-body -->
+        </div><!-- /main-content -->
+    </div><!-- /app-shell -->
+
+    <!-- ============================================================
+         MODAL DE CONFIRMAÇÃO DE ADOÇÃO / COMPRA
+         ============================================================ -->
+    <div class="store-modal-backdrop" id="storeModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="store-modal">
+            <button class="store-modal__close" id="modalCloseBtn" aria-label="Fechar janela">
+                <i class="fi fi-br-cross"></i>
+            </button>
+
+            <div class="store-modal__img-wrap">
+                <img src="../../public/assets/imagens/dinooriginal.png" alt="Dino" id="modalDinoImg" class="store-modal__img">
+            </div>
+
+            <h3 class="store-modal__title" id="modalTitle">Desbloquear Mascote?</h3>
+            <p class="store-modal__subtitle" id="modalSubtitle">
+                Você está prestes a adotar o <strong id="modalDinoName">Dino Astronauta</strong> usando seus pontos de XP!
+            </p>
+
+            <!-- Tabela comparativa de XP -->
+            <div class="store-modal__xp-table">
+                <div class="store-modal__xp-row">
+                    <span>Seu saldo atual:</span>
+                    <strong id="modalXpCurrent">1.240 XP</strong>
+                </div>
+                <div class="store-modal__xp-row store-modal__xp-row--cost">
+                    <span>Preço do dino:</span>
+                    <strong id="modalXpCost">- 450 XP</strong>
+                </div>
+                <div class="store-modal__xp-row store-modal__xp-row--total">
+                    <span>Saldo restante:</span>
+                    <strong id="modalXpRemaining">790 XP</strong>
+                </div>
+            </div>
+
+            <div class="store-modal__actions">
+                <button class="btn btn--secondary" id="modalCancelBtn" type="button">
+                    Cancelar
+                </button>
+                <button class="btn btn--primary" id="modalConfirmBtn" type="button">
+                    <i class="fi fi-br-shopping-cart"></i> Adotar e Equipar!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Canvas de Confetes / Comemoração -->
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts da Plataforma -->
+    <script type="module" src="../../public/js/pages/auth/route-guard.js"></script>
+    <script src="../../public/js/roar-storage.js"></script>
+    <script src="../../public/js/roar-page-transition.js"></script>
+    <script type="module" src="../../public/js/roar-sidebar.js"></script>
+    <script src="../../public/js/roar-avatar.js"></script>
+    <script type="module" src="../../public/js/pages/aluno/pages-aluno-loja.js"></script>
+</body>
+
+</html>

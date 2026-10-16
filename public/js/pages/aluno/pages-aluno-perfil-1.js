@@ -91,14 +91,18 @@ function setLoading() {
 
 
 function renderProfile(profile) {
-    elements.navbarAvatar.textContent =
-        profile.initials;
+    if (window.ROAR_SYNC_AVATAR) {
+        window.ROAR_SYNC_AVATAR();
+    } else {
+        elements.navbarAvatar.textContent =
+            profile.initials;
+
+        elements.profileAvatar.textContent =
+            profile.initials;
+    }
 
     elements.navbarAvatar.title =
         profile.name;
-
-    elements.profileAvatar.textContent =
-        profile.initials;
 
     elements.studentName.textContent =
         profile.name;
@@ -112,8 +116,9 @@ function renderProfile(profile) {
     elements.studentLearningMode.textContent =
         profile.learningMode.label;
 
+    const currentXp = window.ROARAvatar ? window.ROARAvatar.getXp() : profile.xp;
     elements.studentXp.textContent =
-        formatNumber(profile.xp);
+        formatNumber(currentXp);
 
     elements.studentId.textContent =
         String(profile.id);
@@ -131,10 +136,14 @@ function renderProfile(profile) {
         profile.learningMode.name;
 
     elements.studentXpDetail.textContent =
-        `${formatNumber(profile.xp)} XP`;
+        `${formatNumber(currentXp)} XP`;
 
     elements.profileStatus.textContent =
         "Suas informações estão atualizadas.";
+
+    if (window.ROAR_SYNC_AVATAR) {
+        window.ROAR_SYNC_AVATAR();
+    }
 }
 
 
