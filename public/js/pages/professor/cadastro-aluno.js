@@ -1,7 +1,6 @@
 import { showToast } from "../../components/toast.js";
 import { alunoService } from "../../services/aluno-service.js";
 import { sessionService } from "../../services/session-service.js";
-import { formatCpf } from "../../utils/formatters.js";
 
 const STUDENTS_PAGE = "alunos.html";
 
@@ -16,7 +15,6 @@ const SELECTORS = Object.freeze({
     name: "#nomeAluno",
     schoolYear: "#anoEscolar",
     email: "#emailAluno",
-    cpf: "#cpfAluno",
 
     communication:
         'input[name="pergunta1"]:checked',
@@ -81,9 +79,6 @@ function getElements() {
             SELECTORS.email,
         ),
 
-        cpfInput: document.querySelector(
-            SELECTORS.cpf,
-        ),
 
         finalLevelInput: document.querySelector(
             SELECTORS.finalLevel,
@@ -151,7 +146,6 @@ function validateInitialData(elements) {
         elements.nameInput,
         elements.schoolYearInput,
         elements.emailInput,
-        elements.cpfInput,
     ];
 
     for (const input of inputs) {
@@ -225,7 +219,6 @@ function getStudentData(elements) {
         name: elements.nameInput.value,
         schoolYear: elements.schoolYearInput.value,
         email: elements.emailInput.value,
-        cpf: elements.cpfInput.value,
 
         communication: getSelectedValue(
             SELECTORS.communication,
@@ -305,15 +298,6 @@ function registerEvents(elements) {
     elements.form?.addEventListener(
         "submit",
         (event) => event.preventDefault(),
-    );
-
-    elements.cpfInput?.addEventListener(
-        "input",
-        (event) => {
-            event.currentTarget.value = formatCpf(
-                event.currentTarget.value,
-            );
-        },
     );
 
     elements.nextTriageButton?.addEventListener(

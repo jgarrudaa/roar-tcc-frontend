@@ -139,10 +139,6 @@ const elements = {
         "editarAlunoEmail",
     ),
 
-    editCpf: document.getElementById(
-        "editarAlunoCpf",
-    ),
-
     editSchoolYear: document.getElementById(
         "editarAlunoAno",
     ),
@@ -198,26 +194,6 @@ function escapeHtml(value) {
         .replaceAll("'", "&#039;");
 }
 
-
-function formatCpf(value) {
-    const digits = String(value ?? "")
-        .replace(/\D/g, "")
-        .slice(0, 11);
-
-    return digits
-        .replace(
-            /^(\d{3})(\d)/,
-            "$1.$2",
-        )
-        .replace(
-            /^(\d{3})\.(\d{3})(\d)/,
-            "$1.$2.$3",
-        )
-        .replace(
-            /\.(\d{3})(\d)/,
-            ".$1-$2",
-        );
-}
 
 function clampPercentage(value) {
     const number = Number(value);
@@ -812,9 +788,6 @@ function prepareModal(student) {
     elements.editEmail.value =
         student.email ?? "";
 
-    elements.editCpf.value =
-        formatCpf(student.cpf);
-
     elements.editSchoolYear.value =
         student.schoolYear ?? "";
 
@@ -1134,7 +1107,6 @@ function closeStudentModal(force = false) {
 function setStudentManagementDisabled(disabled) {
     elements.editName.disabled = disabled;
     elements.editEmail.disabled = disabled;
-    elements.editCpf.disabled = disabled;
     elements.editSchoolYear.disabled = disabled;
     elements.editLevel.disabled = disabled;
     elements.saveStudentButton.disabled = disabled;
@@ -1188,9 +1160,7 @@ async function saveSelectedStudent(event) {
             {
                 name: elements.editName.value,
                 email: elements.editEmail.value,
-                cpf: elements.editCpf.value,
-                schoolYear:
-                    elements.editSchoolYear.value,
+                schoolYear:elements.editSchoolYear.value,
                 level: newLevel,
             },
         );
@@ -1526,15 +1496,6 @@ function bindEvents() {
         deactivateSelectedStudent,
     );
 
-    elements.editCpf.addEventListener(
-        "input",
-        () => {
-            elements.editCpf.value =
-                formatCpf(
-                    elements.editCpf.value,
-                );
-        },
-    );
 
     elements.resetPinButton.addEventListener(
         "click",
@@ -1642,11 +1603,6 @@ async function loadStudents() {
 
                     email:
                         details?.email ?? "",
-
-                    cpf:
-                        String(
-                            details?.cpf ?? "",
-                        ),
 
                     mode:
                         details?.mode ??
