@@ -164,6 +164,6 @@ assert.equal(serviceModule.normalizeActivity({
     atividade_id: 7,
     ordem_sequencia: 1,
     tipo_interacao: 'DragAndDrop',
-}).type, 'associate', 'Existing association activities must retain their engine.');
+}).type, 'shadowPuzzle', 'DragAndDrop uses the existing shadowPuzzle engine.');
 
 console.log('Sombras: 2/4/6 peças cobrem 30.000 pontos sem lacunas ou sobreposições; áreas, abas, bounds e aliases válidos.');

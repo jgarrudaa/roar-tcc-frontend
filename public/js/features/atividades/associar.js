@@ -100,7 +100,11 @@ export function createAssociateActivity(
     function handleOption(
         option,
         button,
+        optionsContainer,
     ) {
+        if (resolved && normalizeAnswer(option.en) !== normalizeAnswer(item.en)) {
+            return;
+        }
         /*
          * Toda alternativa pronuncia sua própria
          * palavra quando for selecionada.
@@ -108,8 +112,8 @@ export function createAssociateActivity(
         speakEnglishWord(option.en);
 
         /*
-         * Após a conclusão, os botões continuam
-         * disponíveis para repetir as palavras.
+         * Após a conclusão, apenas a resposta correta
+         * permanece disponível para repetir a palavra.
          */
         if (resolved) {
             elements.setMessage(
@@ -130,6 +134,9 @@ export function createAssociateActivity(
             correctAnswer
         ) {
             resolved = true;
+            optionsContainer.querySelectorAll("button").forEach((candidate) => {
+                candidate.disabled = candidate !== button;
+            });
 
             button.classList.add(
                 "is-correct",
@@ -212,7 +219,7 @@ export function createAssociateActivity(
     }
 
 
-    function createWordButton(option) {
+    function createWordButton(option, optionsContainer) {
         const button =
             createButton(option.en);
 
@@ -230,6 +237,7 @@ export function createAssociateActivity(
                 handleOption(
                     option,
                     button,
+                    optionsContainer,
                 );
             },
         );
@@ -290,7 +298,7 @@ export function createAssociateActivity(
         options.forEach(
             (option) => {
                 optionsContainer.append(
-                    createWordButton(option),
+                    createWordButton(option, optionsContainer),
                 );
             },
         );
@@ -313,6 +321,9 @@ export function createAssociateActivity(
         );
 
         elements.setProgress(0, 1);
+        if (student.supportLevel <= 2) {
+            speakEnglishWord(item.en);
+        }
     }
 
 

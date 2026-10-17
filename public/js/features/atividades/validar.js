@@ -88,12 +88,12 @@ export function createValidateActivity(
 
 
     function getInstruction() {
-        if (activity.instruction) {
-            return activity.instruction;
+        if (student.supportLevel === 1) {
+            return "Ouça a palavra em inglês e escolha a imagem correta.";
         }
 
-        if (student.supportLevel === 1) {
-            return "Escolha a imagem correta.";
+        if (activity.instruction) {
+            return activity.instruction;
         }
 
         if (student.supportLevel === 2) {
@@ -124,15 +124,19 @@ export function createValidateActivity(
     function handleOption(
         option,
         button,
+        optionsContainer,
     ) {
+        if (resolved && normalizeAnswer(option.en) !== normalizeAnswer(item.en)) {
+            return;
+        }
         /*
          * Cada alternativa fala a própria palavra.
          */
         speakWord(option.en);
 
         /*
-         * Após o acerto, as alternativas continuam
-         * funcionando como botões de pronúncia.
+         * Após o acerto, apenas a resposta correta
+         * continua funcionando como botão de pronúncia.
          */
         if (resolved) {
             elements.setMessage(
@@ -153,6 +157,9 @@ export function createValidateActivity(
             correctAnswer
         ) {
             resolved = true;
+            optionsContainer.querySelectorAll("button").forEach((candidate) => {
+                candidate.disabled = candidate !== button;
+            });
 
             button.classList.add(
                 "is-correct",
@@ -318,6 +325,15 @@ export function createValidateActivity(
             content.append(
                 promptArea,
             );
+        } else {
+            const targetWord = document.createElement("p");
+            targetWord.className = "revealed-word";
+            targetWord.lang = "en";
+            targetWord.textContent = normalizeAnswer(item.en);
+            const playButton = createButton("Ouvir novamente", "listen-button");
+            playButton.addEventListener("click", () => speakWord(item.en));
+            promptArea.append(targetWord, playButton);
+            content.append(promptArea);
         }
 
         const options =
@@ -346,6 +362,7 @@ export function createValidateActivity(
                         handleOption(
                             option,
                             button,
+                            optionsContainer,
                         );
                     },
                 );
@@ -373,6 +390,9 @@ export function createValidateActivity(
         );
 
         elements.setProgress(0, 1);
+        if (student.supportLevel <= 2) {
+            speakWord(item.en);
+        }
     }
 
 
@@ -380,6 +400,10 @@ export function createValidateActivity(
         start: render,
 
         repeatInstruction() {
+            if (student.supportLevel === 1) {
+                speakWord(item.en);
+                return;
+            }
             audioService.speak(
                 getInstruction(),
                 "pt-BR",

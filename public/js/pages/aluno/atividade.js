@@ -1,5 +1,15 @@
 import { showToast } from "../../components/toast.js";
-import { createActivityController } from "../../features/atividades/atividade-controller.js?v=3";
+import { createActivityController } from "../../features/atividades/atividade-controller.js?v=4";
+
+let activeController = null;
+let pageClosed = false;
+window.addEventListener("pagehide", () => {
+    pageClosed = true;
+    activeController?.destroy();
+});
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted) window.location.reload();
+});
 
 const parameters =
     new URLSearchParams(
@@ -17,6 +27,7 @@ const stage = Math.max(
 );
 
 const elements = {
+    backButton: document.querySelector(".activity-back"),
     title: document.querySelector(
         "#activity-title",
     ),
@@ -120,9 +131,16 @@ async function initialize() {
                 elements,
             });
 
-        if (!controller) {
+        if (!controller || pageClosed) {
+            controller?.destroy();
             return;
         }
+        activeController = controller;
+        elements.backButton?.addEventListener("click", (event) => {
+            if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            controller.previous();
+        });
 
         elements.repeatButton
             .addEventListener(
@@ -138,6 +156,7 @@ async function initialize() {
 
         controller.start();
     } catch (error) {
+        if (pageClosed) return;
         console.error(
             "Erro ao abrir atividade:",
             error,
