@@ -38,6 +38,15 @@ function normalizeStudentSession(response) {
         );
     }
 
+    const xpTotal = Number(response.user.xpTotal ?? response.user.xp ?? response.user.xp_total ?? 0);
+
+    // 1. LIMPA O CACHE DE DINO / LOJA DA CONTA ANTERIOR
+    localStorage.removeItem("roar_unlocked_dinos");
+    localStorage.removeItem("roar_equipped_dino");
+
+    // 2. REGISTRA O XP DA NOVA CONTA AUTENTICADA
+    localStorage.setItem("roar_dino_xp", String(xpTotal));
+
     return {
         token: response.token,
         role: response.role ?? "student",
@@ -47,6 +56,7 @@ function normalizeStudentSession(response) {
             email: response.user.email,
             schoolYear: response.user.schoolYear,
             supportLevel: response.user.supportLevel,
+            xpTotal: Number(response.user.xpTotal ?? response.user.xp ?? response.user.xp_total ?? 0),
         },
     };
 }
@@ -103,6 +113,7 @@ function createMockStudentSession(email) {
             id: 1,
             name: "Aluno demonstrativo",
             email,
+            xpTotal: 1240,
         },
     };
 }

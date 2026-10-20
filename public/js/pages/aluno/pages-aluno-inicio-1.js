@@ -120,9 +120,17 @@ function renderProfile(profile, modulesCount) {
     elements.navAvatar.title =
         `Abrir perfil de ${profile.name}`;
 
-    const currentXp = window.ROARAvatar ? window.ROARAvatar.getXp() : profile.xpTotal;
+    // 1. Pega o XP real retornado pela API
+    const realXp = Number(profile.xpTotal ?? profile.xp ?? 0);
+
+    // 2. SALVA o XP real no avatarService (isso atualiza a memória para a Loja ler)
+    if (window.ROARAvatar) {
+        window.ROARAvatar.setXp(realXp);
+    }
+
+    // 3. Exibe na tela
     elements.xpTotal.textContent =
-        currentXp.toLocaleString("pt-BR");
+        realXp.toLocaleString("pt-BR");
 
     const streak = profile.currentStreak;
 

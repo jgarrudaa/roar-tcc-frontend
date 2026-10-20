@@ -55,7 +55,6 @@ function playSound(type = "success") {
                 return;
             }
         }
-        // Fallback Web Audio se roarSoundFx não estiver carregado
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         if (AudioContextClass) {
             const ctx = new AudioContextClass();
@@ -120,8 +119,8 @@ function launchConfetti() {
         particles.forEach((p) => {
             p.x += p.vx;
             p.y += p.vy;
-            p.vy += 0.45; // gravidade
-            p.vx *= 0.98; // atrito
+            p.vy += 0.45;
+            p.vx *= 0.98;
             p.rotation += p.rotSpeed;
             p.tiltAngle += p.tiltAngleInc;
             p.tilt = Math.sin(p.tiltAngle) * 15;
@@ -179,7 +178,6 @@ function renderHeaderStats() {
         elements.heroPreviewImg.alt = equippedDino.name;
     }
 
-    // Atualiza contadores
     const catalog = avatarService.getCatalog();
     const comumCount = catalog.filter((d) => d.rarity === "padrao" || d.rarity === "comum").length;
     const raroCount = catalog.filter((d) => d.rarity === "raro").length;
@@ -242,7 +240,6 @@ function renderDinoGrid() {
 
         const imgPath = avatarService.resolveImagePath(dino);
 
-        // Header do card: Badge de Raridade + Preço
         const header = document.createElement("div");
         header.className = "dino-card__header";
 
@@ -267,7 +264,6 @@ function renderDinoGrid() {
         header.appendChild(rarityBadge);
         header.appendChild(pricePill);
 
-        // Visual (Imagem do Dino)
         const visual = document.createElement("div");
         visual.className = "dino-card__visual";
 
@@ -283,7 +279,6 @@ function renderDinoGrid() {
         visual.appendChild(visualBg);
         visual.appendChild(img);
 
-        // Informações
         const info = document.createElement("div");
         info.className = "dino-card__info";
         info.innerHTML = `
@@ -292,7 +287,6 @@ function renderDinoGrid() {
             <p class="dino-card__desc">${dino.description}</p>
         `;
 
-        // Botão de Ação
         const actionWrap = document.createElement("div");
         actionWrap.className = "dino-card__action";
 
@@ -308,7 +302,6 @@ function renderDinoGrid() {
             btn.innerHTML = `<i class="fi fi-br-refresh"></i> Equipar`;
             btn.addEventListener("click", () => handleEquip(dino));
         } else {
-            // Precisa comprar
             const canAfford = currentXp >= dino.price;
             if (canAfford) {
                 btn.className = "dino-btn dino-btn--buy";
@@ -341,7 +334,7 @@ function renderDinoGrid() {
    ------------------------------------------------------------ */
 async function handleEquip(dino) {
     try {
-        await avatarService.equipDino(dino.id); // <- Adicionado await
+        await avatarService.equipDino(dino.id);
         playSound("success");
         showToast(`Mascote alterado para ${dino.name}!`, "success");
         renderDinoGrid();
@@ -354,7 +347,6 @@ async function handleEquip(dino) {
    MODAL DE COMPRA
    ------------------------------------------------------------ */
 function openPurchaseModal(dino) {
-    pendingPurchaseDino = null;
     pendingPurchaseDino = dino;
     const currentXp = avatarService.getXp();
     const remaining = currentXp - dino.price;
@@ -367,27 +359,26 @@ function openPurchaseModal(dino) {
     elements.modalXpCost.textContent = `- ${dino.price.toLocaleString("pt-BR")} XP`;
     elements.modalXpRemaining.textContent = `${remaining.toLocaleString("pt-BR")} XP`;
 
-    
-    elements.modalBackdrop.inert = false; 
-
-    elements.modalBackdrop.classList.add("is-open");
-    elements.modalBackdrop.setAttribute("aria-hidden", "false");
-    elements.modalConfirmBtn.focus();
+    if (elements.modalBackdrop) {
+        elements.modalBackdrop.inert = false;
+        elements.modalBackdrop.classList.add("is-open");
+        elements.modalBackdrop.setAttribute("aria-hidden", "false");
+    }
+    elements.modalConfirmBtn?.focus();
 }
 
 function closePurchaseModal() {
     pendingPurchaseDino = null;
 
-    
-    if (document.activeElement && elements.modalBackdrop.contains(document.activeElement)) {
+    if (document.activeElement && elements.modalBackdrop?.contains(document.activeElement)) {
         document.activeElement.blur();
     }
 
-    elements.modalBackdrop.classList.remove("is-open");
-    elements.modalBackdrop.setAttribute("aria-hidden", "true");
-    
-    // Opcional recomendado pelo W3C (deixa o modal "morto" para cliques invisíveis)
-    elements.modalBackdrop.inert = true; 
+    if (elements.modalBackdrop) {
+        elements.modalBackdrop.classList.remove("is-open");
+        elements.modalBackdrop.setAttribute("aria-hidden", "true");
+        elements.modalBackdrop.inert = true;
+    }
 }
 
 async function handleConfirmPurchase() {
@@ -395,14 +386,12 @@ async function handleConfirmPurchase() {
     const dino = pendingPurchaseDino;
 
     try {
-        // Mostra estado de "Carregando..." no botão para evitar duplo clique
         elements.modalConfirmBtn.disabled = true;
         elements.modalConfirmBtn.innerHTML = '<i class="fi fi-br-spinner"></i> Adotando...';
 
-        await avatarService.buyDino(dino.id); // <- Adicionado await
+        await avatarService.buyDino(dino.id);
         closePurchaseModal();
 
-        // Celebração!
         playSound("celebration");
         launchConfetti();
         showToast(`🎉 Incrível! Você adotou o ${dino.name}! Ele já está equipado em toda a plataforma.`, "success");
@@ -411,9 +400,10 @@ async function handleConfirmPurchase() {
     } catch (e) {
         showToast(e.message || "Não foi possível concluir a compra.", "error");
     } finally {
-        // Restaura o botão
-        elements.modalConfirmBtn.disabled = false;
-        elements.modalConfirmBtn.innerHTML = '<i class="fi fi-br-shopping-cart"></i> Adotar e Equipar!';
+        if (elements.modalConfirmBtn) {
+            elements.modalConfirmBtn.disabled = false;
+            elements.modalConfirmBtn.innerHTML = '<i class="fi fi-br-shopping-cart"></i> Adotar e Equipar!';
+        }
     }
 }
 
@@ -422,7 +412,7 @@ async function handleConfirmPurchase() {
    ------------------------------------------------------------ */
 function handleTreinoXp() {
     const added = 200;
-    const newTotal = avatarService.addXp(added);
+    avatarService.addXp(added);
     playSound("success");
     showToast(`⚡ Parabéns! Você completou um treino relâmpago e ganhou +${added} XP!`, "success");
     renderDinoGrid();
@@ -432,7 +422,6 @@ function handleTreinoXp() {
    REGISTRO DE EVENTOS
    ------------------------------------------------------------ */
 function registerEvents() {
-    // Filtros de abas
     elements.tabs.forEach((tab) => {
         tab.addEventListener("click", () => {
             elements.tabs.forEach((t) => {
@@ -446,10 +435,8 @@ function registerEvents() {
         });
     });
 
-    // Botão de Treino XP
     elements.btnTreinoXp?.addEventListener("click", handleTreinoXp);
 
-    // Modal
     elements.modalCloseBtn?.addEventListener("click", closePurchaseModal);
     elements.modalCancelBtn?.addEventListener("click", closePurchaseModal);
     elements.modalConfirmBtn?.addEventListener("click", handleConfirmPurchase);
@@ -461,12 +448,11 @@ function registerEvents() {
     });
 
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && elements.modalBackdrop.classList.contains("is-open")) {
+        if (e.key === "Escape" && elements.modalBackdrop?.classList.contains("is-open")) {
             closePurchaseModal();
         }
     });
 
-    // Sincronização global
     window.addEventListener("roar-avatar-changed", () => {
         renderDinoGrid();
     });
@@ -478,6 +464,9 @@ function registerEvents() {
 
 /* ------------------------------------------------------------
    INICIALIZAÇÃO
+   ------------------------------------------------------------ */
+/* ------------------------------------------------------------
+   INICIALIZAÇÃO DA LOJA
    ------------------------------------------------------------ */
 function initialize() {
     renderDinoGrid();
