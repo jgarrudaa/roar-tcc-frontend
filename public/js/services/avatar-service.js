@@ -308,13 +308,18 @@ export const avatarService = {
         const dino = this.getEquippedDino();
         const imgPath = this.resolveImagePath(dino);
 
-        const navAvatars = doc.querySelectorAll(".navbar__avatar, #navAvatar, #studentAvatar, #navbarAvatar");
+        // Adicionámos o #profileAvatar à lista!
+        const navAvatars = doc.querySelectorAll(".navbar__avatar, #navAvatar, #studentAvatar, #navbarAvatar, #profileAvatar");
         navAvatars.forEach((avatar) => {
             let img = avatar.querySelector("img.navbar__avatar-img");
             if (!img) {
                 avatar.innerHTML = "";
                 img = doc.createElement("img");
                 img.className = "navbar__avatar-img";
+                // Ajusta o estilo para se adaptar bem ao círculo grande
+                img.style.width = "100%";
+                img.style.height = "100%";
+                img.style.objectFit = "cover";
                 avatar.appendChild(img);
             }
             img.src = imgPath;
@@ -326,11 +331,14 @@ export const avatarService = {
             img.src = imgPath;
         });
 
-        const xpDisplays = doc.querySelectorAll("#xpTotal, #studentXp, #storeUserXp");
+        const xpDisplays = doc.querySelectorAll("#xpTotal, #studentXp, #storeUserXp, #studentXpDetail");
         const currentXp = this.getXp();
         xpDisplays.forEach((el) => {
             if (el.id === "storeUserXp" || el.id === "xpTotal" || el.id === "studentXp") {
                 el.textContent = currentXp.toLocaleString("pt-BR");
+            } else if (el.id === "studentXpDetail") {
+                // Específico para o detalhe no perfil que tem a palavra " XP" no fim
+                el.textContent = `${currentXp.toLocaleString("pt-BR")} XP`;
             }
         });
     },

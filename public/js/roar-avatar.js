@@ -4,24 +4,27 @@
    ============================================================ */
 
 (function () {
+    // Agora usando exatamente os IDs e nomes que existem no Supabase
     const DINO_CATALOG = [
-        { id: "dino_original", name: "Lex Clássico", title: "O Mascote Lendário", price: 0, rarity: "padrao", rarityLabel: "Inicial", fileName: "dinooriginal.png", isOriginal: true },
-        { id: "dino_jogador", name: "Dino Craque", title: "Artilheiro das Palavras", price: 800, rarity: "comum", rarityLabel: "Comum", fileName: "dino_jogador.png", isOriginal: false },
-        { id: "dino_basquete", name: "Dino Basqueteiro", title: "Cestinha das Quadras", price: 800, rarity: "comum", rarityLabel: "Comum", fileName: "dino_basquete.png", isOriginal: false },
-        { id: "dino_explorador", name: "Dino Explorador", title: "Aventureiro da Selva", price: 800, rarity: "comum", rarityLabel: "Comum", fileName: "dino_explorador.png", isOriginal: false },
-        { id: "dino_cowboy", name: "Dino Cowboy", title: "Xerife do Velho Oeste", price: 900, rarity: "raro", rarityLabel: "Raro", fileName: "dino_cowboy.png", isOriginal: false },
-        { id: "dino_militar", name: "Dino Militar", title: "Comandante Tático", price: 900, rarity: "raro", rarityLabel: "Raro", fileName: "dino_militar.png", isOriginal: false },
-        { id: "dino_hotdog", name: "Dino Hot Dog", title: "Chef Divertido", price: 900, rarity: "raro", rarityLabel: "Raro", fileName: "dino_hotdog.png", isOriginal: false },
-        { id: "dino_ninja", name: "Dino Ninja", title: "Guerreiro das Sombras", price: 900, rarity: "epico", rarityLabel: "Épico", fileName: "dino_ninja.png", isOriginal: false },
-        { id: "dino_cavaleiro", name: "Dino Cavaleiro", title: "Paladino da Távola", price: 950, rarity: "epico", rarityLabel: "Épico", fileName: "dino_cavaleiro.png", isOriginal: false },
-        { id: "dino_astronauta", name: "Dino Astronauta", title: "Explorador Cósmico", price: 980, rarity: "lendario", rarityLabel: "Lendário", fileName: "dino_astronauta.png", isOriginal: false },
-        { id: "dino_robo", name: "Dino Cibernético", title: "Androide do Futuro", price: 980, rarity: "lendario", rarityLabel: "Lendário", fileName: "dino_robo.png", isOriginal: false },
-        { id: "dino_rico", name: "Dino Magnata", title: "Fino Trato & Alta Classe", price: 1000, rarity: "lendario", rarityLabel: "Lendário", fileName: "dino_rico.png", isOriginal: false },
-        { id: "dino_rei", name: "Dino Rei Supremo", title: "Soberano do Reino ROAR", price: 1000, rarity: "mitico", rarityLabel: "Mítico", fileName: "dino_rei.png", isOriginal: false },
+        { id: 1, name: "Dino Padrão", fileName: "dinooriginal.png", isOriginal: true },
+        { id: 2, name: "Dino Basquete", fileName: "dino_basquete.png", isOriginal: false },
+        { id: 3, name: "Dino Explorador", fileName: "dino_explorador.png", isOriginal: false },
+        { id: 4, name: "Dino Jogador (Brasil)", fileName: "dino_jogador.png", isOriginal: false },
+        { id: 5, name: "Dino Cowboy", fileName: "dino_cowboy.png", isOriginal: false },
+        { id: 6, name: "Dino Cachorro-Quente", fileName: "dino_hotdog.png", isOriginal: false },
+        { id: 7, name: "Dino Militar", fileName: "dino_militar.png", isOriginal: false },
+        { id: 8, name: "Dino Ninja", fileName: "dino_ninja.png", isOriginal: false },
+        { id: 9, name: "Dino Cavaleiro", fileName: "dino_cavaleiro.png", isOriginal: false },
+        { id: 10, name: "Dino Astronauta", fileName: "dino_astronauta.png", isOriginal: false },
+        { id: 11, name: "Dino Robô", fileName: "dino_robo.png", isOriginal: false },
+        { id: 12, name: "Dino Rico", fileName: "dino_rico.png", isOriginal: false },
+        { id: 13, name: "Dino Rei", fileName: "dino_rei.png", isOriginal: false }
     ];
 
     function getEquippedDino() {
-        const id = localStorage.getItem("roar_equipped_dino") || "dino_original";
+        const idString = localStorage.getItem("roar_equipped_dino");
+        // Converte para número e procura. Se falhar, usa o ID 1
+        const id = Number(idString) || 1;
         return DINO_CATALOG.find((d) => d.id === id) || DINO_CATALOG[0];
     }
 
@@ -37,7 +40,7 @@
             prefix = "public/assets/imagens/";
         }
 
-        if (dino.isOriginal || dino.id === "dino_original") {
+        if (dino.isOriginal || dino.id === 1) {
             return prefix + "dinooriginal.png";
         }
         return prefix + "dinos/" + dino.fileName;
@@ -47,7 +50,7 @@
         const dino = getEquippedDino();
         const imgPath = resolveDinoPath(dino);
 
-        // Navbar avatars
+        // 1. Bolinhas do Navbar (Canto superior direito)
         const navAvatars = document.querySelectorAll(".navbar__avatar, #navAvatar, #studentAvatar, #navbarAvatar");
         navAvatars.forEach((avatar) => {
             let img = avatar.querySelector("img.navbar__avatar-img");
@@ -64,21 +67,7 @@
             avatar.style.background = "linear-gradient(135deg, rgba(133, 199, 242, 0.4), rgba(68, 246, 152, 0.3))";
         });
 
-        // Mascote no Hero da home
-        const mascotImgs = document.querySelectorAll("#mascotImg, .hero-mascot img");
-        mascotImgs.forEach((img) => {
-            img.src = imgPath;
-            img.alt = "Mascote " + dino.name;
-        });
-
-        // Mascote na página de conquistas e atividades
-        const congratsImgs = document.querySelectorAll(".congrats-banner img, .lex-feedback img, .shadow-lex img");
-        congratsImgs.forEach((img) => {
-            img.src = imgPath;
-            img.alt = "Mascote " + dino.name;
-        });
-
-        // Avatar no perfil
+        // 2. Avatar Gigante do Perfil (#profileAvatar)
         const profileAvatar = document.getElementById("profileAvatar");
         if (profileAvatar) {
             let img = profileAvatar.querySelector("img.profile-avatar-img");
@@ -96,7 +85,14 @@
             img.alt = "Mascote: " + dino.name;
         }
 
-        // Live XP nos elementos apropriados se houver valor salvo
+        // 3. Mascote na Home (#mascotImg), Conquistas e Feedback de Atividades
+        const mascotImgs = document.querySelectorAll("#mascotImg, .hero-mascot img, .congrats-banner img, .lex-feedback img, .shadow-lex img");
+        mascotImgs.forEach((img) => {
+            img.src = imgPath;
+            img.alt = "Mascote " + dino.name;
+        });
+
+        // 4. Live XP
         const storedXp = localStorage.getItem("roar_dino_xp");
         if (storedXp !== null) {
             const num = Number(storedXp);
@@ -105,6 +101,12 @@
                 document.querySelectorAll("#storeUserXp, #xpTotal, #studentXp").forEach((el) => {
                     el.textContent = formatted;
                 });
+
+                // Formatação específica para o detalhe no perfil
+                const xpDetail = document.getElementById("studentXpDetail");
+                if (xpDetail) {
+                    xpDetail.textContent = formatted + " XP";
+                }
             }
         }
     }
@@ -125,6 +127,14 @@
         }
     });
 
-    // Torna disponível globalmente
+    // Torna disponível globalmente para outras scripts chamarem
     window.ROAR_SYNC_AVATAR = applyAvatarToPage;
+
+    // Assegura compatibilidade com o objeto global antigo se for chamado
+    if (!window.ROARAvatar) {
+        window.ROARAvatar = {
+            applyToPage: applyAvatarToPage,
+            getXp: () => Number(localStorage.getItem("roar_dino_xp") || 0)
+        };
+    }
 })();

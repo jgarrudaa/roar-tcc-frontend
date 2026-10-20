@@ -1,5 +1,7 @@
 import { studentHomeService } from "../../services/student-home-service.js";
+import { avatarService } from "../../services/avatar-service.js";
 import { showToast } from "../../components/toast.js";
+import { avatarService } from "../../services/avatar-service.js";
 
 
 const MASCOT_MESSAGES = Object.freeze([
@@ -107,47 +109,57 @@ function setMascotMessage(message) {
 
 
 function renderProfile(profile, modulesCount) {
-    elements.userName.textContent =
-        profile.name;
+    elements.userName.textContent = profile.name;
 
     if (window.ROAR_SYNC_AVATAR) {
         window.ROAR_SYNC_AVATAR();
     } else {
-        elements.navAvatar.textContent =
-            profile.initial;
+        elements.navAvatar.textContent = profile.initial;
     }
 
-    elements.navAvatar.title =
-        `Abrir perfil de ${profile.name}`;
+    elements.navAvatar.title = `Abrir perfil de ${profile.name}`;
 
-    // 1. Pega o XP real retornado pela API
+    // 1. Extrai o XP real que veio do banco de dados
     const realXp = Number(profile.xpTotal ?? profile.xp ?? 0);
 
-    // 2. SALVA o XP real no avatarService (isso atualiza a memória para a Loja ler)
-    if (window.ROARAvatar) {
+    // 2. Grava na memória para a Loja ler depois
+    localStorage.setItem("roar_dino_xp", String(realXp));
+    
+    try {
+        const sessionRaw = localStorage.getItem("roarSession");
+        if (sessionRaw) {
+            const session = JSON.parse(sessionRaw);
+            if (session.user) {
+                session.user.xpTotal = realXp;
+                session.user.xp = realXp;
+                localStorage.setItem("roarSession", JSON.stringify(session));
+            }
+        }
+    } catch (e) {}
+
+    // 3. ATUALIZA O XP E A IMAGEM DO MASCOTE NA TELA INICIAL
+    if (avatarService) {
+        avatarService.setXp(realXp);
+        avatarService.applyToPage(); // <--- Esta linha atualiza o #mascotImg!
+    } else if (window.ROARAvatar) {
         window.ROARAvatar.setXp(realXp);
+        window.ROARAvatar.applyToPage();
     }
 
-    // 3. Exibe na tela
-    elements.xpTotal.textContent =
-        realXp.toLocaleString("pt-BR");
+    // Exibe o XP formatado
+    elements.xpTotal.textContent = realXp.toLocaleString("pt-BR");
 
     const streak = profile.currentStreak;
-
-    elements.currentStreak.textContent =
-        streak === 1
-            ? "1 dia"
-            : `${streak} dias`;
-
+    elements.currentStreak.textContent = streak === 1 ? "1 dia" : `${streak} dias`;
     elements.currentStreak.setAttribute(
         "aria-label",
-        streak === 1
-            ? "Ofensiva de 1 dia"
-            : `Ofensiva de ${streak} dias`,
+        streak === 1 ? "Ofensiva de 1 dia" : `Ofensiva de ${streak} dias`,
     );
 
-    elements.availableModules.textContent =
-        String(modulesCount);
+    elements.availableModules.textContent = String(modulesCount);
+    if (avatarService) {
+        avatarService.applyToPage();
+    }
 }
 
 
