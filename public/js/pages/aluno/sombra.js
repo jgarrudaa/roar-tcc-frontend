@@ -1,4 +1,7 @@
 import { createShadowActivity } from "../../features/atividades/sombra.js";
+import { getShadowPieceCount } from "../../features/atividades/sombra-puzzle.js";
+import { alunosApi } from "../../api/alunos-api.js";
+import { sessionService } from "../../services/session-service.js";
 import { audioService } from "../../services/audio-service.js";
 import { storage } from "../../utils/storage.js";
 
@@ -24,7 +27,15 @@ const progress = document.querySelector("#activity-progress");
 const progressLabel = document.querySelector("#progress-label");
 const roundLabel = document.querySelector("#shadow-round");
 const difficulty = document.querySelector("#shadow-difficulty");
+const difficultyControl = document.querySelector("#shadow-difficulty-control");
+const pieceCountLabel = document.querySelector("#shadow-piece-count");
 const soundButton = document.querySelector("#shadow-sound");
+let student = { teaSupportLevel: null };
+let fixedDifficulty = false;
+let profileLoading = false;
+let profileRequest = 0;
+let pageActive = true;
+let showingSummary = false;
 let engine = null;
 let round = 0;
 let completed = 0;
@@ -46,6 +57,7 @@ function updateProgress() {
 }
 
 function startRound() {
+    showingSummary = false;
     engine?.destroy?.();
     audioService.stop();
     nextButton.hidden = false;
@@ -56,8 +68,8 @@ function startRound() {
     const item = animals[round];
     engine = createShadowActivity({
         activity: { id: "practice-" + item.id, item },
-        student: { supportLevel: 1 },
-        pieceCount: Number(difficulty.value),
+        student,
+        pieceCount: fixedDifficulty ? undefined : Number(difficulty.value),
         onSpeak: speak,
         elements: {
             stage,
@@ -76,6 +88,7 @@ function startRound() {
 }
 
 function showSummary() {
+    showingSummary = true;
     engine?.destroy?.();
     engine = null;
     audioService.stop();
@@ -114,7 +127,7 @@ function showSummary() {
     restart.addEventListener("click", () => {
         round = 0;
         completed = 0;
-        difficulty.disabled = false;
+        difficulty.disabled = fixedDifficulty;
         startRound();
         roundLabel.scrollIntoView({ block: "nearest" });
     });
@@ -137,6 +150,7 @@ nextButton.addEventListener("click", () => {
 });
 
 difficulty.addEventListener("change", () => {
+    if (fixedDifficulty || profileLoading || !engine) return;
     completed = round;
     startRound();
 });
@@ -152,7 +166,73 @@ soundButton.addEventListener("click", () => {
 });
 
 window.addEventListener("pagehide", () => {
+    pageActive = false;
+    profileRequest += 1;
+    profileLoading = false;
     engine?.destroy?.();
+    engine = null;
     audioService.stop();
 });
-startRound();
+
+window.addEventListener("pageshow", event => {
+    if (!event.persisted) return;
+    pageActive = true;
+    // O motor anterior foi destruído: recomeçar somente o animal atual.
+    if (!showingSummary) completed = round;
+    updateProgress();
+    initialize();
+});
+
+async function initialize() {
+    if (profileLoading || !pageActive) return;
+    profileLoading = true;
+    const request = ++profileRequest;
+    difficulty.disabled = true;
+    nextButton.disabled = true;
+    stage.setAttribute("aria-busy", "true");
+    const loading = document.createElement("p");
+    loading.setAttribute("role", "status");
+    loading.textContent = "Preparando as peças…";
+    stage.replaceChildren(loading);
+    try {
+        let currentStudent = { teaSupportLevel: null };
+        if (sessionService.hasRole("student")) {
+            const profile = await alunosApi.getCurrent();
+            if (!pageActive || request !== profileRequest) return;
+            const level = profile?.teaSupportLevel ?? profile?.nivel_suporte_tea;
+            currentStudent = { teaSupportLevel: [1, 2, 3].includes(level) ? level : null };
+        }
+        if (fixedDifficulty && currentStudent.teaSupportLevel === null) difficulty.value = "2";
+        student = currentStudent;
+        fixedDifficulty = student.teaSupportLevel !== null;
+        difficultyControl.hidden = fixedDifficulty;
+        pieceCountLabel.hidden = !fixedDifficulty;
+        difficulty.disabled = fixedDifficulty;
+        if (fixedDifficulty) {
+            const count = getShadowPieceCount({ student });
+            difficulty.value = String(count);
+            pieceCountLabel.textContent = `${count} peças`;
+        }
+        if (showingSummary) showSummary();
+        else startRound();
+    } catch {
+        if (!pageActive || request !== profileRequest) return;
+        stage.removeAttribute("aria-busy");
+        instruction.textContent = "Vamos preparar o jogo para você.";
+        message.textContent = "Não foi possível carregar seu perfil. Tente novamente.";
+        const retry = document.createElement("button");
+        retry.type = "button";
+        retry.className = "shadow-retry";
+        retry.textContent = "Tentar novamente";
+        retry.addEventListener("click", () => {
+            stage.setAttribute("aria-busy", "true");
+            retry.disabled = true;
+            initialize();
+        });
+        stage.replaceChildren(retry);
+    } finally {
+        if (request === profileRequest) profileLoading = false;
+    }
+}
+
+initialize();

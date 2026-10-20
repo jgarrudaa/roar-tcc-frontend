@@ -44,6 +44,26 @@ function normalizeText(value) {
     return String(value ?? "").trim();
 }
 
+function normalizeTeaSupportLevel(value, validate = false) {
+    if (value === undefined || value === null || value === "") {
+        return null;
+    }
+
+    const normalized = typeof value === "string"
+        ? value.trim()
+        : value;
+
+    if ([1, 2, 3, "1", "2", "3"].includes(normalized)) {
+        return Number(normalized);
+    }
+
+    if (validate) {
+        throw new Error("Selecione um nível de suporte TEA válido ou Não informado.");
+    }
+
+    return null;
+}
+
 
 
 function normalizePin(pin) {
@@ -147,6 +167,9 @@ function mapStudentCreationPayload(data, pin) {
         pergunta_b: data.reading,
         suporte_audio: Boolean(data.audioSupport),
         pin_acesso: pin,
+        ...(data.teaSupportLevel === null
+            ? {}
+            : { nivel_suporte_tea: data.teaSupportLevel }),
     };
 }
 
@@ -183,6 +206,9 @@ function normalizeCreatedStudent(
             originalData.schoolYear,
         ),
         level: Number(calculatedLevel),
+        teaSupportLevel: normalizeTeaSupportLevel(
+            response?.nivel_suporte_tea ?? originalData.teaSupportLevel,
+        ),
         mode: response?.modo_definido ?? null,
         pin: normalizePin(
             response?.pin ?? pin,
@@ -206,6 +232,7 @@ function normalizeStudent(student) {
         schoolYear:student?.ano_escolar ?? "Não informado",
         mode:student?.modo_aprendizagem ??"Não informado",
         level: getLevelFromMode(student?.modo_aprendizagem,),
+        teaSupportLevel: normalizeTeaSupportLevel(student?.nivel_suporte_tea),
         xp: Number(student?.xp_total ?? 0),
         createdAt: student?.criado_em ?? null,
     };
@@ -217,6 +244,7 @@ async function create(data) {
         name: normalizeText(data?.name),
         email: normalizeEmail(data?.email),
         schoolYear: normalizeText(data?.schoolYear,),
+        teaSupportLevel: normalizeTeaSupportLevel(data?.teaSupportLevel, true),
         communication: data?.communication,
         reading: data?.reading,
         audioSupport: Boolean(
@@ -303,6 +331,13 @@ async function update(studentId, data) {
         ),
         nivel: Number(data?.level),
     };
+
+    if (Object.prototype.hasOwnProperty.call(data ?? {}, "teaSupportLevel")) {
+        normalizedData.nivel_suporte_tea = normalizeTeaSupportLevel(
+            data.teaSupportLevel,
+            true,
+        );
+    }
 
     if (!required(normalizedData.nome)) {
         throw new Error(

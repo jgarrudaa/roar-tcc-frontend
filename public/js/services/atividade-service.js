@@ -123,6 +123,7 @@ function normalizeStudent(profile) {
         .replace(/\s+/g, " ");
     const canonicalMode = LEARNING_MODE_ALIASES.get(modeKey);
     const learningMode = LEARNING_MODES[canonicalMode];
+    const teaSupportLevel = profile?.teaSupportLevel ?? profile?.nivel_suporte_tea;
 
     if (!learningMode) {
         throw new Error(
@@ -148,6 +149,7 @@ function normalizeStudent(profile) {
 
         supportLevel: learningMode.level,
         supportMode: learningMode.label,
+        teaSupportLevel: [1, 2, 3].includes(teaSupportLevel) ? teaSupportLevel : null,
 
         xpTotal: Math.max(
             0,
