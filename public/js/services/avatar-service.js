@@ -5,7 +5,7 @@
 
 export const DINO_CATALOG = Object.freeze([
     {
-        id: "dino_original",
+        id: "1",
         name: "Lex Clássico",
         title: "O Mascote Lendário",
         price: 0,
@@ -18,7 +18,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "classico",
     },
     {
-        id: "dino_jogador",
+        id: "2",
         name: "Dino Craque",
         title: "Artilheiro das Palavras",
         price: 800,
@@ -31,7 +31,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "esportes",
     },
     {
-        id: "dino_basquete",
+        id: "3",
         name: "Dino Basqueteiro",
         title: "Cestinha das Quadras",
         price: 800,
@@ -44,7 +44,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "esportes",
     },
     {
-        id: "dino_explorador",
+        id: "4",
         name: "Dino Explorador",
         title: "Aventureiro da Selva",
         price: 800,
@@ -57,7 +57,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "aventura",
     },
     {
-        id: "dino_cowboy",
+        id: "5",
         name: "Dino Cowboy",
         title: "Xerife do Velho Oeste",
         price: 900,
@@ -70,7 +70,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "aventura",
     },
     {
-        id: "dino_militar",
+        id: "6",
         name: "Dino Militar",
         title: "Comandante Tático",
         price: 900,
@@ -83,7 +83,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "especial",
     },
     {
-        id: "dino_hotdog",
+        id: "7",
         name: "Dino Hot Dog",
         title: "Chef Divertido",
         price: 900,
@@ -96,7 +96,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "divertido",
     },
     {
-        id: "dino_ninja",
+        id: "8",
         name: "Dino Ninja",
         title: "Guerreiro das Sombras",
         price: 900,
@@ -109,7 +109,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "aventura",
     },
     {
-        id: "dino_cavaleiro",
+        id: "9",
         name: "Dino Cavaleiro",
         title: "Paladino da Távola",
         price: 950,
@@ -122,7 +122,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "fantasia",
     },
     {
-        id: "dino_astronauta",
+        id: "10",
         name: "Dino Astronauta",
         title: "Explorador Cósmico",
         price: 980,
@@ -135,7 +135,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "fantasia",
     },
     {
-        id: "dino_robo",
+        id: "11",
         name: "Dino Cibernético",
         title: "Androide do Futuro",
         price: 980,
@@ -148,7 +148,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "fantasia",
     },
     {
-        id: "dino_rico",
+        id: "12",
         name: "Dino Magnata",
         title: "Fino Trato & Alta Classe",
         price: 1000,
@@ -161,7 +161,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "especial",
     },
     {
-        id: "dino_rei",
+        id: "13",
         name: "Dino Rei Supremo",
         title: "Soberano do Reino ROAR",
         price: 1000,
@@ -217,26 +217,23 @@ export const avatarService = {
     getUnlockedDinos() {
         let unlocked = getStoredJson(STORAGE_KEYS.UNLOCKED, null);
         if (!Array.isArray(unlocked) || unlocked.length === 0) {
-            unlocked = ["dino_original"];
+            unlocked = [1]; // ID 1 é o Dino Padrão
             setStoredJson(STORAGE_KEYS.UNLOCKED, unlocked);
-        } else if (!unlocked.includes("dino_original")) {
-            unlocked.push("dino_original");
+        } else if (!unlocked.includes(1)) {
+            unlocked.push(1);
             setStoredJson(STORAGE_KEYS.UNLOCKED, unlocked);
         }
         return unlocked;
     },
 
-    isUnlocked(id) {
-        return this.getUnlockedDinos().includes(id);
-    },
-
     getEquippedDinoId() {
         const equipped = localStorage.getItem(STORAGE_KEYS.EQUIPPED);
         const unlocked = this.getUnlockedDinos();
-        if (equipped && unlocked.includes(equipped)) {
-            return equipped;
+        const eqId = parseInt(equipped, 10); // Converte para número
+        if (eqId && unlocked.includes(eqId)) {
+            return eqId;
         }
-        return "dino_original";
+        return 1; // Padrão
     },
 
     getEquippedDino() {
@@ -261,7 +258,7 @@ export const avatarService = {
                     return sessionXp;
                 }
             }
-        } catch {}
+        } catch { }
 
         try {
             const roarDataRaw = localStorage.getItem("roarData");
@@ -273,7 +270,7 @@ export const avatarService = {
                     return roarXp;
                 }
             }
-        } catch {}
+        } catch { }
 
         const defaultXp = 1240;
         this.setXp(defaultXp);
@@ -291,7 +288,7 @@ export const avatarService = {
                 roarData.xp = safeAmount;
                 localStorage.setItem("roarData", JSON.stringify(roarData));
             }
-        } catch {}
+        } catch { }
 
         try {
             const sessionRaw = localStorage.getItem("roarSession");
@@ -303,7 +300,7 @@ export const avatarService = {
                     localStorage.setItem("roarSession", JSON.stringify(session));
                 }
             }
-        } catch {}
+        } catch { }
 
         window.dispatchEvent(
             new CustomEvent("roar-xp-changed", {
@@ -317,86 +314,80 @@ export const avatarService = {
     addXp(amount) {
         return this.setXp(this.getXp() + amount);
     },
-
-    buyDino(id) {
+    async buyDino(id) {
         const dino = this.getDinoById(id);
-        if (!dino) {
-            throw new Error("Dino não encontrado no catálogo.");
+        if (!dino) throw new Error("Dino não encontrado no catálogo.");
+
+        // NOTA: Confirme qual é a chave do localStorage onde o token está salvo
+        // (Geralmente é token ou roar_token)
+        const token = localStorage.getItem("token") || localStorage.getItem("roar_token");
+
+        const response = await fetch("http://localhost:5000/alunos/loja-lex", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ acao: "comprar", skin_id: dino.id })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.erro || "Erro ao comprar na loja.");
         }
 
+        // Se o backend aprovou, atualizamos o local
         const unlocked = this.getUnlockedDinos();
-        if (unlocked.includes(dino.id)) {
-            return {
-                success: true,
-                alreadyOwned: true,
-                dino,
-                message: `Você já possui o ${dino.name}!`,
-            };
+        if (!unlocked.includes(dino.id)) {
+            unlocked.push(dino.id);
+            setStoredJson(STORAGE_KEYS.UNLOCKED, unlocked);
         }
 
-        const currentXp = this.getXp();
-        if (currentXp < dino.price) {
-            const needed = dino.price - currentXp;
-            throw new Error(
-                `XP insuficiente! Você tem ${currentXp.toLocaleString("pt-BR")} XP, mas este dino custa ${dino.price.toLocaleString("pt-BR")} XP (faltam ${needed.toLocaleString("pt-BR")} XP).`
-            );
-        }
-
-        const remainingXp = this.setXp(currentXp - dino.price);
-
-        unlocked.push(dino.id);
-        setStoredJson(STORAGE_KEYS.UNLOCKED, unlocked);
-
-        this.equipDino(dino.id);
+        // Atualiza o XP local com o que o back-end devolveu e equipa
+        this.setXp(data.xp_restante);
+        await this.equipDino(dino.id);
 
         window.dispatchEvent(
             new CustomEvent("roar-avatar-changed", {
-                detail: {
-                    dino,
-                    action: "buy",
-                    remainingXp,
-                },
+                detail: { dino, action: "buy", remainingXp: data.xp_restante },
             })
         );
 
-        return {
-            success: true,
-            alreadyOwned: false,
-            dino,
-            remainingXp,
-            message: `Parabéns! Você adotou o ${dino.name} e ele já foi equipado como seu mascote!`,
-        };
+        return { success: true, dino, message: data.mensagem };
     },
 
-    equipDino(id) {
+    async equipDino(id) {
         const dino = this.getDinoById(id);
-        if (!dino) {
-            throw new Error("Dino não encontrado.");
-        }
+        if (!dino) throw new Error("Dino não encontrado.");
 
-        const unlocked = this.getUnlockedDinos();
-        if (!unlocked.includes(dino.id)) {
-            throw new Error(`Você ainda não desbloqueou o ${dino.name}.`);
+        const token = localStorage.getItem("token") || localStorage.getItem("roar_token");
+
+        const response = await fetch("http://localhost:5000/alunos/loja-lex", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ acao: "equipar", skin_id: dino.id })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.erro || "Erro ao equipar dino.");
         }
 
         localStorage.setItem(STORAGE_KEYS.EQUIPPED, dino.id);
-
         this.applyToPage();
 
         window.dispatchEvent(
             new CustomEvent("roar-avatar-changed", {
-                detail: {
-                    dino,
-                    action: "equip",
-                },
+                detail: { dino, action: "equip" },
             })
         );
 
-        return {
-            success: true,
-            dino,
-            message: `O ${dino.name} agora é o seu mascote ativo!`,
-        };
+        return { success: true, dino, message: data.mensagem };
     },
 
     resolveImagePath(dino, fromDepth = null) {
