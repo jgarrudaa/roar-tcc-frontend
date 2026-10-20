@@ -1,0 +1,38 @@
+/* Keep the prompt image and its margins consistent across vocabulary items. */
+.activity-page .association-prompt-button {
+    width: min(320px, 76vw);
+    height: clamp(170px, 32vh, 280px);
+    padding: 14px;
+}
+
+.activity-page .association-prompt-button .prompt-image {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    min-width: 0;
+    min-height: 0;
+    object-fit: contain;
+    object-position: center;
+}
+
+.activity-page .audio-image-game .revealed-word,
+.activity-page .validation-game .revealed-word {
+    margin: 0;
+    font-size: clamp(24px, 3.5vw, 36px);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.activity-back svg,
+.audio-button svg {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 760px) {
+    .activity-page .association-game { gap: 12px; }
+    .activity-page .association-prompt-button {
+        width: min(280px, 76vw);
+        height: clamp(150px, 27vh, 230px);
+    }
+}

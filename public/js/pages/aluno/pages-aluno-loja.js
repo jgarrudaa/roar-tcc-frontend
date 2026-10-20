@@ -339,9 +339,9 @@ function renderDinoGrid() {
 /* ------------------------------------------------------------
    AÇÃO DE EQUIPAR
    ------------------------------------------------------------ */
-function handleEquip(dino) {
+async function handleEquip(dino) {
     try {
-        const result = avatarService.equipDino(dino.id);
+        await avatarService.equipDino(dino.id); // <- Adicionado await
         playSound("success");
         showToast(`Mascote alterado para ${dino.name}!`, "success");
         renderDinoGrid();
@@ -354,6 +354,7 @@ function handleEquip(dino) {
    MODAL DE COMPRA
    ------------------------------------------------------------ */
 function openPurchaseModal(dino) {
+    pendingPurchaseDino = null;
     pendingPurchaseDino = dino;
     const currentXp = avatarService.getXp();
     const remaining = currentXp - dino.price;
@@ -366,6 +367,9 @@ function openPurchaseModal(dino) {
     elements.modalXpCost.textContent = `- ${dino.price.toLocaleString("pt-BR")} XP`;
     elements.modalXpRemaining.textContent = `${remaining.toLocaleString("pt-BR")} XP`;
 
+    
+    elements.modalBackdrop.inert = false; 
+
     elements.modalBackdrop.classList.add("is-open");
     elements.modalBackdrop.setAttribute("aria-hidden", "false");
     elements.modalConfirmBtn.focus();
@@ -373,27 +377,43 @@ function openPurchaseModal(dino) {
 
 function closePurchaseModal() {
     pendingPurchaseDino = null;
+
+    
+    if (document.activeElement && elements.modalBackdrop.contains(document.activeElement)) {
+        document.activeElement.blur();
+    }
+
     elements.modalBackdrop.classList.remove("is-open");
     elements.modalBackdrop.setAttribute("aria-hidden", "true");
+    
+    // Opcional recomendado pelo W3C (deixa o modal "morto" para cliques invisíveis)
+    elements.modalBackdrop.inert = true; 
 }
 
-function handleConfirmPurchase() {
+async function handleConfirmPurchase() {
     if (!pendingPurchaseDino) return;
     const dino = pendingPurchaseDino;
 
     try {
-        const result = avatarService.buyDino(dino.id);
+        // Mostra estado de "Carregando..." no botão para evitar duplo clique
+        elements.modalConfirmBtn.disabled = true;
+        elements.modalConfirmBtn.innerHTML = '<i class="fi fi-br-spinner"></i> Adotando...';
+
+        await avatarService.buyDino(dino.id); // <- Adicionado await
         closePurchaseModal();
 
         // Celebração!
         playSound("celebration");
         launchConfetti();
-
         showToast(`🎉 Incrível! Você adotou o ${dino.name}! Ele já está equipado em toda a plataforma.`, "success");
 
         renderDinoGrid();
     } catch (e) {
         showToast(e.message || "Não foi possível concluir a compra.", "error");
+    } finally {
+        // Restaura o botão
+        elements.modalConfirmBtn.disabled = false;
+        elements.modalConfirmBtn.innerHTML = '<i class="fi fi-br-shopping-cart"></i> Adotar e Equipar!';
     }
 }
 

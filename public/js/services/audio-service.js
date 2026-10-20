@@ -9,18 +9,36 @@ function getPreferences() {
     };
 }
 
-export const audioService = Object.freeze({
-    speak(text, language = "pt-BR") {
-        const preferences = getPreferences();
-        if (!preferences.enabled || !("speechSynthesis" in window) || !text) return;
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = language;
+let sequenceVersion = 0;
+
+function stop() {
+    sequenceVersion += 1;
+    window.speechSynthesis?.cancel();
+}
+
+function speakSequence(parts) {
+    stop();
+    const version = sequenceVersion;
+    const preferences = getPreferences();
+    if (!preferences.enabled || !("speechSynthesis" in window)) return;
+    const phrases = parts.filter((part) => String(part?.text ?? "").trim());
+    function speakPart(index) {
+        if (version !== sequenceVersion || index >= phrases.length) return;
+        const part = phrases[index];
+        const utterance = new SpeechSynthesisUtterance(String(part.text));
+        utterance.lang = part.language || "pt-BR";
         utterance.rate = preferences.rate;
         utterance.volume = preferences.volume;
+        utterance.onend = () => speakPart(index + 1);
         window.speechSynthesis.speak(utterance);
+    }
+    speakPart(0);
+}
+
+export const audioService = Object.freeze({
+    speak(text, language = "pt-BR") {
+        speakSequence([{ text, language }]);
     },
-    stop() {
-        window.speechSynthesis?.cancel();
-    },
+    speakSequence,
+    stop,
 });

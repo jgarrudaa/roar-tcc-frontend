@@ -28,7 +28,14 @@ const soundButton = document.querySelector("#shadow-sound");
 let engine = null;
 let round = 0;
 let completed = 0;
+let advanceTimer = null;
+let roundVersion = 0;
 let soundsEnabled = storage.getPreferences().soundsEnabled !== false;
+
+function cancelAutoAdvance() {
+    if (advanceTimer !== null) window.clearTimeout(advanceTimer);
+    advanceTimer = null;
+}
 
 function speak(text, language = "pt-BR") {
     if (soundsEnabled) audioService.speak(text, language);
@@ -46,6 +53,8 @@ function updateProgress() {
 }
 
 function startRound() {
+    cancelAutoAdvance();
+    const currentVersion = ++roundVersion;
     engine?.destroy?.();
     audioService.stop();
     nextButton.hidden = false;
@@ -67,8 +76,15 @@ function startRound() {
             setProgress() { updateProgress(); },
         },
         onCorrect() {
+            if (currentVersion !== roundVersion) return;
             completed = Math.max(completed, round + 1);
             updateProgress();
+            if (advanceTimer !== null) return;
+            advanceTimer = window.setTimeout(() => {
+                if (currentVersion !== roundVersion) return;
+                advanceTimer = null;
+                advanceRound();
+            }, 2000);
         },
         onWrong() {},
     });
@@ -76,6 +92,8 @@ function startRound() {
 }
 
 function showSummary() {
+    cancelAutoAdvance();
+    roundVersion += 1;
     engine?.destroy?.();
     engine = null;
     audioService.stop();
@@ -124,8 +142,9 @@ function showSummary() {
     title.focus();
 }
 
-nextButton.addEventListener("click", () => {
+function advanceRound() {
     if (!engine?.next()) return;
+    cancelAutoAdvance();
     if (round === animals.length - 1) {
         showSummary();
         return;
@@ -134,7 +153,9 @@ nextButton.addEventListener("click", () => {
     startRound();
     stage.querySelector(".shadow-listen-button")?.focus();
     instruction.scrollIntoView({ block: "nearest" });
-});
+}
+
+nextButton.addEventListener("click", advanceRound);
 
 difficulty.addEventListener("change", () => {
     completed = round;
@@ -152,7 +173,12 @@ soundButton.addEventListener("click", () => {
 });
 
 window.addEventListener("pagehide", () => {
+    cancelAutoAdvance();
+    roundVersion += 1;
     engine?.destroy?.();
     audioService.stop();
+});
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted) window.location.reload();
 });
 startRound();

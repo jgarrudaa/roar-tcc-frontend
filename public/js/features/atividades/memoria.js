@@ -66,9 +66,36 @@ export function createMemoryActivity(
     let matchedPairs = 0;
     let totalPairs = 0;
     let memoryItems = [];
+    let previewing = false;
+    let destroyed = false;
+    const timers = new Set();
+
+    function schedule(callback, delay) {
+        const timer = window.setTimeout(() => {
+            timers.delete(timer);
+            if (!destroyed) callback();
+        }, delay);
+        timers.add(timer);
+        return timer;
+    }
+
+    function clearTimers() {
+        timers.forEach((timer) => window.clearTimeout(timer));
+        timers.clear();
+    }
+
+    function destroy() {
+        destroyed = true;
+        lockBoard = true;
+        clearTimers();
+        window.removeEventListener("pagehide", destroy);
+        elements.stage.classList.remove("memory-stage");
+        audioService.stop();
+    }
 
 
     function getInstruction() {
+        if (previewing) return "Observe as cartas e memorize onde está cada par.";
         return (
             activity.instruction ||
             "Encontre os pares de imagem e palavra."
@@ -188,7 +215,7 @@ export function createMemoryActivity(
 
     function handleCard(card) {
         if (
-            lockBoard ||
+            destroyed || lockBoard || card.disabled ||
             card === firstCard ||
             card.classList.contains(
                 "is-matched",
@@ -228,7 +255,7 @@ export function createMemoryActivity(
             "Essas cartas são diferentes. Observe e tente novamente.",
         );
 
-        window.setTimeout(
+        schedule(
             () => {
                 hideCard(firstCard);
                 hideCard(secondCard);
@@ -282,6 +309,8 @@ export function createMemoryActivity(
             "memory-card-front";
 
         front.textContent = "?";
+        front.setAttribute("aria-hidden", "true");
+        back.setAttribute("aria-hidden", "true");
 
         back.className =
             "memory-card-back";
@@ -316,7 +345,7 @@ export function createMemoryActivity(
 
     function renderGame() {
         firstCard = null;
-        lockBoard = false;
+        lockBoard = previewing;
         matchedPairs = 0;
 
         elements.stage.replaceChildren();
@@ -356,8 +385,42 @@ export function createMemoryActivity(
         grid.className =
             "memory-grid";
 
+        grid.dataset.pairs = String(totalPairs);
         grid.append(...cards);
-        content.append(grid);
+        const controls = document.createElement("div");
+        const previewText = document.createElement("p");
+        const startButton = createButton("Começar agora", "memory-start-button");
+        controls.className = "memory-preview-controls";
+        previewText.textContent = "Observe os pares. As cartas viram em 5 segundos.";
+        controls.append(previewText, startButton);
+        controls.hidden = !previewing;
+        content.append(controls, grid);
+        elements.stage.classList.add("memory-stage");
+
+        function finishPreview() {
+            if (destroyed || !previewing) return;
+            clearTimers();
+            const restoreFocus = document.activeElement === startButton;
+            previewing = false;
+            cards.forEach((card) => {
+                hideCard(card);
+                card.disabled = false;
+            });
+            controls.hidden = true;
+            lockBoard = false;
+            elements.setInstruction(getInstruction());
+            elements.setMessage("Vire duas cartas para encontrar um par.");
+            if (restoreFocus) cards[0]?.focus();
+            audioService.speak(getInstruction(), "pt-BR");
+        }
+        if (previewing) {
+            cards.forEach((card) => {
+                revealCard(card);
+                card.disabled = true;
+            });
+            startButton.addEventListener("click", finishPreview);
+            schedule(finishPreview, 5000);
+        }
 
         elements.stage.append(
             content,
@@ -368,7 +431,8 @@ export function createMemoryActivity(
         );
 
         elements.setMessage(
-            "Vire duas cartas para encontrar um par.",
+            previewing ? "Memorize a posição de cada imagem e palavra."
+                : "Vire duas cartas para encontrar um par.",
         );
 
         elements.setProgress(
@@ -378,139 +442,28 @@ export function createMemoryActivity(
     }
 
 
-    function renderPreview() {
-        elements.stage.replaceChildren();
-
-        elements.nextButton.disabled =
-            true;
-
-        const content =
-            document.createElement("div");
-
-        const title =
-            document.createElement("h2");
-
-        const previewGrid =
-            document.createElement("div");
-
-        const startButton =
-            createButton(
-                "Começar jogo",
-                "btn btn--primary",
-            );
-
-        content.className =
-            "activity-content memory-preview";
-
-        title.textContent =
-            "Conheça os pares";
-
-        previewGrid.className =
-            "memory-preview-grid";
-
-        memoryItems.forEach(
-            (item) => {
-                const pair =
-                    document.createElement(
-                        "div",
-                    );
-
-                const image =
-                    createImage(
-                        item,
-                        student.supportLevel,
-                    );
-
-                const wordButton =
-                    createButton(
-                        item.en,
-                        "memory-preview-word",
-                    );
-
-                pair.className =
-                    "memory-preview-pair";
-
-                wordButton.setAttribute(
-                    "aria-label",
-                    `Ouvir ${item.en}`,
-                );
-
-                wordButton.addEventListener(
-                    "click",
-                    () => {
-                        audioService.speak(
-                            item.en,
-                            "en-US",
-                        );
-                    },
-                );
-
-                pair.append(
-                    image,
-                    wordButton,
-                );
-
-                previewGrid.append(
-                    pair,
-                );
-            },
-        );
-
-        startButton.addEventListener(
-            "click",
-            renderGame,
-        );
-
-        content.append(
-            title,
-            previewGrid,
-            startButton,
-        );
-
-        elements.stage.append(
-            content,
-        );
-
-        elements.setInstruction(
-            "Observe os pares antes de começar.",
-        );
-
-        elements.setMessage(
-            "Quando estiver pronto, pressione Começar jogo.",
-        );
-
-        elements.setProgress(
-            0,
-            memoryItems.length,
-        );
-    }
-
-
     function render() {
+        clearTimers();
+        destroyed = false;
+        previewing = [1, 2].includes(Number(student.supportLevel));
+        window.addEventListener("pagehide", destroy);
         memoryItems =
             createMemoryItems(
                 activity.item,
                 module.items,
                 getPairLimit(
-                    student.supportLevel,
+                    Number(student.supportLevel),
                 ),
             );
 
-        /*
-         * O Nível 2 recebe apresentação prévia.
-         * Os demais níveis iniciam diretamente no jogo.
-         */
-        if (student.supportLevel === 2) {
-            renderPreview();
-            return;
-        }
-
         renderGame();
+        audioService.speak(getInstruction(), "pt-BR");
     }
 
 
     return Object.freeze({
         start: render,
+        destroy,
 
         repeatInstruction() {
             audioService.speak(
@@ -521,7 +474,7 @@ export function createMemoryActivity(
 
         next() {
             return (
-                totalPairs > 0 &&
+                !destroyed && totalPairs > 0 &&
                 matchedPairs ===
                     totalPairs
             );

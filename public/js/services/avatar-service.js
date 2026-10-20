@@ -1,11 +1,8 @@
-/* ============================================================
-   ROAR — avatar-service.js
-   Gerenciamento central de avatares dos dinos, inventário e XP
-   ============================================================ */
+import { sessionService } from "./session-service.js";
 
 export const DINO_CATALOG = Object.freeze([
     {
-        id: "1",
+        id: "dino_original",
         name: "Lex Clássico",
         title: "O Mascote Lendário",
         price: 0,
@@ -18,7 +15,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "classico",
     },
     {
-        id: "2",
+        id: "dino_jogador",
         name: "Dino Craque",
         title: "Artilheiro das Palavras",
         price: 800,
@@ -31,7 +28,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "esportes",
     },
     {
-        id: "3",
+        id: "dino_basquete",
         name: "Dino Basqueteiro",
         title: "Cestinha das Quadras",
         price: 800,
@@ -44,7 +41,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "esportes",
     },
     {
-        id: "4",
+        id: "dino_explorador",
         name: "Dino Explorador",
         title: "Aventureiro da Selva",
         price: 800,
@@ -57,7 +54,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "aventura",
     },
     {
-        id: "5",
+        id: "dino_cowboy",
         name: "Dino Cowboy",
         title: "Xerife do Velho Oeste",
         price: 900,
@@ -70,7 +67,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "aventura",
     },
     {
-        id: "6",
+        id: "dino_militar",
         name: "Dino Militar",
         title: "Comandante Tático",
         price: 900,
@@ -83,7 +80,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "especial",
     },
     {
-        id: "7",
+        id: "dino_hotdog",
         name: "Dino Hot Dog",
         title: "Chef Divertido",
         price: 900,
@@ -96,7 +93,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "divertido",
     },
     {
-        id: "8",
+        id: "dino_ninja",
         name: "Dino Ninja",
         title: "Guerreiro das Sombras",
         price: 900,
@@ -109,7 +106,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "aventura",
     },
     {
-        id: "9",
+        id: "dino_cavaleiro",
         name: "Dino Cavaleiro",
         title: "Paladino da Távola",
         price: 950,
@@ -122,7 +119,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "fantasia",
     },
     {
-        id: "10",
+        id: "dino_astronauta",
         name: "Dino Astronauta",
         title: "Explorador Cósmico",
         price: 980,
@@ -135,7 +132,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "fantasia",
     },
     {
-        id: "11",
+        id: "dino_robo",
         name: "Dino Cibernético",
         title: "Androide do Futuro",
         price: 980,
@@ -148,7 +145,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "fantasia",
     },
     {
-        id: "12",
+        id: "dino_rico",
         name: "Dino Magnata",
         title: "Fino Trato & Alta Classe",
         price: 1000,
@@ -161,7 +158,7 @@ export const DINO_CATALOG = Object.freeze([
         category: "especial",
     },
     {
-        id: "13",
+        id: "dino_rei",
         name: "Dino Rei Supremo",
         title: "Soberano do Reino ROAR",
         price: 1000,
@@ -182,27 +179,17 @@ const STORAGE_KEYS = Object.freeze({
 });
 
 function getStoredJson(key, fallback) {
-    try {
-        const item = localStorage.getItem(key);
-        return item ? JSON.parse(item) : fallback;
-    } catch {
-        return fallback;
-    }
+    try { const item = localStorage.getItem(key); return item ? JSON.parse(item) : fallback; } catch { return fallback; }
 }
 
 function setStoredJson(key, value) {
-    try {
-        localStorage.setItem(key, JSON.stringify(value));
-    } catch (e) {
-        console.warn("AvatarService: Erro ao salvar storage", e);
-    }
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { console.warn("Erro ao salvar storage", e); }
 }
 
 export const avatarService = {
     getCatalog() {
         const unlockedIds = this.getUnlockedDinos();
         const equippedId = this.getEquippedDinoId();
-
         return DINO_CATALOG.map((dino) => ({
             ...dino,
             isUnlocked: unlockedIds.includes(dino.id),
@@ -210,14 +197,12 @@ export const avatarService = {
         }));
     },
 
-    getDinoById(id) {
-        return DINO_CATALOG.find((d) => d.id === id) || DINO_CATALOG[0];
-    },
+    getDinoById(id) { return DINO_CATALOG.find((d) => d.id === id) || DINO_CATALOG[0]; },
 
     getUnlockedDinos() {
         let unlocked = getStoredJson(STORAGE_KEYS.UNLOCKED, null);
         if (!Array.isArray(unlocked) || unlocked.length === 0) {
-            unlocked = [1]; // ID 1 é o Dino Padrão
+            unlocked = ["dino_original"];
             setStoredJson(STORAGE_KEYS.UNLOCKED, unlocked);
         } else if (!unlocked.includes(1)) {
             unlocked.push(1);
@@ -226,20 +211,20 @@ export const avatarService = {
         return unlocked;
     },
 
+    isUnlocked(id) {
+        return this.getUnlockedDinos().includes(id);
+    },
+
     getEquippedDinoId() {
         const equipped = localStorage.getItem(STORAGE_KEYS.EQUIPPED);
         const unlocked = this.getUnlockedDinos();
-        const eqId = parseInt(equipped, 10); // Converte para número
-        if (eqId && unlocked.includes(eqId)) {
-            return eqId;
+        if (equipped && unlocked.includes(equipped)) {
+            return equipped;
         }
-        return 1; // Padrão
+        return "dino_original";
     },
 
-    getEquippedDino() {
-        const id = this.getEquippedDinoId();
-        return this.getDinoById(id);
-    },
+    getEquippedDino() { return this.getDinoById(this.getEquippedDinoId()); },
 
     getXp() {
         const storedXp = localStorage.getItem(STORAGE_KEYS.XP);
@@ -247,30 +232,21 @@ export const avatarService = {
             const parsed = Number(storedXp);
             if (!Number.isNaN(parsed) && parsed >= 0) return parsed;
         }
-
         try {
             const sessionRaw = localStorage.getItem("roarSession");
             if (sessionRaw) {
-                const session = JSON.parse(sessionRaw);
-                const sessionXp = Number(session?.user?.xpTotal ?? session?.user?.xp);
-                if (!Number.isNaN(sessionXp) && sessionXp > 0) {
-                    this.setXp(sessionXp);
-                    return sessionXp;
-                }
+                const sessionXp = Number(JSON.parse(sessionRaw)?.user?.xpTotal);
+                if (!Number.isNaN(sessionXp) && sessionXp > 0) { this.setXp(sessionXp); return sessionXp; }
             }
-        } catch { }
+        } catch {}
 
         try {
             const roarDataRaw = localStorage.getItem("roarData");
             if (roarDataRaw) {
-                const roarData = JSON.parse(roarDataRaw);
-                const roarXp = Number(roarData?.xp);
-                if (!Number.isNaN(roarXp) && roarXp > 0) {
-                    this.setXp(roarXp);
-                    return roarXp;
-                }
+                const roarXp = Number(JSON.parse(roarDataRaw)?.xp);
+                if (!Number.isNaN(roarXp) && roarXp > 0) { this.setXp(roarXp); return roarXp; }
             }
-        } catch { }
+        } catch {}
 
         const defaultXp = 1240;
         this.setXp(defaultXp);
@@ -288,7 +264,7 @@ export const avatarService = {
                 roarData.xp = safeAmount;
                 localStorage.setItem("roarData", JSON.stringify(roarData));
             }
-        } catch { }
+        } catch {}
 
         try {
             const sessionRaw = localStorage.getItem("roarSession");
@@ -300,7 +276,7 @@ export const avatarService = {
                     localStorage.setItem("roarSession", JSON.stringify(session));
                 }
             }
-        } catch { }
+        } catch {}
 
         window.dispatchEvent(
             new CustomEvent("roar-xp-changed", {
@@ -312,70 +288,69 @@ export const avatarService = {
     },
 
     addXp(amount) {
-        return this.setXp(this.getXp() + amount);
+        return this.setXp(this.getXp() + Number(amount));
     },
-    async buyDino(id) {
+
+    buyDino(id) {
         const dino = this.getDinoById(id);
-        if (!dino) throw new Error("Dino não encontrado no catálogo.");
-
-        // NOTA: Confirme qual é a chave do localStorage onde o token está salvo
-        // (Geralmente é token ou roar_token)
-        const token = localStorage.getItem("token") || localStorage.getItem("roar_token");
-
-        const response = await fetch("http://localhost:5000/alunos/loja-lex", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({ acao: "comprar", skin_id: dino.id })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.erro || "Erro ao comprar na loja.");
+        if (!dino) {
+            throw new Error("Dino não encontrado no catálogo.");
         }
 
         // Se o backend aprovou, atualizamos o local
         const unlocked = this.getUnlockedDinos();
-        if (!unlocked.includes(dino.id)) {
-            unlocked.push(dino.id);
-            setStoredJson(STORAGE_KEYS.UNLOCKED, unlocked);
+        if (unlocked.includes(dino.id)) {
+            return {
+                success: true,
+                alreadyOwned: true,
+                dino,
+                message: `Você já possui o ${dino.name}!`,
+            };
         }
 
-        // Atualiza o XP local com o que o back-end devolveu e equipa
-        this.setXp(data.xp_restante);
-        await this.equipDino(dino.id);
+        const currentXp = this.getXp();
+        if (currentXp < dino.price) {
+            const needed = dino.price - currentXp;
+            throw new Error(
+                `XP insuficiente! Você tem ${currentXp.toLocaleString("pt-BR")} XP, mas este dino custa ${dino.price.toLocaleString("pt-BR")} XP (faltam ${needed.toLocaleString("pt-BR")} XP).`
+            );
+        }
+
+        const remainingXp = this.setXp(currentXp - dino.price);
+
+        unlocked.push(dino.id);
+        setStoredJson(STORAGE_KEYS.UNLOCKED, unlocked);
+
+        this.equipDino(dino.id);
 
         window.dispatchEvent(
             new CustomEvent("roar-avatar-changed", {
-                detail: { dino, action: "buy", remainingXp: data.xp_restante },
+                detail: {
+                    dino,
+                    action: "buy",
+                    remainingXp,
+                },
             })
         );
 
-        return { success: true, dino, message: data.mensagem };
+        return {
+            success: true,
+            alreadyOwned: false,
+            dino,
+            remainingXp,
+            message: `Parabéns! Você adotou o ${dino.name} e ele já foi equipado como seu mascote!`,
+        };
     },
 
     async equipDino(id) {
         const dino = this.getDinoById(id);
-        if (!dino) throw new Error("Dino não encontrado.");
+        if (!dino) {
+            throw new Error("Dino não encontrado.");
+        }
 
-        const token = localStorage.getItem("token") || localStorage.getItem("roar_token");
-
-        const response = await fetch("http://localhost:5000/alunos/loja-lex", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({ acao: "equipar", skin_id: dino.id })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.erro || "Erro ao equipar dino.");
+        const unlocked = this.getUnlockedDinos();
+        if (!unlocked.includes(dino.id)) {
+            throw new Error(`Você ainda não desbloqueou o ${dino.name}.`);
         }
 
         localStorage.setItem(STORAGE_KEYS.EQUIPPED, dino.id);
@@ -383,16 +358,22 @@ export const avatarService = {
 
         window.dispatchEvent(
             new CustomEvent("roar-avatar-changed", {
-                detail: { dino, action: "equip" },
+                detail: {
+                    dino,
+                    action: "equip",
+                },
             })
         );
 
-        return { success: true, dino, message: data.mensagem };
+        return {
+            success: true,
+            dino,
+            message: `O ${dino.name} agora é o seu mascote ativo!`,
+        };
     },
 
     resolveImagePath(dino, fromDepth = null) {
         if (!dino) dino = this.getEquippedDino();
-
         let prefix = "../../public/assets/imagens/";
 
         if (fromDepth === null && typeof window !== "undefined") {
@@ -404,18 +385,11 @@ export const avatarService = {
             } else {
                 prefix = "public/assets/imagens/";
             }
-        } else if (fromDepth === 0) {
-            prefix = "public/assets/imagens/";
-        } else if (fromDepth === 1) {
-            prefix = "../public/assets/imagens/";
-        } else if (fromDepth === 2) {
-            prefix = "../../public/assets/imagens/";
-        }
+        } else if (fromDepth === 0) { prefix = "public/assets/imagens/"; }
+        else if (fromDepth === 1) { prefix = "../public/assets/imagens/"; }
+        else if (fromDepth === 2) { prefix = "../../public/assets/imagens/"; }
 
-        if (dino.isOriginal || dino.id === "dino_original") {
-            return `${prefix}dinooriginal.png`;
-        }
-
+        if (dino.isOriginal || dino.id === 1) { return `${prefix}dinooriginal.png`; }
         return `${prefix}dinos/${dino.fileName}`;
     },
 
@@ -436,40 +410,12 @@ export const avatarService = {
             }
             img.src = imgPath;
             img.alt = `Mascote: ${dino.name}`;
-            avatar.title = `Mascote Ativo: ${dino.name} (Abrir Perfil)`;
-            avatar.style.padding = "2px";
-            avatar.style.background = "linear-gradient(135deg, rgba(133, 199, 242, 0.4), rgba(68, 246, 152, 0.3))";
+            avatar.title = `Mascote Ativo: ${dino.name}`;
         });
 
-        const mascotImgs = doc.querySelectorAll("#mascotImg, .hero-mascot img");
-        mascotImgs.forEach((img) => {
+        doc.querySelectorAll("#mascotImg, .hero-mascot img, .congrats-banner img").forEach((img) => {
             img.src = imgPath;
-            img.alt = `Mascote ${dino.name}`;
         });
-
-        const congratsBannerImgs = doc.querySelectorAll(".congrats-banner img");
-        congratsBannerImgs.forEach((img) => {
-            img.src = imgPath;
-            img.alt = `Mascote ${dino.name}`;
-        });
-
-        const profileAvatar = doc.getElementById("profileAvatar");
-        if (profileAvatar) {
-            let img = profileAvatar.querySelector("img.profile-avatar-img");
-            if (!img) {
-                profileAvatar.innerHTML = "";
-                img = doc.createElement("img");
-                img.className = "profile-avatar-img";
-                img.style.width = "100%";
-                img.style.height = "100%";
-                img.style.objectFit = "contain";
-                img.style.padding = "6px";
-                profileAvatar.appendChild(img);
-            }
-            img.src = imgPath;
-            img.alt = `Mascote: ${dino.name}`;
-            profileAvatar.title = `Mascote: ${dino.name}`;
-        }
 
         const xpDisplays = doc.querySelectorAll("#xpTotal, #studentXp, #storeUserXp");
         const currentXp = this.getXp();

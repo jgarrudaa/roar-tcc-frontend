@@ -1,15 +1,17 @@
 import { atividadeService } from "../../services/atividade-service.js";
+import { audioService } from "../../services/audio-service.js";
 import { soundFx } from "../../services/roar-sound-fx.js";
-import { createAssociateActivity, } from "./associar.js?v=2";
-import { createRecognizeActivity, } from "./reconhecer.js";
-import { createValidateActivity, } from "./validar.js?v=2";
-import { createAudioImageActivity, } from "./audio-imagem.js";
-import { createTrueFalseActivity, } from "./verdadeiro-falso.js";
-import { createMemoryActivity, } from "./memoria.js?v=2";
+import { createAssociateActivity, } from "./associar.js?v=4";
+import { createRecognizeActivity, } from "./reconhecer.js?v=4";
+import { createValidateActivity, } from "./validar.js?v=4";
+import { createAudioImageActivity, } from "./audio-imagem.js?v=4";
+import { createTrueFalseActivity, } from "./verdadeiro-falso.js?v=4";
+import { createMemoryActivity, } from "./memoria.js?v=4";
 import { createCompleteSentenceActivity,} from "./completar-frase.js";
 import { createOrderSentenceActivity,} from "./ordenar-frase.js?v=1";
 import { createWritingActivity,} from "./escrita.js";
 import { createWordBankActivity,} from "./banco-palavras.js";
+import { createShadowPuzzleActivity } from "./quebra-cabeca-sombra.js";
 import { createShadowActivity } from "./sombra.js";
 
 
@@ -26,6 +28,7 @@ const ACTIVITY_FACTORIES = Object.freeze({
     orderSentence:createOrderSentenceActivity,
     writing:createWritingActivity,
     wordBank:createWordBankActivity,
+    shadowPuzzle: createShadowPuzzleActivity,
     shadow: createShadowActivity,
 });
 
@@ -99,7 +102,7 @@ function buildNextUrl(
 function calculateElapsedSeconds(
     startedAt,
 ) {
-    if (!startedAt) {
+    if (startedAt === null) {
         return 0;
     }
 
@@ -125,390 +128,186 @@ function setControlsDisabled(
         disabled;
 }
 
-export async function createActivityController({
-    moduleId,
-    stage,
-    elements,
-}) {
-    const context =
-        await atividadeService.getContext(
-            moduleId,
-            stage,
-        );
-
-    const {
-        activity,
-        module,
-        student,
-    } = context;
-
-    elements.title.textContent =
-        module.title;
-
-    if (elements.levelBadge) {
-        elements.levelBadge.textContent =
-            student.supportMode;
+export async function createActivityController({ moduleId, stage, elements }) {
+    const context = await atividadeService.getContext(moduleId, stage);
+    const { activity, module, student } = context;
+    const currentIndex = findCurrentActivityIndex(module, activity);
+    const previousActivity = module.activities[currentIndex - 1];
+    const previousUrl = previousActivity ? buildNextUrl(module.id, previousActivity) : "atividades.html";
+    elements.title.textContent = module.title;
+    if (elements.levelBadge) elements.levelBadge.textContent = student.supportMode;
+    if (elements.backButton) {
+        elements.backButton.href = previousUrl;
+        elements.backButton.setAttribute("aria-label", previousActivity ? "Voltar à atividade anterior" : "Voltar para atividades");
+        elements.backButton.title = previousActivity ? "Atividade anterior" : "Atividades";
     }
-
-    elements.setInstruction(
-        activity.instruction,
-    );
-
+    elements.setInstruction(activity.instruction);
     if (activity.status !== "active") {
         createBlockedMessage(elements);
-
-        elements.setInstruction(
-            "Escolha outra atividade disponível.",
-        );
-
-        elements.setMessage(
-            "Quando ela for liberada, você poderá continuar.",
-        );
-
-        setControlsDisabled(
-            elements,
-            true,
-        );
-
+        elements.setInstruction("Escolha outra atividade disponível.");
+        elements.setMessage("Quando ela for liberada, você poderá continuar.");
+        setControlsDisabled(elements, true);
         return null;
     }
+    if (currentIndex < 0) throw new Error("A atividade atual não foi encontrada no módulo.");
+    if (!ACTIVITY_FACTORIES[activity.type]) throw new Error(`Motor não encontrado para o tipo '${activity.type}'.`);
 
-    const factory =
-        ACTIVITY_FACTORIES[
-        activity.type
-        ];
-
-    if (!factory) {
-        throw new Error(
-            `Motor não encontrado para o tipo '${activity.type}'.`,
-        );
+    // The additional level-two game belongs to the same saved activity. The API
+    // receives one completion only, after memory AND the puzzle are finished.
+    const phases = [activity];
+    if (activity.type === "memory" && Number(student.supportLevel) === 2) {
+        phases.push({ ...activity, type: "shadow", instruction:
+            "Agora monte a imagem! Arraste cada peça até a sombra ou toque para encaixar." });
     }
-
-
-    /*
- * Progresso geral do módulo.
- *
- * Cada motor trabalha internamente com seu próprio progresso,
- * por exemplo 0/1 ou 1/2. O controller converte esse valor
- * para a posição correspondente entre todas as atividades.
- */
-    const currentActivityIndex =
-        findCurrentActivityIndex(
-            module,
-            activity,
-        );
-
-    if (currentActivityIndex < 0) {
-        throw new Error(
-            "A atividade atual não foi encontrada no módulo.",
-        );
-    }
-
-    const totalModuleActivities =
-        Math.max(
-            1,
-            module.activities.length,
-        );
-
-    function setModuleProgress(
-        activityValue,
-        activityMaximum,
-    ) {
-        const safeMaximum =
-            Math.max(
-                1,
-                Number(activityMaximum) || 1,
-            );
-
-        const safeValue =
-            Math.min(
-                safeMaximum,
-                Math.max(
-                    0,
-                    Number(activityValue) || 0,
-                ),
-            );
-
-        const activityPercentage =
-            safeValue / safeMaximum;
-
-        const moduleProgress =
-            Math.min(
-                totalModuleActivities,
-                currentActivityIndex +
-                activityPercentage,
-            );
-
-        elements.progress.max =
-            totalModuleActivities;
-
-        elements.progress.value =
-            moduleProgress;
-
-        elements.progressLabel.textContent =
-            `Etapa ${currentActivityIndex + 1} de ${totalModuleActivities}`;
-    }
-
-    const engineElements = {
-        ...elements,
-        setProgress: setModuleProgress,
-    };
-
-    /*
-     * Mostra a posição correta imediatamente,
-     * antes mesmo de o aluno responder.
-     */
-    setModuleProgress(0, 1);
-
-    const statistics = {
-        correct: 0,
-        wrong: 0,
-    };
-
-    /*
-     * Evita contabilizar o mesmo item
-     * como correto mais de uma vez.
-     */
+    const statistics = { correct: 0, wrong: 0 };
     const correctItems = new Set();
-
+    let engine;
+    let phaseIndex = 0;
+    let epoch = 0;
+    let phaseLocked = false;
+    let autoAdvanceTimer = null;
     let startedAt = null;
     let completionPromise = null;
     let navigationStarted = false;
     let activityStarted = false;
+    let disposed = false;
 
-    function registerCorrect(item) {
-        const itemId =
-            item?.itemId ??
-            item?.id ??
-            activity.id;
-
-        const itemKey =
-            String(itemId);
-
-        if (
-            correctItems.has(itemKey)
-        ) {
-            return;
-        }
-
-        correctItems.add(itemKey);
-        statistics.correct += 1;
+    function clearAutoAdvance() {
+        if (autoAdvanceTimer !== null) window.clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = null;
     }
 
-    function registerWrong() {
-        statistics.wrong += 1;
+    function setModuleProgress(value, maximum) {
+        const max = Math.max(1, Number(maximum) || 1);
+        const fraction = Math.min(max, Math.max(0, Number(value) || 0)) / max;
+        elements.progress.max = module.activities.length;
+        elements.progress.value = currentIndex + (phaseIndex + fraction) / phases.length;
+        elements.progressLabel.textContent = `Etapa ${currentIndex + 1} de ${module.activities.length}` +
+            (phases.length > 1 ? ` · Jogo ${phaseIndex + 1} de ${phases.length}` : "");
     }
 
-    const engine = factory({
-        ...context,
-
-        /*
-         * barra representa o módulo completo.
-         */
-        elements: engineElements,
-
-        onCorrect(item) {
-            soundFx.playSuccess();
-            registerCorrect(item);
-        },
-
-        onWrong() {
-            soundFx.playTryAgain();
-            registerWrong();
-        },
-    });
-
-    if (
-        !engine ||
-        typeof engine.start !==
-        "function" ||
-        typeof engine.next !==
-        "function"
-    ) {
-        throw new Error(
-            "O motor da atividade possui uma interface inválida.",
-        );
+    function lockCompletedStage() {
+        phaseLocked = true;
+        if (elements.stage.contains(document.activeElement)) elements.nextButton.focus?.({ preventScroll: true });
+        elements.stage.inert = true;
     }
 
-    function getNextDestination() {
-        const currentIndex =
-            findCurrentActivityIndex(
-                module,
-                activity,
-            );
-
-        if (currentIndex < 0) {
-            throw new Error(
-                "A atividade atual não foi encontrada no módulo.",
-            );
+    function prepareEngine() {
+        const activeEpoch = ++epoch;
+        phaseLocked = false;
+        elements.stage.inert = false;
+        elements.nextButton.disabled = true;
+        elements.repeatButton.disabled = false;
+        elements.setInstruction(phases[phaseIndex].instruction);
+        setModuleProgress(0, 1);
+        engine = ACTIVITY_FACTORIES[phases[phaseIndex].type]({
+            ...context, activity: phases[phaseIndex],
+            elements: { ...elements, setProgress: setModuleProgress },
+            onCorrect(item) {
+                if (disposed || phaseLocked || activeEpoch !== epoch) return;
+                const key = `${phaseIndex}:${item?.itemId ?? item?.id ?? activity.id}`;
+                if (!correctItems.has(key)) {
+                    correctItems.add(key);
+                    statistics.correct += 1;
+                    soundFx.playSuccess();
+                }
+                // Some engines report the answer immediately before updating their
+                // resolved flag. Check after the complete input handler has returned.
+                queueMicrotask(() => {
+                    if (disposed || activeEpoch !== epoch || phaseLocked || completionPromise || !engine.next()) return;
+                    lockCompletedStage();
+                    autoAdvanceTimer = window.setTimeout(() => {
+                        autoAdvanceTimer = null;
+                        next();
+                    }, 2000);
+                });
+            },
+            onWrong() {
+                if (disposed || phaseLocked || activeEpoch !== epoch) return;
+                statistics.wrong += 1;
+                soundFx.playTryAgain();
+            },
+        });
+        if (!engine || typeof engine.start !== "function" || typeof engine.next !== "function") {
+            throw new Error("O motor da atividade possui uma interface inválida.");
         }
+    }
 
-        const nextActivity =
-            module.activities[
-            currentIndex + 1
-            ];
-
-        if (!nextActivity) {
-            return "atividades.html";
-        }
-
-        return buildNextUrl(
-            module.id,
-            nextActivity,
-        );
+    function destroy() {
+        if (disposed) return;
+        disposed = true;
+        epoch += 1;
+        clearAutoAdvance();
+        engine?.destroy?.();
+        audioService.stop();
+        elements.stage.inert = false;
     }
 
     async function finishActivity() {
-        const timeSeconds =
-            calculateElapsedSeconds(
-                startedAt,
-            );
-
-        elements.setMessage(
-            "Salvando seu progresso...",
-        );
-
-        setControlsDisabled(
-            elements,
-            true,
-        );
-
+        elements.setMessage("Salvando seu progresso...");
+        setControlsDisabled(elements, true);
         try {
-            const result =
-                await atividadeService.complete(
-                    activity.id,
-                    {
-                        correct:
-                            statistics.correct,
-
-                        wrong:
-                            statistics.wrong,
-
-                        timeSeconds,
-                    },
-                );
-
-            const earnedXp =
-                Number(
-                    result?.data?.xp_ganho ??
-                    result?.xp_ganho,
-                ) || 0;
-
+            const result = await atividadeService.complete(activity.id, {
+                ...statistics, timeSeconds: calculateElapsedSeconds(startedAt),
+            });
+            if (disposed) return false;
+            const earnedXp = Number(result?.data?.xp_ganho ?? result?.xp_ganho) || 0;
             soundFx.playAchievement();
-            elements.setMessage(
-                earnedXp > 0
-                    ? `Atividade concluída! Você ganhou ${earnedXp} XP.`
-                    : "Atividade concluída! Seu progresso foi salvo.",
-            );
-
-            if (navigationStarted) {
-                return true;
-            }
-
+            elements.setMessage(earnedXp > 0 ? `Atividade concluída! Você ganhou ${earnedXp} XP.` :
+                "Atividade concluída! Seu progresso foi salvo.");
             navigationStarted = true;
-
-            const destination =
-                getNextDestination();
-
-            window.setTimeout(() => {
-                navigateTo(destination);
-            }, 700);
-
+            const nextActivity = module.activities[currentIndex + 1];
+            destroy();
+            navigateTo(nextActivity ? buildNextUrl(module.id, nextActivity) : "atividades.html");
             return true;
         } catch (error) {
-            console.error(
-                "Não foi possível registrar a conclusão:",
-                error,
-            );
-
+            if (disposed) return false;
+            console.error("Não foi possível registrar a conclusão:", error);
             completionPromise = null;
-
-            elements.setMessage(
-                error?.message ||
-                "Não foi possível salvar seu progresso. Tente novamente.",
-            );
-
-            elements.nextButton.disabled =
-                false;
-
-            elements.repeatButton.disabled =
-                false;
-
+            elements.setMessage("Não foi possível salvar seu progresso. Toque em Próximo para tentar novamente.");
+            setControlsDisabled(elements, false);
             return false;
         }
     }
 
+    function next() {
+        if (completionPromise) return completionPromise;
+        if (disposed || navigationStarted || !activityStarted || !engine.next()) return Promise.resolve(false);
+        clearAutoAdvance();
+        lockCompletedStage();
+        if (phaseIndex + 1 < phases.length) {
+            engine.destroy?.();
+            audioService.stop();
+            phaseIndex += 1;
+            prepareEngine();
+            engine.start();
+            return Promise.resolve(true);
+        }
+        completionPromise = finishActivity();
+        return completionPromise;
+    }
+
+    prepareEngine();
     return Object.freeze({
         start() {
-            if (activityStarted) {
-                return;
-            }
-
+            if (activityStarted || disposed) return;
             activityStarted = true;
-
-            startedAt =
-                performance.now();
-
+            startedAt = performance.now();
             engine.start();
         },
-
         repeatInstruction() {
-            if (
-                navigationStarted ||
-                completionPromise
-            ) {
-                return;
-            }
-
-            if (
-                typeof
-                engine.repeatInstruction ===
-                "function"
-            ) {
-                engine.repeatInstruction();
-            }
+            if (disposed || navigationStarted || completionPromise) return;
+            engine.repeatInstruction?.();
         },
-
-        next() {
-            if (navigationStarted) {
-                return completionPromise;
-            }
-
-            /*
-             * Enquanto o progresso estiver
-             * sendo enviado, cliques adicionais
-             * reutilizam a mesma Promise.
-             */
-            if (completionPromise) {
-                return completionPromise;
-            }
-
-            const completed =
-                engine.next();
-
-            if (!completed) {
-                return Promise.resolve(false);
-            }
-
-            completionPromise =
-                finishActivity();
-
-            return completionPromise;
+        next,
+        previous() {
+            if (disposed || navigationStarted) return;
+            destroy();
+            navigateTo(previousUrl);
         },
-
+        destroy,
         getStatistics() {
-            return Object.freeze({
-                correct:
-                    statistics.correct,
-
-                wrong:
-                    statistics.wrong,
-
-                timeSeconds:
-                    calculateElapsedSeconds(
-                        startedAt,
-                    ),
-            });
+            return Object.freeze({ ...statistics, timeSeconds: calculateElapsedSeconds(startedAt) });
         },
     });
 }

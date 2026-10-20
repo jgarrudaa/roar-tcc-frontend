@@ -1,0 +1,118 @@
+/* Fit the real board to the stage; retain scrolling at small sizes and zoom. */
+.activity-stage#activity-stage.memory-stage { padding: clamp(10px, 1.8vh, 18px); }
+
+#activity-stage.memory-stage .activity-content.memory-game {
+    width: 100%;
+    max-width: 900px;
+    height: 100%;
+    min-height: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+#activity-stage.memory-stage .memory-preview-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px 18px;
+    flex: 0 0 auto;
+    text-align: center;
+}
+
+#activity-stage.memory-stage .memory-preview-controls[hidden] { display: none; }
+.memory-preview-controls p { margin: 0; font-size: 1rem; }
+
+.memory-start-button {
+    min-height: 44px;
+    padding: 8px 18px;
+    border: 2px solid var(--roar-blue);
+    border-radius: 12px;
+    background: var(--roar-blue);
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.memory-start-button:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 3px;
+}
+
+#activity-stage.memory-stage .memory-game .memory-grid {
+    flex: 0 1 420px;
+    width: min(100%, 780px);
+    max-width: 780px;
+    min-height: 200px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: clamp(8px, 1.5vh, 14px);
+}
+
+#activity-stage.memory-stage .memory-game .memory-grid[data-pairs="1"],
+#activity-stage.memory-stage .memory-game .memory-grid[data-pairs="2"] {
+    max-width: 600px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+#activity-stage.memory-stage .memory-game .memory-grid[data-pairs="1"] {
+    grid-template-rows: minmax(0, 1fr);
+}
+
+#activity-stage.memory-stage .memory-game .memory-grid[data-pairs="4"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+#activity-stage.memory-stage .memory-game .memory-grid .memory-card {
+    min-width: 0;
+    min-height: 96px;
+    height: 100%;
+    aspect-ratio: auto;
+}
+
+#activity-stage.memory-stage .memory-game .memory-card-back .prompt-image {
+    width: 100%;
+    height: 100%;
+    max-width: 180px;
+    max-height: 160px;
+    min-height: 0;
+    object-fit: contain;
+}
+
+#activity-stage.memory-stage .memory-card-back {
+    padding: 8px;
+    overflow-wrap: anywhere;
+    font-size: clamp(16px, 2vw, 25px);
+}
+
+#activity-stage.memory-stage .memory-card:disabled { opacity: 1; }
+
+@media (max-width: 520px), (max-height: 550px) {
+    #activity-stage.memory-stage .activity-content.memory-game {
+        height: auto;
+        min-height: 100%;
+        justify-content: flex-start;
+    }
+
+    #activity-stage.memory-stage .memory-game .memory-grid {
+        flex: none;
+        grid-auto-rows: minmax(110px, auto);
+        grid-template-rows: none;
+    }
+
+    #activity-stage.memory-stage .memory-game .memory-grid .memory-card {
+        min-height: 110px;
+    }
+}
+
+@media (max-width: 520px) {
+    #activity-stage.memory-stage .memory-game .memory-grid,
+    #activity-stage.memory-stage .memory-game .memory-grid[data-pairs="4"] {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
