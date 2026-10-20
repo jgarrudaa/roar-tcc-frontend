@@ -1,7 +1,6 @@
 import { studentHomeService } from "../../services/student-home-service.js";
 import { avatarService } from "../../services/avatar-service.js";
-import { showToast } from "../../components/toast.js";
-import { avatarService } from "../../services/avatar-service.js";
+import { showToast } from "../../components/toast.js"
 
 
 const MASCOT_MESSAGES = Object.freeze([
