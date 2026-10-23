@@ -15,6 +15,7 @@ const SELECTORS = Object.freeze({
     name: "#nomeAluno",
     schoolYear: "#anoEscolar",
     email: "#emailAluno",
+    teaSupportLevel: "#nivelSuporteTea",
 
     communication:
         'input[name="pergunta1"]:checked',
@@ -79,6 +80,9 @@ function getElements() {
             SELECTORS.email,
         ),
 
+        teaSupportLevelInput: document.querySelector(
+            SELECTORS.teaSupportLevel,
+        ),
 
         finalLevelInput: document.querySelector(
             SELECTORS.finalLevel,
@@ -219,6 +223,7 @@ function getStudentData(elements) {
         name: elements.nameInput.value,
         schoolYear: elements.schoolYearInput.value,
         email: elements.emailInput.value,
+        teaSupportLevel: elements.teaSupportLevelInput.value,
 
         communication: getSelectedValue(
             SELECTORS.communication,
@@ -239,6 +244,7 @@ function getStudentData(elements) {
 function setSaving(elements, isSaving) {
     state.isSaving = isSaving;
     elements.saveButton.disabled = isSaving;
+    elements.teaSupportLevelInput.disabled = isSaving;
 
     elements.saveButton.textContent = isSaving
         ? "Salvando..."

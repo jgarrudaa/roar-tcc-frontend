@@ -28,10 +28,16 @@ function edgePath(startX, startY, endX, endY, tab, depth) {
 }
 
 export function getShadowPieceCount(context) {
+    // Suporte TEA e modo de aprendizagem são campos independentes.
+    const teaLevel = context.student?.teaSupportLevel;
+    if (teaLevel === 1) return 6;
+    if (teaLevel === 2) return 4;
+    if (teaLevel === 3) return 2;
+
     const requested = Number(context.pieceCount);
     if ([2, 4, 6].includes(requested)) return requested;
-    const level = Number(context.student?.supportLevel ?? 1);
-    return level === 3 ? 6 : level === 2 ? 4 : 2;
+    // Sem suporte TEA informado, começar pela montagem mais simples.
+    return 2;
 }
 
 export function createShadowPuzzle(pieceCount) {

@@ -15,6 +15,31 @@ function loadModule(relativePath) {
 const puzzleModule = loadModule('../public/js/features/atividades/sombra-puzzle.js');
 const serviceModule = loadModule('../public/js/services/atividade-service.js');
 
+// O nível TEA é independente do modo de aprendizagem e tem prioridade.
+for (const [teaSupportLevel, expected] of [[1, 6], [2, 4], [3, 2]]) {
+    for (const supportLevel of [1, 2, 3]) {
+        for (const pieceCount of [undefined, 2, 4, 6]) {
+            const student = serviceModule.normalizeStudent({
+                id: 7,
+                supportLevel: `Nível ${supportLevel} - ${['Suporte Visual Puro', 'Aprendiz Guiado', 'Autonomia Contextual'][supportLevel - 1]}`,
+                teaSupportLevel,
+            });
+            assert.equal(student.supportLevel, supportLevel);
+            assert.equal(student.teaSupportLevel, teaSupportLevel);
+            assert.equal(puzzleModule.getShadowPieceCount({ student, pieceCount }), expected);
+        }
+    }
+}
+for (const teaSupportLevel of [undefined, null, 0, 4, -1, true, '1', 1.5]) {
+    const student = serviceModule.normalizeStudent({ id: 7, supportLevel: 'Verbal', teaSupportLevel });
+    assert.equal(student.teaSupportLevel, null);
+    assert.equal(puzzleModule.getShadowPieceCount({ student }), 2);
+    assert.equal(puzzleModule.getShadowPieceCount({ student, pieceCount: 4 }), 4);
+}
+assert.equal(serviceModule.normalizeStudent({
+    id: 7, supportLevel: 'Visual Guiado', nivel_suporte_tea: 1,
+}).teaSupportLevel, 1);
+
 // Flatten the produced SVG, independently of the puzzle's edge generator.
 function flattenPath(svgPath) {
     const points = [];
@@ -164,6 +189,8 @@ assert.equal(serviceModule.normalizeActivity({
     atividade_id: 7,
     ordem_sequencia: 1,
     tipo_interacao: 'DragAndDrop',
-}).type, 'shadowPuzzle', 'DragAndDrop uses the existing shadowPuzzle engine.');
+}).type, 'shadowPuzzle', 'DragAndDrop deve manter o jogo de encaixe já utilizado no projeto.');
+
+console.log('Suporte TEA independente: 1 → 6, 2 → 4, 3 → 2 peças; perfis antigos e prioridade sobre seleção manual verificados.');
 
 console.log('Sombras: 2/4/6 peças cobrem 30.000 pontos sem lacunas ou sobreposições; áreas, abas, bounds e aliases válidos.');

@@ -29,13 +29,14 @@
     <main class="shadow-page-main">
         <div class="shadow-session-bar">
             <p id="shadow-round" class="shadow-round">Animal 1 de 6</p>
-            <label class="shadow-difficulty" for="shadow-difficulty">Peças
-                <select id="shadow-difficulty">
+            <label id="shadow-difficulty-control" class="shadow-difficulty" for="shadow-difficulty">Peças
+                <select id="shadow-difficulty" disabled>
                     <option value="2">2 peças</option>
                     <option value="4">4 peças</option>
                     <option value="6">6 peças</option>
                 </select>
             </label>
+            <p id="shadow-piece-count" class="shadow-difficulty" hidden></p>
         </div>
         <p class="shadow-instruction" id="activity-instruction">Arraste cada peça até sua sombra.</p>
         <div id="activity-stage" class="shadow-stage" aria-busy="true">

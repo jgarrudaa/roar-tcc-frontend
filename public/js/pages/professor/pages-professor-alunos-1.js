@@ -147,6 +147,10 @@ const elements = {
         "editarAlunoNivel",
     ),
 
+    editTeaSupportLevel: document.getElementById(
+        "editarAlunoSuporteTea",
+    ),
+
     editMessage: document.getElementById(
         "editarAlunoMensagem",
     ),
@@ -796,6 +800,9 @@ function prepareModal(student) {
             student.level?.number ?? 1,
         );
 
+    elements.editTeaSupportLevel.value =
+        String(student.teaSupportLevel ?? "");
+
     elements.editMessage.textContent = "";
 
     clearGeneratedPin();
@@ -1109,6 +1116,7 @@ function setStudentManagementDisabled(disabled) {
     elements.editEmail.disabled = disabled;
     elements.editSchoolYear.disabled = disabled;
     elements.editLevel.disabled = disabled;
+    elements.editTeaSupportLevel.disabled = disabled;
     elements.saveStudentButton.disabled = disabled;
     elements.deactivateStudentButton.disabled = disabled;
 }
@@ -1162,6 +1170,7 @@ async function saveSelectedStudent(event) {
                 email: elements.editEmail.value,
                 schoolYear:elements.editSchoolYear.value,
                 level: newLevel,
+                teaSupportLevel: elements.editTeaSupportLevel.value,
             },
         );
 
@@ -1603,6 +1612,9 @@ async function loadStudents() {
 
                     email:
                         details?.email ?? "",
+
+                    teaSupportLevel:
+                        details?.teaSupportLevel ?? null,
 
                     mode:
                         details?.mode ??
