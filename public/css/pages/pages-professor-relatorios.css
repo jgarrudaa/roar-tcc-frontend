@@ -89,6 +89,30 @@
 
 .student-sidebar__list {
     padding: var(--space-sm);
+    
+    /* Define uma altura máxima baseada na altura da tela (viewport) descontando o cabeçalho */
+    max-height: calc(100vh - 160px); 
+    
+    /* Adiciona o scroll vertical automático quando a lista for maior que a altura máxima */
+    overflow-y: auto; 
+}
+
+/* Deixa a barra de rolagem (scroll) mais fina e elegante */
+.student-sidebar__list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.student-sidebar__list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.student-sidebar__list::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: var(--r-full);
+}
+
+.student-sidebar__list::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.25);
 }
 
 .student-item {
