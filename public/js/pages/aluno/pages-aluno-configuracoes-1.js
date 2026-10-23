@@ -12,6 +12,7 @@ const elements = {
     stimuli: document.getElementById("cfgEstimulos"), saveTop: document.getElementById("btnSave"),
     saveBottom: document.getElementById("btnSave2"), logout: document.getElementById("btnLogout"),
     avatar: document.querySelector(".navbar__avatar"),
+    email: document.getElementById("cfgEmail"),
 };
 let preferences = { ...DEFAULTS };
 
@@ -49,6 +50,10 @@ function render() {
     elements.stimuli.checked = preferences.reducedStimuli;
     const user = sessionService.get()?.user ?? {};
     const name = String(user.name ?? user.nome ?? "Aluno").trim();
+    const emailText = String(user.email ?? "E-mail não informado").trim(); 
+    if (elements.email) {
+        elements.email.textContent = emailText;
+    }
     elements.name.value = name;
     elements.name.readOnly = true;
     elements.language.value = "Português";
