@@ -127,9 +127,10 @@
         localStorage.setItem(
             getPreferencesKey(),
             JSON.stringify(
-                normalizePreferences(
-                    preferences,
-                ),
+                {
+                    ...readJson(getPreferencesKey(), {}),
+                    ...normalizePreferences(preferences),
+                },
             ),
         );
     }

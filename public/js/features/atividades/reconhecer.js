@@ -1,3 +1,4 @@
+import { createActivityLifecycle } from "./activity-lifecycle.js";
 import {
     audioService,
 } from "../../services/audio-service.js";
@@ -10,6 +11,7 @@ import {
 export function createRecognizeActivity(
     context,
 ) {
+    const lifecycle = createActivityLifecycle();
     const {
         activity,
         student,
@@ -95,6 +97,7 @@ export function createRecognizeActivity(
 
 
     function render() {
+        if (lifecycle.destroyed) return;
         resolved = false;
 
         elements.stage.replaceChildren();
@@ -154,7 +157,7 @@ export function createRecognizeActivity(
             ),
         );
 
-        imageButton.addEventListener(
+        lifecycle.listen(imageButton,
             "click",
             () => {
                 revealAnswer(
@@ -189,16 +192,21 @@ export function createRecognizeActivity(
 
 
     return Object.freeze({
+        destroy() {
+            lifecycle.destroy();
+            audioService.stop();
+        },
         start: render,
 
         repeatInstruction() {
+            if (lifecycle.destroyed) return;
             audioService.speak(
                 getInstruction(),
             );
         },
 
         next() {
-            return resolved;
+            return !lifecycle.destroyed && resolved;
         },
     });
 }

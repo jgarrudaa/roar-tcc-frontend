@@ -4,10 +4,14 @@
    Projetado para acessibilidade cognitiva e conforto auditivo.
    ============================================================ */
 
+import { storage } from "../utils/storage.js";
+
 class RoarSoundFx {
     constructor() {
         this._ctx = null;
         this._lastClickTime = 0;
+        this._activeOscillators = new Set();
+        window.addEventListener?.("roar-preferences-changed", () => this.stop());
         this._initListeners();
     }
 
@@ -29,10 +33,10 @@ class RoarSoundFx {
 
     _getPreferences() {
         try {
-            const raw = localStorage.getItem("roarPreferences");
-            const prefs = raw ? JSON.parse(raw) : {};
+            const prefs = storage.getPreferences();
             const enabled = prefs.soundsEnabled !== false;
-            const volumePct = Math.min(100, Math.max(0, Number(prefs.volume ?? 80)));
+            const rawVolume = Number(prefs.volume ?? 80);
+            const volumePct = Number.isFinite(rawVolume) ? Math.min(100, Math.max(0, rawVolume)) : 80;
             const reducedStimuli = Boolean(prefs.reducedStimuli);
 
             // Volume base suave (máximo 0.22 do ganho para evitar sons estridentes)
@@ -45,6 +49,18 @@ class RoarSoundFx {
         } catch {
             return { enabled: true, masterGain: 0.18 };
         }
+    }
+
+    _track(oscillator) {
+        this._activeOscillators.add(oscillator);
+        oscillator.onended = () => this._activeOscillators.delete(oscillator);
+    }
+
+    stop() {
+        this._activeOscillators.forEach(oscillator => {
+            try { oscillator.stop(); } catch { /* Já encerrado pelo navegador. */ }
+        });
+        this._activeOscillators.clear();
     }
 
     /**
@@ -75,6 +91,7 @@ class RoarSoundFx {
         osc.connect(gain);
         gain.connect(ctx.destination);
 
+        this._track(osc);
         osc.start(t);
         osc.stop(t + 0.035);
     }
@@ -107,6 +124,7 @@ class RoarSoundFx {
             osc.connect(gain);
             gain.connect(ctx.destination);
 
+            this._track(osc);
             osc.start(t);
             osc.stop(t + noteDuration + 0.04);
         });
@@ -140,6 +158,7 @@ class RoarSoundFx {
             osc.connect(gain);
             gain.connect(ctx.destination);
 
+            this._track(osc);
             osc.start(t);
             osc.stop(t + noteDuration + 0.03);
         });
@@ -173,6 +192,7 @@ class RoarSoundFx {
             osc.connect(gain);
             gain.connect(ctx.destination);
 
+            this._track(osc);
             osc.start(t);
             osc.stop(t + noteDuration + 0.08);
         });
@@ -201,6 +221,7 @@ class RoarSoundFx {
         osc.connect(gain);
         gain.connect(ctx.destination);
 
+        this._track(osc);
         osc.start(t);
         osc.stop(t + 0.025);
     }
@@ -230,6 +251,7 @@ class RoarSoundFx {
         osc.connect(gain);
         gain.connect(ctx.destination);
 
+        this._track(osc);
         osc.start(t);
         osc.stop(t + 0.09);
     }

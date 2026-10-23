@@ -45,7 +45,6 @@
 .shadow-round { margin: 0; color: var(--roar-blue); font-size: 14px; font-weight: 600; }
 .shadow-difficulty { display: flex; align-items: center; gap: 9px; color: var(--roar-muted); font-size: 13px; }
 .shadow-difficulty[hidden] { display: none; }
-.shadow-difficulty select { min-height: 42px; border: 1px solid var(--roar-border); border-radius: 10px; padding: 7px 10px; color: var(--roar-ink); background: var(--roar-surface); }
 .shadow-instruction { margin: 6px 0 16px; font-size: 15px; color: var(--roar-muted); }
 .shadow-stage { padding: 22px 28px; border: 1px solid var(--roar-border); border-radius: 24px; background: var(--roar-surface); }
 .shadow-game {

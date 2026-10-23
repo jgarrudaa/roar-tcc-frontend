@@ -1,4 +1,19 @@
 /* Keep the prompt image and its margins consistent across vocabulary items. */
+.activity-page .activity-content :is(button, input):focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 3px;
+}
+
+.activity-page .activity-content button {
+    min-height: 44px;
+    overflow-wrap: anywhere;
+}
+
+.activity-page .activity-content :is(input, .word-bank, .sentence-target) {
+    min-width: 0;
+    max-width: 100%;
+}
+
 .activity-page .association-prompt-button {
     width: min(320px, 76vw);
     height: clamp(170px, 32vh, 280px);

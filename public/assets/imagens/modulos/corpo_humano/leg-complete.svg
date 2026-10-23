@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 210" fill="none">
+  <title>Perna em destaque, com as duas pernas e os pés inteiros</title>
+  <!-- Quiet reference leg, fully contained inside the illustration. -->
+  <path d="M99 64H134L130 120L126 178H105L103 123Z" fill="#dce3ec" stroke="#98a7b8" stroke-width="2"/>
+  <path d="M105 174H126L133 185L155 190Q164 193 158 199H103Q99 195 101 187Z" fill="#dce3ec" stroke="#98a7b8" stroke-width="2"/>
+  <!-- Study leg: a continuous outline from the thigh to the ankle. -->
+  <path d="M46 62H82L78 120L74 177H51L48 121Z" fill="#f8c39d" stroke="#bc6a00" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M51 174H74L77 187Q81 196 74 199H22Q15 195 22 191L44 184Z" fill="#f8c39d" stroke="#9b6b4c" stroke-width="2"/>
+  <path d="M54 116Q63 121 73 115" stroke="#c78356" stroke-width="3" stroke-linecap="round"/>
+  <!-- Whole waistband and both hems remain visible, with margin at every edge. -->
+  <path d="M43 14H137L140 72H99L91 48L83 72H41Z" fill="#4c83bd" stroke="#285886" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M44 25H137M91 26V48M43 65H84M99 65H139" stroke="#285886" stroke-width="3"/>
+  <path d="M57 32L53 48M123 32L128 48" stroke="#90b8de" stroke-width="3" stroke-linecap="round"/>
+</svg>

@@ -1,3 +1,4 @@
+import { createActivityLifecycle } from "./activity-lifecycle.js";
 import {
     audioService,
 } from "../../services/audio-service.js";
@@ -73,6 +74,7 @@ function createOptions(
 export function createCompleteSentenceActivity(
     context,
 ) {
+    const lifecycle = createActivityLifecycle();
     const {
         activity,
         module,
@@ -189,7 +191,7 @@ export function createCompleteSentenceActivity(
 
         onWrong(item);
 
-        window.setTimeout(
+        lifecycle.timeout(
             () => {
                 button.classList.remove(
                     "is-wrong",
@@ -221,7 +223,7 @@ export function createCompleteSentenceActivity(
         button.setAttribute(
             "aria-label",
             (
-                "Imagem da parte do corpo. " +
+                "Imagem da atividade. " +
                 "Clique para ouvir a palavra."
             ),
         );
@@ -231,7 +233,7 @@ export function createCompleteSentenceActivity(
 
         button.append(image);
 
-        button.addEventListener(
+        lifecycle.listen(button,
             "click",
             handleImageClick,
         );
@@ -276,6 +278,7 @@ export function createCompleteSentenceActivity(
 
 
     function render() {
+        if (lifecycle.destroyed) return;
         resolved = false;
 
         elements.stage.replaceChildren();
@@ -354,7 +357,7 @@ export function createCompleteSentenceActivity(
                     ),
                 );
 
-                button.addEventListener(
+                lifecycle.listen(button,
                     "click",
                     () => {
                         handleOptionClick(
@@ -411,9 +414,14 @@ export function createCompleteSentenceActivity(
 
 
     return Object.freeze({
+        destroy() {
+            lifecycle.destroy();
+            audioService.stop();
+        },
         start: render,
 
         repeatInstruction() {
+            if (lifecycle.destroyed) return;
             audioService.speak(
                 getInstruction(),
                 "pt-BR",
@@ -421,7 +429,7 @@ export function createCompleteSentenceActivity(
         },
 
         next() {
-            return resolved;
+            return !lifecycle.destroyed && resolved;
         },
     });
 }

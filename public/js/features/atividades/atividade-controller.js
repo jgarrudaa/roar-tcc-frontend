@@ -13,6 +13,10 @@ import { createWritingActivity,} from "./escrita.js";
 import { createWordBankActivity,} from "./banco-palavras.js";
 import { createShadowPuzzleActivity } from "./quebra-cabeca-sombra.js";
 import { createShadowActivity } from "./sombra.js";
+import { getModulePracticePhases } from "./module-practice.js";
+import { createCategoriesActivity, createSceneActivity } from "./module-practice-games.js";
+import { storage } from "../../utils/storage.js";
+import { createBodyPuzzleActivity } from './body-puzzle.js';
 
 
 
@@ -30,6 +34,9 @@ const ACTIVITY_FACTORIES = Object.freeze({
     wordBank:createWordBankActivity,
     shadowPuzzle: createShadowPuzzleActivity,
     shadow: createShadowActivity,
+    categories: createCategoriesActivity,
+    scene: createSceneActivity,
+    bodyPuzzle: createBodyPuzzleActivity,
 });
 
 function navigateTo(url) {
@@ -159,6 +166,9 @@ export async function createActivityController({ moduleId, stage, elements }) {
         phases.push({ ...activity, type: "shadow", instruction:
             "Agora monte a imagem! Arraste cada peça até a sombra ou toque para encaixar." });
     }
+    if (currentIndex === module.activities.length - 1) {
+        phases.push(...getModulePracticePhases(context));
+    }
     const statistics = { correct: 0, wrong: 0 };
     const correctItems = new Set();
     let engine;
@@ -171,6 +181,27 @@ export async function createActivityController({ moduleId, stage, elements }) {
     let navigationStarted = false;
     let activityStarted = false;
     let disposed = false;
+    let autoAdvancePaused = storage.getPreferences()?.autoAdvancePaused === true;
+
+    function scheduleAutoAdvance() {
+        clearAutoAdvance();
+        if (autoAdvancePaused || disposed || completionPromise || !phaseLocked) return;
+        autoAdvanceTimer = window.setTimeout(() => {
+            autoAdvanceTimer = null;
+            next();
+        }, 1000);
+    }
+
+    function toggleAutoAdvance() {
+        if (disposed || completionPromise) return;
+        autoAdvancePaused = !autoAdvancePaused;
+        try {
+            storage.setPreferences({ ...storage.getPreferences(), autoAdvancePaused });
+        } catch {
+            // A browser that blocks storage can still pause the current activity.
+        }
+        scheduleAutoAdvance();
+    }
 
     function clearAutoAdvance() {
         if (autoAdvanceTimer !== null) window.clearTimeout(autoAdvanceTimer);
@@ -214,12 +245,10 @@ export async function createActivityController({ moduleId, stage, elements }) {
                 // Some engines report the answer immediately before updating their
                 // resolved flag. Check after the complete input handler has returned.
                 queueMicrotask(() => {
-                    if (disposed || activeEpoch !== epoch || phaseLocked || completionPromise || !engine.next()) return;
+                    if (disposed || activeEpoch !== epoch || phaseLocked || completionPromise) return;
+                    if (!engine.next() && !engine.isRoundComplete?.()) return;
                     lockCompletedStage();
-                    autoAdvanceTimer = window.setTimeout(() => {
-                        autoAdvanceTimer = null;
-                        next();
-                    }, 2000);
+                    scheduleAutoAdvance();
                 });
             },
             onWrong() {
@@ -240,6 +269,7 @@ export async function createActivityController({ moduleId, stage, elements }) {
         clearAutoAdvance();
         engine?.destroy?.();
         audioService.stop();
+        soundFx.stop?.();
         elements.stage.inert = false;
     }
 
@@ -272,12 +302,19 @@ export async function createActivityController({ moduleId, stage, elements }) {
 
     function next() {
         if (completionPromise) return completionPromise;
-        if (disposed || navigationStarted || !activityStarted || !engine.next()) return Promise.resolve(false);
+        if (disposed || navigationStarted || !activityStarted) return Promise.resolve(false);
+        if (!engine.next() && !engine.isRoundComplete?.()) return Promise.resolve(false);
         clearAutoAdvance();
+        if (!engine.next() && engine.advanceRound) {
+            phaseLocked = false;
+            elements.stage.inert = false;
+            return Promise.resolve(engine.advanceRound());
+        }
         lockCompletedStage();
         if (phaseIndex + 1 < phases.length) {
             engine.destroy?.();
             audioService.stop();
+            soundFx.stop?.();
             phaseIndex += 1;
             prepareEngine();
             engine.start();
@@ -300,6 +337,7 @@ export async function createActivityController({ moduleId, stage, elements }) {
             engine.repeatInstruction?.();
         },
         next,
+        toggleAutoAdvance,
         previous() {
             if (disposed || navigationStarted) return;
             destroy();

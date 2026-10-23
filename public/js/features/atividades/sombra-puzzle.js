@@ -34,9 +34,10 @@ export function getShadowPieceCount(context) {
     if (teaLevel === 2) return 4;
     if (teaLevel === 3) return 2;
 
-    const requested = Number(context.pieceCount);
-    if ([2, 4, 6].includes(requested)) return requested;
-    // Sem suporte TEA informado, começar pela montagem mais simples.
+    // Sem TEA informado, usar a autonomia pedagógica registrada no perfil.
+    const learningLevel = context.student?.supportLevel;
+    if (learningLevel === 3) return 6;
+    if (learningLevel === 2) return 4;
     return 2;
 }
 

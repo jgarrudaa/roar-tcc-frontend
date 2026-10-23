@@ -1,3 +1,4 @@
+import { createActivityLifecycle } from "./activity-lifecycle.js";
 import {
     audioService,
 } from "../../services/audio-service.js";
@@ -73,6 +74,7 @@ function createOptions(
 export function createValidateActivity(
     context,
 ) {
+    const lifecycle = createActivityLifecycle();
     const {
         activity,
         module,
@@ -194,7 +196,7 @@ export function createValidateActivity(
 
         onWrong(item);
 
-        window.setTimeout(
+        lifecycle.timeout(
             () => {
                 button.classList.remove(
                     "is-wrong",
@@ -233,7 +235,7 @@ export function createValidateActivity(
 
         button.append(image);
 
-        button.addEventListener(
+        lifecycle.listen(button,
             "click",
             handlePromptImage,
         );
@@ -280,6 +282,7 @@ export function createValidateActivity(
 
 
     function render() {
+        if (lifecycle.destroyed) return;
         resolved = false;
 
         elements.stage.replaceChildren();
@@ -331,7 +334,7 @@ export function createValidateActivity(
             targetWord.lang = "en";
             targetWord.textContent = normalizeAnswer(item.en);
             const playButton = createButton("Ouvir novamente", "listen-button");
-            playButton.addEventListener("click", () => speakWord(item.en));
+            lifecycle.listen(playButton, "click", () => speakWord(item.en));
             promptArea.append(targetWord, playButton);
             content.append(promptArea);
         }
@@ -356,7 +359,7 @@ export function createValidateActivity(
                             option,
                         );
 
-                button.addEventListener(
+                lifecycle.listen(button,
                     "click",
                     () => {
                         handleOption(
@@ -397,9 +400,14 @@ export function createValidateActivity(
 
 
     return Object.freeze({
+        destroy() {
+            lifecycle.destroy();
+            audioService.stop();
+        },
         start: render,
 
         repeatInstruction() {
+            if (lifecycle.destroyed) return;
             if (student.supportLevel === 1) {
                 speakWord(item.en);
                 return;
@@ -411,7 +419,7 @@ export function createValidateActivity(
         },
 
         next() {
-            return resolved;
+            return !lifecycle.destroyed && resolved;
         },
     });
 }

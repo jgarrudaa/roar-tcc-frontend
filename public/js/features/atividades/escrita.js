@@ -1,3 +1,4 @@
+import { createActivityLifecycle } from "./activity-lifecycle.js";
 import {
     audioService,
 } from "../../services/audio-service.js";
@@ -28,6 +29,7 @@ function getCorrectAnswer(activity) {
 export function createWritingActivity(
     context,
 ) {
+    const lifecycle = createActivityLifecycle();
     const {
         activity,
         student,
@@ -46,7 +48,7 @@ export function createWritingActivity(
     function getInstruction() {
         return (
             activity.instruction ||
-            "Escreva em inglês o nome da parte do corpo."
+            "Escreva em inglês o nome da imagem."
         );
     }
 
@@ -89,7 +91,7 @@ export function createWritingActivity(
         button.setAttribute(
             "aria-label",
             (
-                "Imagem da parte do corpo. " +
+                "Imagem da atividade. " +
                 "Clique para ouvir a palavra em inglês."
             ),
         );
@@ -99,7 +101,7 @@ export function createWritingActivity(
 
         button.append(image);
 
-        button.addEventListener(
+        lifecycle.listen(button,
             "click",
             handleImageClick,
         );
@@ -184,7 +186,7 @@ export function createWritingActivity(
         answerInput.focus();
         answerInput.select();
 
-        window.setTimeout(
+        lifecycle.timeout(
             () => {
                 answerInput.classList.remove(
                     "is-wrong",
@@ -268,6 +270,8 @@ export function createWritingActivity(
                 "writing-check-button",
             );
 
+        checkButton.type = "submit";
+
         form.className =
             "writing-form";
 
@@ -328,12 +332,12 @@ export function createWritingActivity(
                 "ou minúsculas."
             );
 
-        answerInput.addEventListener(
+        lifecycle.listen(answerInput,
             "input",
             handleInput,
         );
 
-        form.addEventListener(
+        lifecycle.listen(form,
             "submit",
             handleSubmit,
         );
@@ -350,6 +354,7 @@ export function createWritingActivity(
 
 
     function render() {
+        if (lifecycle.destroyed) return;
         resolved = false;
 
         elements.stage.replaceChildren();
@@ -411,7 +416,7 @@ export function createWritingActivity(
             1,
         );
 
-        window.requestAnimationFrame(
+        lifecycle.frame(
             () => {
                 answerInput.focus();
             },
@@ -420,9 +425,14 @@ export function createWritingActivity(
 
 
     return Object.freeze({
+        destroy() {
+            lifecycle.destroy();
+            audioService.stop();
+        },
         start: render,
 
         repeatInstruction() {
+            if (lifecycle.destroyed) return;
             audioService.speak(
                 getInstruction(),
                 "pt-BR",
@@ -430,7 +440,7 @@ export function createWritingActivity(
         },
 
         next() {
-            return resolved;
+            return !lifecycle.destroyed && resolved;
         },
     });
 }

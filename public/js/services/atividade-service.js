@@ -499,6 +499,10 @@ function normalizeCompletionData(
 }
 
 export const atividadeService = Object.freeze({
+    async getCurrentStudent() {
+        return normalizeStudent(await alunosApi.getCurrent());
+    },
+
     async getContext(moduleId, stage) {
         const validModuleId =
             requirePositiveInteger(

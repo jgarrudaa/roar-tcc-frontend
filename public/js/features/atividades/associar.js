@@ -1,3 +1,4 @@
+import { createActivityLifecycle } from "./activity-lifecycle.js";
 import {
     audioService,
 } from "../../services/audio-service.js";
@@ -58,6 +59,7 @@ function createOptions(
 export function createAssociateActivity(
     context,
 ) {
+    const lifecycle = createActivityLifecycle();
     const {
         activity,
         module,
@@ -171,7 +173,7 @@ export function createAssociateActivity(
 
         onWrong(item);
 
-        window.setTimeout(
+        lifecycle.timeout(
             () => {
                 button.classList.remove(
                     "is-wrong",
@@ -210,7 +212,7 @@ export function createAssociateActivity(
 
         button.append(image);
 
-        button.addEventListener(
+        lifecycle.listen(button,
             "click",
             handlePromptImage,
         );
@@ -231,7 +233,7 @@ export function createAssociateActivity(
             `Selecionar e ouvir ${option.en}`,
         );
 
-        button.addEventListener(
+        lifecycle.listen(button,
             "click",
             () => {
                 handleOption(
@@ -247,6 +249,7 @@ export function createAssociateActivity(
 
 
     function render() {
+        if (lifecycle.destroyed) return;
         resolved = false;
 
         elements.stage.replaceChildren();
@@ -328,9 +331,14 @@ export function createAssociateActivity(
 
 
     return Object.freeze({
+        destroy() {
+            lifecycle.destroy();
+            audioService.stop();
+        },
         start: render,
 
         repeatInstruction() {
+            if (lifecycle.destroyed) return;
             audioService.speak(
                 getInstruction(),
                 "pt-BR",
@@ -338,7 +346,7 @@ export function createAssociateActivity(
         },
 
         next() {
-            return resolved;
+            return !lifecycle.destroyed && resolved;
         },
     });
 }
