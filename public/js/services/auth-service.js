@@ -38,6 +38,19 @@ function normalizeStudentSession(response) {
         );
     }
 
+    const xpTotal = Number(response.user.xpTotal ?? response.user.xp ?? response.user.xp_total ?? 0);
+    const skinAtivaId = Number(response.user.skin_ativa_id ?? 1);
+
+    // Pega o array que o Python enviou, ou define [1] como padrão de segurança
+    const skinsDesbloqueadas = Array.isArray(response.user.skins_desbloqueadas)
+        ? response.user.skins_desbloqueadas
+        : [1];
+
+    // SINCRONIZA A MEMÓRIA DA LOJA EXATAMENTE COM O BANCO DE DADOS
+    localStorage.setItem("roar_dino_xp", String(xpTotal));
+    localStorage.setItem("roar_equipped_dino", String(skinAtivaId));
+    localStorage.setItem("roar_unlocked_dinos", JSON.stringify(skinsDesbloqueadas));
+
     return {
         token: response.token,
         role: response.role ?? "student",
@@ -47,6 +60,9 @@ function normalizeStudentSession(response) {
             email: response.user.email,
             schoolYear: response.user.schoolYear,
             supportLevel: response.user.supportLevel,
+            xpTotal: xpTotal,
+            skinAtivaId: skinAtivaId,
+            skinsDesbloqueadas: skinsDesbloqueadas
         },
     };
 }
@@ -103,6 +119,7 @@ function createMockStudentSession(email) {
             id: 1,
             name: "Aluno demonstrativo",
             email,
+            xpTotal: 1240,
         },
     };
 }

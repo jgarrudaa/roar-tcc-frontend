@@ -1,7 +1,7 @@
 import { showToast } from "../../components/toast.js";
 import { perfilAlunoService } from "../../services/perfil-aluno-service.js";
 import { sessionService } from "../../services/session-service.js";
-
+import { avatarService } from "../../services/avatar-service.js";
 
 const elements = {
     navbarAvatar:
@@ -143,6 +143,11 @@ function renderProfile(profile) {
 
     if (window.ROAR_SYNC_AVATAR) {
         window.ROAR_SYNC_AVATAR();
+    }
+
+    // ATUALIZA A IMAGEM DO MASCOTE NA TELA DE PERFIL
+   if (avatarService) {
+        avatarService.applyToPage();
     }
 }
 

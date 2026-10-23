@@ -43,6 +43,7 @@ export function createAudioImageActivity(
     const {
         activity,
         module,
+        student,
         elements,
         onCorrect,
         onWrong,
@@ -102,7 +103,11 @@ export function createAudioImageActivity(
     function handleOption(
     option,
     button,
+    optionsContainer,
 ) {
+    if (resolved && normalizeAnswer(option.en) !== normalizeAnswer(item.en)) {
+        return;
+    }
     /*
      * Toda imagem funciona como um botão
      * de vocabulário o tempo inteiro.
@@ -136,6 +141,7 @@ export function createAudioImageActivity(
         correctAnswer
     ) {
         resolved = true;
+        disableWrongOptions(optionsContainer, button);
 
         button.classList.add(
             "is-correct",
@@ -222,9 +228,14 @@ export function createAudioImageActivity(
 
         const playButton =
             createButton(
-                "Ouvir palavra",
+                "Ouvir novamente",
                 "listen-button",
             );
+
+        const targetWord = document.createElement("p");
+        targetWord.className = "revealed-word";
+        targetWord.lang = "en";
+        targetWord.textContent = normalizeAnswer(item.en);
 
         const playIcon =
             document.createElement("i");
@@ -269,6 +280,7 @@ export function createAudioImageActivity(
         );
 
         content.append(
+            targetWord,
             playButton,
             optionsContainer,
         );
@@ -284,8 +296,9 @@ export function createAudioImageActivity(
         );
 
         elements.setProgress(0, 1);
-
-
+        if (student?.supportLevel !== 3) {
+            playWord();
+        }
     }
 
 

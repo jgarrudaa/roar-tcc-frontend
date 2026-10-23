@@ -23,19 +23,12 @@ export function createRecognizeActivity(
 
 
     function getInstruction() {
+        if (student.supportLevel <= 2) {
+            return `Toque na imagem: ${item.pt}.`;
+        }
+
         if (activity.instruction) {
             return activity.instruction;
-        }
-
-        if (student.supportLevel === 1) {
-            return "Toque na imagem para conhecer a palavra.";
-        }
-
-        if (student.supportLevel === 2) {
-            return (
-                "Observe a imagem e toque para " +
-                "descobrir a palavra em inglês."
-            );
         }
 
         return (
@@ -143,7 +136,8 @@ export function createRecognizeActivity(
             "revealed-word";
 
         revealedWord.textContent =
-            item.en;
+            item.en.toLocaleUpperCase("en-US");
+        revealedWord.lang = "en";
 
         revealedWord.hidden = true;
 
@@ -188,11 +182,9 @@ export function createRecognizeActivity(
 
         elements.setProgress(0, 1);
 
-        /*
-         * Não existe áudio automático.
-         * O aluno pode usar o botão de áudio
-         * quando quiser.
-         */
+        if (student.supportLevel <= 2) {
+            audioService.speak(`Toque na imagem: ${item.pt}.`, "pt-BR");
+        }
     }
 
 

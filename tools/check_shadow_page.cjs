@@ -54,6 +54,18 @@ async function load({ loggedIn = true, profile = {}, failOnce = false, fetchProf
         createElement() { return new Element(); },
     };
     const window = new Element();
+    const timers = new Map();
+    let timerSequence = 0;
+    window.setTimeout = (callback, delay) => {
+        assert.equal(delay, 2000);
+        const id = ++timerSequence;
+        timers.set(id, () => {
+            timers.delete(id);
+            callback();
+        });
+        return id;
+    };
+    window.clearTimeout = id => timers.delete(id);
     const context = vm.createContext({
         document, window,
         sessionService: { hasRole: () => loggedIn },
@@ -73,10 +85,19 @@ async function load({ loggedIn = true, profile = {}, failOnce = false, fetchProf
     });
     vm.runInContext(source('../public/js/pages/aluno/sombra.js'), context);
     await flush();
-    return { elements, rounds, window, requests: () => requests };
+    return { elements, rounds, window, timers, requests: () => requests };
 }
 
 (async () => {
+    const automatic = await load({ profile: { teaSupportLevel: 1 } });
+    automatic.rounds[0].onCorrect();
+    assert.equal(automatic.timers.size, 1);
+    [...automatic.timers.values()][0]();
+    assert.equal(automatic.rounds[1].activity.id, 'practice-horse');
+    assert.equal(puzzle.getShadowPieceCount(automatic.rounds[1]), 6);
+    automatic.rounds[1].onCorrect();
+    automatic.window.fire('pagehide');
+    assert.equal(automatic.timers.size, 0);
     for (const [teaSupportLevel, expected] of [[1, 6], [2, 4], [3, 2]]) {
         // O modo de aprendizagem não pode decidir a quantidade.
         const app = await load({ profile: { teaSupportLevel, supportLevel: 'Visual Guiado' } });

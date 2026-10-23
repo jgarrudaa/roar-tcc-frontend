@@ -14,7 +14,7 @@ Acesse http://127.0.0.1:8765/pages/aluno/sombra.html.
 - Também é possível tocar na peça e depois no encaixe. Pelo teclado, use Tab e Enter ou Espaço; Escape cancela a seleção.
 - **Ouvir palavra** pronuncia o nome do animal em inglês. O som pode ser desligado.
 - Selecione uma peça e use **Mostrar dica** para destacar seu destino.
-- O botão de próximo animal só libera depois de encaixar todas as peças. Não há limite de tempo ou de tentativas.
+- Depois de encaixar todas as peças, o jogo avança automaticamente em 2 segundos. O botão de próximo animal permite avançar antes. Não há limite de tempo ou de tentativas para montar.
 - Com suporte TEA informado no perfil, a quantidade é automática: nível 1 = 6 peças, nível 2 = 4 peças e nível 3 = 2 peças. Ela permanece a mesma nos seis animais e no reinício.
 - Sem suporte TEA informado, o jogo começa com 2 peças e permite selecionar 2, 4 ou 6. Mudar a quantidade reinicia o animal atual.
 - Ao terminar os seis animais, a revisão permite ouvir as palavras novamente ou reiniciar o jogo.
@@ -51,6 +51,8 @@ Não há preenchimento automático para alunos já cadastrados. O professor pode
 O motor reutilizável é `createShadowActivity` em `public/js/features/atividades/sombra.js`. Ele segue o contrato dos outros jogos (`start`, `repeatInstruction`, `next`) e oferece `destroy` para cancelar carregamento e listeners. A geometria fica em `sombra-puzzle.js`.
 
 O controlador de atividades já reconhece `shadow`. O serviço traduz os tipos `Sombra`, `Shadow`, `Quebra-cabeca` e `Quebra-cabeça`. O tipo `DragAndDrop` mantém o motor `shadowPuzzle`, como já ocorre nesta versão do projeto.
+
+O nível 2 inclui uma rodada de Sombras após o jogo da memória, usando o mesmo vocabulário. Os dois jogos são salvos como uma única atividade, após a conclusão de ambos. Veja `AJUSTES_ATIVIDADES.md`. O tipo `DragAndDrop` já é encaminhado pelo serviço ao motor `shadowPuzzle`.
 
 Para colocar o jogo em sequências oficiais, ainda é necessário permitir o tipo **Sombra** na lista `TIPOS_INTERACAO` do backend e cadastrar as atividades e variações correspondentes com vocabulário e imagens válidos. Nesse fluxo, o controlador existente registra a conclusão de um animal como um acerto, independentemente da quantidade de peças.
 

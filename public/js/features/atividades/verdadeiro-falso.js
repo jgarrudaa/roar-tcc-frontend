@@ -23,6 +23,7 @@ export function createTrueFalseActivity(
     const {
         activity,
         module,
+        student,
         elements,
         onCorrect,
         onWrong,
@@ -35,10 +36,14 @@ export function createTrueFalseActivity(
 
 
     function getInstruction() {
-        return (
-            activity.instruction ||
-            `Esta imagem representa ${item.en}?`
-        );
+        return "A palavra corresponde à imagem? Escolha Yes ou No.";
+    }
+
+    function speakQuestion() {
+        audioService.speakSequence([
+            { text: "Esta imagem é", language: "pt-BR" },
+            { text: `${item.en}?`, language: "en-US" },
+        ]);
     }
 
 
@@ -180,13 +185,13 @@ export function createTrueFalseActivity(
         const noButton = document.createElement("button");
         noButton.type = "button";
         noButton.className = "truth-button truth-no";
-        noButton.setAttribute("aria-label", "Not");
+        noButton.setAttribute("aria-label", "No");
         noButton.innerHTML = `
             <svg class="truth-icon" viewBox="0 0 24 24" width="28" height="28" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M17 14V2"/>
                 <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/>
             </svg>
-            <span class="truth-label">Not</span>
+            <span class="truth-label">No</span>
         `;
 
         content.className =
@@ -196,7 +201,8 @@ export function createTrueFalseActivity(
             "true-false-question";
 
         question.textContent =
-            `Esta imagem é ${item.en}?`;
+            normalizeAnswer(item.en);
+        question.lang = "en";
 
         optionsContainer.className =
             "true-false-options";
@@ -277,8 +283,9 @@ export function createTrueFalseActivity(
         );
 
         elements.setProgress(0, 1);
-
-
+        if (student?.supportLevel !== 3) {
+            speakQuestion();
+        }
     }
 
 
@@ -286,9 +293,7 @@ export function createTrueFalseActivity(
         start: render,
 
         repeatInstruction() {
-            audioService.speak(
-                `Esta imagem é ${item.en}?`,
-            );
+            speakQuestion();
         },
 
         next() {
