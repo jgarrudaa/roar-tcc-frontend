@@ -1,3 +1,4 @@
+import { createActivityLifecycle } from "./activity-lifecycle.js";
 import {
     audioService,
 } from "../../services/audio-service.js";
@@ -20,6 +21,7 @@ function normalizeAnswer(value) {
 export function createTrueFalseActivity(
     context,
 ) {
+    const lifecycle = createActivityLifecycle();
     const {
         activity,
         module,
@@ -144,7 +146,7 @@ export function createTrueFalseActivity(
 
         onWrong(item);
 
-        window.setTimeout(() => {
+        lifecycle.timeout(() => {
             button.classList.remove(
                 "is-wrong",
             );
@@ -153,6 +155,7 @@ export function createTrueFalseActivity(
 
 
     function render() {
+        if (lifecycle.destroyed) return;
         resolved = false;
 
         displayedItem =
@@ -207,7 +210,7 @@ export function createTrueFalseActivity(
         optionsContainer.className =
             "true-false-options";
 
-        yesButton.addEventListener(
+        lifecycle.listen(yesButton,
             "click",
             () => {
                 handleAnswer(
@@ -218,7 +221,7 @@ export function createTrueFalseActivity(
             },
         );
 
-        noButton.addEventListener(
+        lifecycle.listen(noButton,
             "click",
             () => {
                 handleAnswer(
@@ -252,7 +255,7 @@ export function createTrueFalseActivity(
             ),
         );
 
-        imageButton.addEventListener(
+        lifecycle.listen(imageButton,
             "click",
             () => {
                 audioService.speak(
@@ -290,14 +293,19 @@ export function createTrueFalseActivity(
 
 
     return Object.freeze({
+        destroy() {
+            lifecycle.destroy();
+            audioService.stop();
+        },
         start: render,
 
         repeatInstruction() {
+            if (lifecycle.destroyed) return;
             speakQuestion();
         },
 
         next() {
-            return resolved;
+            return !lifecycle.destroyed && resolved;
         },
     });
 }

@@ -9,6 +9,7 @@ const elements = {
     language: document.getElementById("cfgIdioma"), volume: document.getElementById("cfgVolume"),
     notifications: document.getElementById("cfgNotif"), contrast: document.getElementById("cfgContrast"),
     sounds: document.getElementById("cfgSons"), animations: document.getElementById("cfgAnim"),
+    autoAdvance: document.getElementById("cfgAutoAdvance"),
     stimuli: document.getElementById("cfgEstimulos"), saveTop: document.getElementById("btnSave"),
     saveBottom: document.getElementById("btnSave2"), logout: document.getElementById("btnLogout"),
     btnTogglePin: document.getElementById("btnTogglePin"),
@@ -22,6 +23,7 @@ let pinVisible = false;
 
 function normalize(value) {
     const source = value && typeof value === "object" ? value : {};
+    const rate = Number(source.speechRate ?? 0.9);
     return {
         theme: source.theme === "dark" ? "dark" : "light",
         fontSize: ["small", "medium", "large"].includes(source.fontSize) ? source.fontSize : "medium",
@@ -29,6 +31,8 @@ function normalize(value) {
         notifications: Boolean(source.notifications ?? false), highContrast: Boolean(source.highContrast ?? false),
         soundsEnabled: Boolean(source.soundsEnabled ?? true), animationsEnabled: Boolean(source.animationsEnabled ?? true),
         reducedStimuli: Boolean(source.reducedStimuli ?? false),
+        autoAdvancePaused: source.autoAdvancePaused === true,
+        speechRate: Number.isFinite(rate) ? Math.min(1.5, Math.max(0.6, rate)) : 0.9,
     };
 }
 
@@ -51,6 +55,7 @@ function render() {
     elements.contrast.checked = preferences.highContrast;
     elements.sounds.checked = preferences.soundsEnabled;
     elements.animations.checked = preferences.animationsEnabled;
+    elements.autoAdvance.checked = !preferences.autoAdvancePaused;
     elements.stimuli.checked = preferences.reducedStimuli;
     const user = sessionService.get()?.user ?? {};
     const name = String(user.name ?? user.nome ?? "Aluno").trim();
@@ -78,7 +83,8 @@ function readForm() {
     return normalize({
         ...preferences, volume: elements.volume.value, notifications: elements.notifications.checked,
         highContrast: elements.contrast.checked, soundsEnabled: elements.sounds.checked,
-        animationsEnabled: elements.animations.checked, reducedStimuli: elements.stimuli.checked
+        animationsEnabled: elements.animations.checked, reducedStimuli: elements.stimuli.checked,
+        autoAdvancePaused: !elements.autoAdvance.checked,
     });
 }
 
@@ -92,7 +98,7 @@ function registerEvents() {
     elements.fontButtons.forEach((button) => button.addEventListener("click", () => {
         preferences = { ...preferences, fontSize: button.dataset.fs }; render(); apply(preferences);
     }));
-    [elements.volume, elements.notifications, elements.contrast, elements.sounds, elements.animations, elements.stimuli]
+    [elements.volume, elements.notifications, elements.contrast, elements.sounds, elements.animations, elements.stimuli, elements.autoAdvance]
         .forEach((element) => element.addEventListener("input", preview));
 
     if (elements.btnTogglePin) {

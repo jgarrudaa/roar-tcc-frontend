@@ -1,12 +1,6 @@
 # Jogo das sombras
 
-Abra `pages/aluno/sombra.html` em um servidor HTTP. O catálogo de atividades também tem o botão **Jogar agora**.
-
-```powershell
-python -m http.server 8765 --bind 127.0.0.1
-```
-
-Acesse http://127.0.0.1:8765/pages/aluno/sombra.html.
+Acesse `pages/aluno/atividades.html` e escolha um módulo. Os jogos fazem parte da sequência de atividades. O endereço antigo `pages/aluno/sombra.html` redireciona para os módulos, sem iniciar uma partida separada.
 
 ## Como jogar
 
@@ -14,16 +8,15 @@ Acesse http://127.0.0.1:8765/pages/aluno/sombra.html.
 - Também é possível tocar na peça e depois no encaixe. Pelo teclado, use Tab e Enter ou Espaço; Escape cancela a seleção.
 - **Ouvir palavra** pronuncia o nome do animal em inglês. O som pode ser desligado.
 - Selecione uma peça e use **Mostrar dica** para destacar seu destino.
-- Depois de encaixar todas as peças, o jogo avança automaticamente em 2 segundos. O botão de próximo animal permite avançar antes. Não há limite de tempo ou de tentativas para montar.
-- Com suporte TEA informado no perfil, a quantidade é automática: nível 1 = 6 peças, nível 2 = 4 peças e nível 3 = 2 peças. Ela permanece a mesma nos seis animais e no reinício.
-- Sem suporte TEA informado, o jogo começa com 2 peças e permite selecionar 2, 4 ou 6. Mudar a quantidade reinicia o animal atual.
-- Ao terminar os seis animais, a revisão permite ouvir as palavras novamente ou reiniciar o jogo.
+- Depois de encaixar todas as peças, o jogo avança automaticamente em 1 segundo. O botão Próximo permite avançar antes. Não há limite de tempo ou de tentativas para montar.
+- Com suporte TEA informado no perfil, a quantidade é automática: nível 1 = 6 peças, nível 2 = 4 peças e nível 3 = 2 peças. A regra é aplicada ao vocabulário da atividade atual.
+- Sem suporte TEA informado, o modo de aprendizagem cadastrado define a quantidade automaticamente: Suporte Visual Puro = 2 peças, Aprendiz Guiado = 4 e Autonomia Contextual = 6. Não há seletor manual.
 
 As imagens de vaca, cavalo, porco, ovelha, pato e galinha são os arquivos já presentes em `public/assets/imagens/modulos/fazenda/`, servidos pelo próprio projeto.
 
-## Prática e integração
+## Integração aos módulos
 
-A página de prática pode ser aberta sem autenticação. Para alunos autenticados, consulta `/alunos/me` antes de iniciar para usar `teaSupportLevel` do perfil. Se o perfil não carregar, oferece nova tentativa. O progresso fica na memória da partida e não é enviado ao XP ou aos relatórios. A preferência de som usa o armazenamento de preferências já existente na plataforma.
+O controlador do módulo consulta o perfil autenticado e usa o vocabulário da atividade. O modo Aprendiz Guiado inclui Sombras após a memória; a conclusão só é enviada após as duas etapas, como uma única atividade. Sons, preferências, avanço e saída são gerenciados pelo fluxo comum dos módulos.
 
 ## Suporte TEA separado do modo de aprendizagem
 
@@ -36,9 +29,9 @@ A persistência usa a tabela protegida `public.aluno_suporte_tea`, vinculada por
 | 1 | 6 |
 | 2 | 4 |
 | 3 | 2 |
-| Não informado | 2 inicialmente, com ajuste manual na prática |
+| Não informado | Conforme o modo de aprendizagem cadastrado: 2, 4 ou 6 |
 
-Os modos existentes (Suporte Visual Puro, Aprendiz Guiado e Autonomia Contextual) continuam independentes e não são usados para deduzir o nível TEA. No motor `shadow`, um nível TEA válido tem prioridade sobre `pieceCount`. O jogo de encaixar a figura inteira (`shadowPuzzle` / `DragAndDrop`) continua com sua regra de alternativas; esta adaptação é do quebra-cabeça de partes (`shadow`).
+Os modos existentes (Suporte Visual Puro, Aprendiz Guiado e Autonomia Contextual) continuam independentes e não são usados para deduzir o nível TEA. Na ausência de TEA informado, determinam somente a quantidade de peças. O motor `shadow` ignora `pieceCount` manual, prioriza o TEA preenchido e usa o modo cadastrado como alternativa. O jogo de encaixar a figura inteira (`shadowPuzzle` / `DragAndDrop`) continua com sua regra de alternativas; esta adaptação é do quebra-cabeça de partes (`shadow`).
 
 ## Publicação
 
@@ -67,4 +60,4 @@ node tools/check_student_tea_support.cjs
 python -m unittest discover -s back-tcc-version-2/tests -p test_tea_support_level.py
 ```
 
-Os testes geométricos verificam se as peças cobrem a imagem inteira sem lacunas ou sobreposição. As verificações da página simulam DOM e API para conferir níveis, bloqueio de ajuste manual, seis animais, revisão, reinício e falha/repetição do carregamento do perfil. Os testes do backend usam banco simulado. A verificação visual no navegador continua necessária para arraste, teclado, dica e largura móvel de 320 px.
+Os testes geométricos verificam se as peças cobrem a imagem inteira sem lacunas ou sobreposição. A verificação do endereço antigo confirma o redirecionamento aos módulos e a remoção do atalho separado. `check_activity_flow.cjs` verifica a sequência de memória e Sombras e o salvamento no módulo; `check_shadow_game.cjs` verifica as quantidades automáticas. Os testes do backend usam banco simulado.

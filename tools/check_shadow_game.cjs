@@ -33,8 +33,8 @@ for (const [teaSupportLevel, expected] of [[1, 6], [2, 4], [3, 2]]) {
 for (const teaSupportLevel of [undefined, null, 0, 4, -1, true, '1', 1.5]) {
     const student = serviceModule.normalizeStudent({ id: 7, supportLevel: 'Verbal', teaSupportLevel });
     assert.equal(student.teaSupportLevel, null);
-    assert.equal(puzzleModule.getShadowPieceCount({ student }), 2);
-    assert.equal(puzzleModule.getShadowPieceCount({ student, pieceCount: 4 }), 4);
+    assert.equal(puzzleModule.getShadowPieceCount({ student }), 6);
+    assert.equal(puzzleModule.getShadowPieceCount({ student, pieceCount: 4 }), 6);
 }
 assert.equal(serviceModule.normalizeStudent({
     id: 7, supportLevel: 'Visual Guiado', nivel_suporte_tea: 1,
@@ -191,6 +191,6 @@ assert.equal(serviceModule.normalizeActivity({
     tipo_interacao: 'DragAndDrop',
 }).type, 'shadowPuzzle', 'DragAndDrop deve manter o jogo de encaixe já utilizado no projeto.');
 
-console.log('Suporte TEA independente: 1 → 6, 2 → 4, 3 → 2 peças; perfis antigos e prioridade sobre seleção manual verificados.');
+console.log('Suporte TEA independente: 1 → 6, 2 → 4, 3 → 2 peças; perfis antigos e modo cadastrado como fallback e ausência de seleção manual verificados.');
 
 console.log('Sombras: 2/4/6 peças cobrem 30.000 pontos sem lacunas ou sobreposições; áreas, abas, bounds e aliases válidos.');

@@ -1,3 +1,4 @@
+import { createActivityLifecycle } from "./activity-lifecycle.js";
 import {
     audioService,
 } from "../../services/audio-service.js";
@@ -117,6 +118,7 @@ function createWordOptions(
 export function createWordBankActivity(
     context,
 ) {
+    const lifecycle = createActivityLifecycle();
     const {
         activity,
         module,
@@ -188,7 +190,7 @@ export function createWordBankActivity(
         button.setAttribute(
             "aria-label",
             (
-                "Imagem da parte do corpo. " +
+                "Imagem da atividade. " +
                 "Clique para ouvir a palavra."
             ),
         );
@@ -198,7 +200,7 @@ export function createWordBankActivity(
 
         button.append(image);
 
-        button.addEventListener(
+        lifecycle.listen(button,
             "click",
             handleImageClick,
         );
@@ -389,7 +391,7 @@ export function createWordBankActivity(
                 "is-wrong",
             );
 
-            window.setTimeout(
+            lifecycle.timeout(
                 () => {
                     selectedButton.classList.remove(
                         "is-wrong",
@@ -490,7 +492,7 @@ export function createWordBankActivity(
                     ),
                 );
 
-                button.addEventListener(
+                lifecycle.listen(button,
                     "click",
                     () => {
                         selectWord(
@@ -511,6 +513,7 @@ export function createWordBankActivity(
 
 
     function render() {
+        if (lifecycle.destroyed) return;
         resolved = false;
         selectedOption = null;
 
@@ -569,7 +572,7 @@ export function createWordBankActivity(
         checkButton.disabled =
             true;
 
-        checkButton.addEventListener(
+        lifecycle.listen(checkButton,
             "click",
             checkAnswer,
         );
@@ -605,9 +608,14 @@ export function createWordBankActivity(
 
 
     return Object.freeze({
+        destroy() {
+            lifecycle.destroy();
+            audioService.stop();
+        },
         start: render,
 
         repeatInstruction() {
+            if (lifecycle.destroyed) return;
             audioService.speak(
                 getInstruction(),
                 "pt-BR",
@@ -615,7 +623,7 @@ export function createWordBankActivity(
         },
 
         next() {
-            return resolved;
+            return !lifecycle.destroyed && resolved;
         },
     });
 }

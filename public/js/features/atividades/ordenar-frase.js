@@ -1,3 +1,4 @@
+import { createActivityLifecycle } from "./activity-lifecycle.js";
 import {
     audioService,
 } from "../../services/audio-service.js";
@@ -54,6 +55,7 @@ function createSentenceTokens(activity) {
 export function createOrderSentenceActivity(
     context,
 ) {
+    const lifecycle = createActivityLifecycle();
     const {
         activity,
         student,
@@ -125,7 +127,7 @@ export function createOrderSentenceActivity(
         button.setAttribute(
             "aria-label",
             (
-                "Imagem da parte do corpo. " +
+                "Imagem da atividade. " +
                 "Clique para ouvir a palavra."
             ),
         );
@@ -135,7 +137,7 @@ export function createOrderSentenceActivity(
 
         button.append(image);
 
-        button.addEventListener(
+        lifecycle.listen(button,
             "click",
             handleImageClick,
         );
@@ -224,7 +226,7 @@ export function createOrderSentenceActivity(
             ),
         );
 
-        button.addEventListener(
+        lifecycle.listen(button,
             "click",
             () => {
                 moveToSentence(token);
@@ -256,7 +258,7 @@ export function createOrderSentenceActivity(
             ),
         );
 
-        button.addEventListener(
+        lifecycle.listen(button,
             "click",
             () => {
                 moveToWordBank(token);
@@ -448,7 +450,7 @@ export function createOrderSentenceActivity(
 
         onWrong(item);
 
-        window.setTimeout(
+        lifecycle.timeout(
             () => {
                 sentenceTarget.classList.remove(
                     "is-wrong",
@@ -460,6 +462,7 @@ export function createOrderSentenceActivity(
 
 
     function render() {
+        if (lifecycle.destroyed) return;
         resolved = false;
 
         availableTokens =
@@ -560,12 +563,12 @@ export function createOrderSentenceActivity(
         actions.className =
             "order-sentence-actions";
 
-        clearButton.addEventListener(
+        lifecycle.listen(clearButton,
             "click",
             clearSentence,
         );
 
-        checkButton.addEventListener(
+        lifecycle.listen(checkButton,
             "click",
             checkAnswer,
         );
@@ -617,9 +620,14 @@ export function createOrderSentenceActivity(
 
 
     return Object.freeze({
+        destroy() {
+            lifecycle.destroy();
+            audioService.stop();
+        },
         start: render,
 
         repeatInstruction() {
+            if (lifecycle.destroyed) return;
             audioService.speak(
                 getInstruction(),
                 "pt-BR",
@@ -627,7 +635,7 @@ export function createOrderSentenceActivity(
         },
 
         next() {
-            return resolved;
+            return !lifecycle.destroyed && resolved;
         },
     });
 }

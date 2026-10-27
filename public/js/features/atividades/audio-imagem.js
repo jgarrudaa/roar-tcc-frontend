@@ -1,3 +1,4 @@
+import { createActivityLifecycle } from "./activity-lifecycle.js";
 import {
     audioService,
 } from "../../services/audio-service.js";
@@ -40,6 +41,7 @@ function createOptions(
 export function createAudioImageActivity(
     context,
 ) {
+    const lifecycle = createActivityLifecycle();
     const {
         activity,
         module,
@@ -176,7 +178,7 @@ export function createAudioImageActivity(
 
     onWrong(item);
 
-    window.setTimeout(() =>
+    lifecycle.timeout(() =>
         button.classList.remove(
             "is-wrong",
         ), 650);
@@ -202,7 +204,7 @@ export function createAudioImageActivity(
             createImage(option, 1),
         );
 
-        button.addEventListener(
+        lifecycle.listen(button,
             "click",
             () => {
                 handleOption(
@@ -218,6 +220,7 @@ export function createAudioImageActivity(
 
 
     function render() {
+        if (lifecycle.destroyed) return;
         resolved = false;
 
         elements.stage.replaceChildren();
@@ -274,7 +277,7 @@ export function createAudioImageActivity(
             );
         });
 
-        playButton.addEventListener(
+        lifecycle.listen(playButton,
             "click",
             playWord,
         );
@@ -303,14 +306,19 @@ export function createAudioImageActivity(
 
 
     return Object.freeze({
+        destroy() {
+            lifecycle.destroy();
+            audioService.stop();
+        },
         start: render,
 
         repeatInstruction() {
+            if (lifecycle.destroyed) return;
             playWord();
         },
 
         next() {
-            return resolved;
+            return !lifecycle.destroyed && resolved;
         },
     });
 }

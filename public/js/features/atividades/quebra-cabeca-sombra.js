@@ -1,3 +1,4 @@
+import { createActivityLifecycle } from "./activity-lifecycle.js";
 import { audioService } from "../../services/audio-service.js";
 import { createImage, shuffle } from "./activity-helpers.js";
 
@@ -26,6 +27,7 @@ function getPieces(item, items, limit) {
  * - Reforço positivo com fala em inglês e apoio pedagógico do mascote LEX.
  */
 export function createShadowPuzzleActivity(context) {
+    const lifecycle = createActivityLifecycle();
     const { activity, module, student, elements, onCorrect, onWrong } = context;
     const item = activity.item;
 
@@ -99,7 +101,7 @@ export function createShadowPuzzleActivity(context) {
         );
         onWrong(item);
 
-        window.setTimeout(() => {
+        lifecycle.timeout(() => {
             tile?.classList.remove("is-wrong");
             if (selectedPiece?.item === piece) {
                 selectedPiece = null;
@@ -196,6 +198,7 @@ export function createShadowPuzzleActivity(context) {
     }
 
     function render() {
+        if (lifecycle.destroyed) return;
         resolved = false;
         selectedPiece = null;
         if (cleanupPointerListeners) {
@@ -245,7 +248,7 @@ export function createShadowPuzzleActivity(context) {
         target.append(shadow);
 
         // Clique/Toque no alvo da sombra
-        target.addEventListener("click", () => {
+        lifecycle.listen(target, "click", () => {
             if (resolved) {
                 audioService.speak(item.en, "en-US");
                 return;
@@ -261,14 +264,14 @@ export function createShadowPuzzleActivity(context) {
         });
 
         // Eventos HTML5 Drag & Drop nativos (Desktop mouse)
-        target.addEventListener("dragenter", (event) => {
+        lifecycle.listen(target, "dragenter", (event) => {
             event.preventDefault();
             if (!resolved) {
                 target.classList.add("is-drag-over");
             }
         });
 
-        target.addEventListener("dragover", (event) => {
+        lifecycle.listen(target, "dragover", (event) => {
             event.preventDefault();
             if (event.dataTransfer) {
                 event.dataTransfer.dropEffect = "move";
@@ -278,14 +281,14 @@ export function createShadowPuzzleActivity(context) {
             }
         });
 
-        target.addEventListener("dragleave", (event) => {
+        lifecycle.listen(target, "dragleave", (event) => {
             if (event.relatedTarget && target.contains(event.relatedTarget)) {
                 return;
             }
             target.classList.remove("is-drag-over");
         });
 
-        target.addEventListener("drop", (event) => {
+        lifecycle.listen(target, "drop", (event) => {
             event.preventDefault();
             target.classList.remove("is-drag-over");
             const index = Number(event.dataTransfer?.getData("text/plain"));
@@ -327,7 +330,7 @@ export function createShadowPuzzleActivity(context) {
             }
 
             // Modo acessível por clique / seleção
-            tile.addEventListener("click", () => {
+            lifecycle.listen(tile, "click", () => {
                 if (resolved) {
                     audioService.speak(piece.en, "en-US");
                     elements.setMessage(`Esta palavra é ${piece.en}.`);
@@ -345,7 +348,7 @@ export function createShadowPuzzleActivity(context) {
             });
 
             // HTML5 Drag & Drop nativo
-            tile.addEventListener("dragstart", (event) => {
+            lifecycle.listen(tile, "dragstart", (event) => {
                 if (resolved || tile.classList.contains("is-placed")) {
                     event.preventDefault();
                     return;
@@ -358,13 +361,13 @@ export function createShadowPuzzleActivity(context) {
                 audioService.speak(piece.en, "en-US");
             });
 
-            tile.addEventListener("dragend", () => {
+            lifecycle.listen(tile, "dragend", () => {
                 tile.classList.remove("is-dragging-source");
                 target?.classList.remove("is-drag-over");
             });
 
             // Pointer Events (suporte unificado para Touch, Caneta Stylus e Mouse)
-            tile.addEventListener("pointerdown", (event) => {
+            lifecycle.listen(tile, "pointerdown", (event) => {
                 // Se o usuário clicar com o botão primário ou tocar
                 if (event.button !== 0 && event.pointerType === "mouse") {
                     return;
@@ -390,12 +393,21 @@ export function createShadowPuzzleActivity(context) {
     }
 
     return Object.freeze({
+        destroy() {
+            lifecycle.destroy();
+            cleanupPointerListeners?.();
+            cleanupPointerListeners = null;
+            cleanupGhost();
+
+            audioService.stop();
+        },
         start: render,
         repeatInstruction() {
+            if (lifecycle.destroyed) return;
             audioService.speak(instruction, "pt-BR");
         },
         next() {
-            return resolved;
+            return !lifecycle.destroyed && resolved;
         },
     });
 }

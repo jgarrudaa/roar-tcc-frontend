@@ -4,7 +4,7 @@ Implementação das orientações do documento **ajustes jogo.pdf** (seis págin
 
 ## Navegação e respostas
 
-- Ao concluir um jogo, a resposta fica protegida contra novos cliques e o avanço acontece após **2 segundos**. O botão **Próximo** continua permitindo avançar antes.
+- Ao concluir um jogo, a resposta fica protegida contra novos cliques e o avanço acontece após **1 segundo**. O botão **Próximo** continua permitindo avançar antes.
 - A seta no cabeçalho volta à atividade anterior, usando a ordem cadastrada no módulo. Na primeira atividade, volta ao catálogo.
 - Sair, voltar ou avançar manualmente cancela o avanço pendente. Cada conclusão gera uma solicitação de salvamento por vez.
 - Se o salvamento falhar, a tela permanece na resposta concluída e o botão **Próximo** permite tentar novamente. Não há repetição automática de requisições.
@@ -24,9 +24,9 @@ Implementação das orientações do documento **ajustes jogo.pdf** (seis págin
 - As tentativas ficam bloqueadas durante a prévia. Ao esconder as cartas, a ordem é mantida.
 - Não há mais a tela separada “Conheça os pares”. A orientação é falada na abertura.
 - A grade adapta-se ao espaço disponível, sem rolagem interna nas dimensões verificadas. Em telas muito pequenas ou com zoom, a rolagem necessária permanece disponível para não cortar conteúdo.
-- No nível 2, concluir a memória abre uma rodada adicional de **Sombras com 4 peças**, usando o vocabulário da atividade. A barra identifica **Jogo 1 de 2** e **Jogo 2 de 2**.
+- No modo de aprendizagem 2, concluir a memória abre uma rodada adicional de **Sombras**, usando o vocabulário da atividade. As peças seguem o suporte TEA cadastrado (1 = 6, 2 = 4, 3 = 2); sem TEA preenchido, o modo Aprendiz Guiado usa 4 peças. A barra identifica **Jogo 1 de 2** e **Jogo 2 de 2**.
 - Memória e Sombras compõem a mesma atividade do backend: o progresso só é enviado após os dois jogos, uma única vez. Não foram criados registros nem tipos novos no banco.
-- A página avulsa de Sombras também avança após 2 segundos e abre a revisão depois do sexto animal.
+- O endereço antigo da página avulsa de Sombras redireciona para os módulos.
 
 ## Verificação
 
