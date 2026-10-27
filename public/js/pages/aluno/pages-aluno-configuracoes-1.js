@@ -11,10 +11,14 @@ const elements = {
     sounds: document.getElementById("cfgSons"), animations: document.getElementById("cfgAnim"),
     stimuli: document.getElementById("cfgEstimulos"), saveTop: document.getElementById("btnSave"),
     saveBottom: document.getElementById("btnSave2"), logout: document.getElementById("btnLogout"),
+    btnTogglePin: document.getElementById("btnTogglePin"),
     avatar: document.querySelector(".navbar__avatar"),
     email: document.getElementById("cfgEmail"),
+    pin: document.getElementById("cfgPin"),
+
 };
 let preferences = { ...DEFAULTS };
+let pinVisible = false;
 
 function normalize(value) {
     const source = value && typeof value === "object" ? value : {};
@@ -50,10 +54,15 @@ function render() {
     elements.stimuli.checked = preferences.reducedStimuli;
     const user = sessionService.get()?.user ?? {};
     const name = String(user.name ?? user.nome ?? "Aluno").trim();
-    const emailText = String(user.email ?? "E-mail não informado").trim(); 
+    const emailText = String(user.email ?? "E-mail não informado").trim();
     if (elements.email) {
         elements.email.textContent = emailText;
     }
+    const pinText = String(user.pin ?? user.pin_acesso ?? "0000").trim();
+    if (elements.pin) {
+        elements.pin.textContent = "****";
+    }
+
     elements.name.value = name;
     elements.name.readOnly = true;
     elements.language.value = "Português";
@@ -85,6 +94,25 @@ function registerEvents() {
     }));
     [elements.volume, elements.notifications, elements.contrast, elements.sounds, elements.animations, elements.stimuli]
         .forEach((element) => element.addEventListener("input", preview));
+
+    if (elements.btnTogglePin) {
+        
+        const user = sessionService.get()?.user ?? {};
+        const pinText = String(user.pin ?? user.pin_acesso ?? "0000").trim();
+
+        elements.btnTogglePin.addEventListener("click", () => {
+            pinVisible = !pinVisible;
+
+            if (pinVisible) {
+                elements.pin.textContent = pinText;
+                elements.btnTogglePin.innerHTML = '<i class="fi fi-br-eye-crossed"></i> Ocultar';
+            } else {
+                elements.pin.textContent = "****";
+                elements.btnTogglePin.innerHTML = '<i class="fi fi-br-eye"></i> Mostrar';
+            }
+        });
+    }
+
     elements.saveTop.addEventListener("click", save);
     elements.saveBottom.addEventListener("click", save);
     elements.logout.addEventListener("click", () => { sessionService.end(); window.location.replace("../auth/login-aluno.html"); });
