@@ -148,7 +148,7 @@
     background: var(--roar-surface);
     box-shadow: var(--roar-shadow);
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: hidden;
 }
 
 .activity-loading,

@@ -100,7 +100,19 @@ function normalizeMediaUrl(value) {
         mediaUrl.startsWith("data:") ||
         mediaUrl.startsWith("blob:");
 
-    if (isAbsoluteUrl || mediaUrl.startsWith("/")) {
+    if (isAbsoluteUrl) {
+        return mediaUrl;
+    }
+
+    const isLocalLiveServer =
+        ["localhost", "127.0.0.1"].includes(window.location.hostname) &&
+        window.location.port === "5501";
+
+    if (isLocalLiveServer && mediaUrl.startsWith("/assets/")) {
+        return `/public${mediaUrl}`;
+    }
+
+    if (mediaUrl.startsWith("/")) {
         return mediaUrl;
     }
 
@@ -452,8 +464,8 @@ function createActivity(
         id: selectedActivity.activityId,
         stage: selectedActivity.order,
         type: selectedActivity.type,
-        originalType:selectedActivity.originalType,
-        instruction:selectedActivity.instruction,
+        originalType: selectedActivity.originalType,
+        instruction: selectedActivity.instruction,
         answer: selectedActivity.answer || item.en,
         status: "active",
 

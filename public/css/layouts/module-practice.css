@@ -84,3 +84,26 @@
     .practice-choice { padding: 12px 8px; }
     .practice-card .prompt-image { height: 100px; }
 }
+
+.body-jigsaw {
+    width: min(100%, 1120px);
+    max-width: 1120px;
+    margin-inline: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.body-jigsaw .shadow-header {
+    width: 100%;
+    text-align: center;
+}
+
+.body-jigsaw .shadow-controls {
+    width: 100%;
+    justify-content: center;
+}
+
+.body-jigsaw .shadow-workspace {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}

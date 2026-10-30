@@ -9,6 +9,10 @@ const elements = {
     confirmation: document.getElementById("confirmationInput"), send: document.getElementById("sendCodeButton"),
     validate: document.getElementById("validateCodeButton"), reset: document.getElementById("resetPasswordButton"),
     resend: document.getElementById("resendCodeButton"), changeEmail: document.getElementById("changeEmailButton"),
+    toggleNewPassword: document.getElementById("toggleNewPassword"),
+    toggleConfirmation: document.getElementById("toggleConfirmation"),
+    passwordRequirements: document.getElementById("passwordRequirements"),
+    mascot: document.getElementById("recoveryDino"),
 };
 
 const state = { email: "", code: "", busy: false, countdown: 0, timer: null };
@@ -30,6 +34,61 @@ function setBusy(button, busy, busyText, normalText) {
     state.busy = busy;
     button.disabled = busy;
     button.textContent = busy ? busyText : normalText;
+}
+
+function updateRecoveryMascot() {
+    const visible = [elements.password, elements.confirmation]
+        .some((input) => input.type === "text");
+
+    const hasPassword = [elements.password, elements.confirmation]
+        .some((input) => input.value.length > 0);
+
+    const image = visible
+        ? elements.mascot.dataset.dinoPeeking
+        : hasPassword
+            ? elements.mascot.dataset.dinoHiding
+            : elements.mascot.dataset.dinoNeutral;
+
+    elements.mascot.src = image;
+}
+
+function setupPasswordToggle(input, button, label) {
+    button.addEventListener("click", () => {
+        const showPassword = input.type === "password";
+
+        input.type = showPassword ? "text" : "password";
+        button.setAttribute("aria-pressed", String(showPassword));
+        button.setAttribute(
+            "aria-label",
+            `${showPassword ? "Ocultar" : "Mostrar"} ${label}`,
+        );
+
+        input.type = showPassword ? "text" : "password";
+        updateRecoveryMascot();
+
+        button.querySelector("[data-eye]").hidden = showPassword;
+        button.querySelector("[data-eye-off]").hidden = !showPassword;
+    });
+}
+
+function updatePasswordRequirements() {
+    const value = elements.password.value;
+
+    const rules = {
+        length: value.length >= 8,
+        uppercase: /[A-Z]/.test(value),
+        lowercase: /[a-z]/.test(value),
+        number: /\d/.test(value),
+    };
+
+    elements.passwordRequirements
+        .querySelectorAll("[data-password-rule]")
+        .forEach((item) => {
+            const valid = rules[item.dataset.passwordRule];
+            item.classList.toggle("is-valid", valid);
+            item.querySelector(".requirement-mark").textContent =
+                valid ? "✓" : "○";
+        });
 }
 
 function startCountdown() {
@@ -91,3 +150,20 @@ elements.resend.addEventListener("click", requestCode);
 elements.changeEmail.addEventListener("click", () => { clearInterval(state.timer); state.email = ""; state.code = ""; elements.code.value = ""; showStep("email"); });
 elements.code.addEventListener("input", () => { elements.code.value = elements.code.value.replace(/\D/g, "").slice(0, 6); });
 showStep("email");
+setupPasswordToggle(
+    elements.password,
+    elements.toggleNewPassword,
+    "a nova senha",
+);
+
+setupPasswordToggle(
+    elements.confirmation,
+    elements.toggleConfirmation,
+    "a confirmação da senha",
+);
+
+elements.password.addEventListener("input", updatePasswordRequirements);
+updatePasswordRequirements();
+
+elements.password.addEventListener("input", updateRecoveryMascot);
+elements.confirmation.addEventListener("input", updateRecoveryMascot);

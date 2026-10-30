@@ -512,6 +512,7 @@ input {
         max-width: 200px;
     }
 }
+
 /* Exibe apenas a etapa ativa dos formulários integrados à API. */
 .auth-form[hidden] {
     display: none;
@@ -530,6 +531,7 @@ input {
 }
 
 @media (max-width: 360px) {
+
     .auth-visual,
     .auth-form-panel {
         padding: 20px 14px;
@@ -578,4 +580,44 @@ input {
         max-width: 240px;
         height: 200px;
     }
+}
+
+.auth-page--teacher-recovery .auth-password-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.auth-page--teacher-recovery .auth-password-toggle [hidden] {
+    display: none;
+}
+
+.auth-page--teacher-recovery .password-requirements {
+    display: grid;
+    gap: 6px;
+    margin: -4px 0 2px;
+    padding: 0;
+    list-style: none;
+    color: var(--auth-muted);
+    font-size: 13px;
+}
+
+.auth-page--teacher-recovery .password-requirements li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.auth-page--teacher-recovery .password-requirements .requirement-mark {
+    width: 18px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.auth-page--teacher-recovery .password-requirements li.is-valid {
+    color: var(--auth-green);
 }

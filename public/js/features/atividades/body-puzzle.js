@@ -31,20 +31,7 @@ export function createBodyPuzzleActivity(context) {
         engine.start();
         const root = elements.stage.querySelector('.shadow-game');
         root.classList.add('body-jigsaw');
-        const heading = document.createElement('h2');
-        heading.className = 'body-jigsaw-title';
-        heading.textContent = 'Monte o corpo';
-        const counter = document.createElement('p');
-        counter.className = 'body-jigsaw-round';
-        counter.textContent = `Imagem ${index + 1} de ${activity.cards.length}`;
-        const tutorial = document.createElement('details');
-        tutorial.className = 'body-jigsaw-help';
-        const summary = document.createElement('summary');
-        summary.textContent = 'Como jogar';
-        const steps = document.createElement('p');
-        steps.textContent = 'Escolha uma peça e arraste até a sombra com o mesmo formato. Repita até completar a imagem. Você também pode tocar na peça e na sombra, ou usar Tab e Enter. Use “Mostrar dica” para encontrar o encaixe da peça selecionada.';
-        tutorial.append(summary, steps);
-        root.prepend(heading, counter, tutorial);
+
         elements.stage.scrollTop = 0;
     }
 

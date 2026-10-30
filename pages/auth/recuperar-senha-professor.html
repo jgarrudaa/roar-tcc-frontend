@@ -27,7 +27,10 @@
                     seu e-mail e crie<br>uma nova senha com segurança.</p>
             </div>
             <div class="auth-mascot-stage" aria-hidden="true">
-                <img src="../../public/assets/imagens/dino2.png" alt="" class="auth-dino">
+                <img src="../../public/assets/imagens/dino2.png" alt="" class="auth-dino" id="recoveryDino"
+                    data-dino-neutral="../../public/assets/imagens/dino2.png"
+                    data-dino-hiding="../../public/assets/imagens/dinosenha2-sem-colar.png"
+                    data-dino-peeking="../../public/assets/imagens/dino espiando2.png">
             </div>
         </section>
 
@@ -62,15 +65,61 @@
 
                 <form id="passwordStep" hidden novalidate>
                     <div class="auth-fields">
-                        <label class="sr-only" for="passwordInput">Nova senha</label>
-                        <input id="passwordInput" class="auth-input" type="password" autocomplete="new-password"
-                            placeholder="Nova senha" required>
-                        <label class="sr-only" for="confirmationInput">Confirmar nova senha</label>
-                        <input id="confirmationInput" class="auth-input" type="password" autocomplete="new-password"
-                            placeholder="Confirme a nova senha" required>
+                        <div class="auth-password-field">
+                            <label class="sr-only" for="passwordInput">Nova senha</label>
+                            <input id="passwordInput" class="auth-input" type="password" autocomplete="new-password"
+                                placeholder="Nova senha" required>
+
+                            <button class="auth-password-toggle" id="toggleNewPassword" type="button"
+                                aria-label="Mostrar nova senha" aria-pressed="false">
+                                <svg data-eye viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg data-eye-off viewBox="0 0 24 24" aria-hidden="true" hidden>
+                                    <path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                                    <path
+                                        d="M9.9 5.2A11 11 0 0 1 12 5c6.4 0 10 7 10 7a15 15 0 0 1-3.1 3.8M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10 10 0 0 0 3-.5">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="auth-password-field">
+                            <label class="sr-only" for="confirmationInput">Confirmar nova senha</label>
+                            <input id="confirmationInput" class="auth-input" type="password" autocomplete="new-password"
+                                placeholder="Confirme a nova senha" required>
+
+                            <button class="auth-password-toggle" id="toggleConfirmation" type="button"
+                                aria-label="Mostrar confirmação da senha" aria-pressed="false">
+                                <svg data-eye viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg data-eye-off viewBox="0 0 24 24" aria-hidden="true" hidden>
+                                    <path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+                                    <path
+                                        d="M9.9 5.2A11 11 0 0 1 12 5c6.4 0 10 7 10 7a15 15 0 0 1-3.1 3.8M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10 10 0 0 0 3-.5">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                    <p class="auth-form-label">Use 8 caracteres, incluindo maiúscula, minúscula e número.</p>
-                    <button class="buttoncadastro" id="resetPasswordButton" type="submit">Redefinir senha</button>
+
+                    <ul class="password-requirements" id="passwordRequirements">
+                        <li data-password-rule="length"><span class="requirement-mark" aria-hidden="true">○</span> Pelo
+                            menos 8 caracteres</li>
+                        <li data-password-rule="uppercase"><span class="requirement-mark" aria-hidden="true">○</span>
+                            Uma letra maiúscula</li>
+                        <li data-password-rule="lowercase"><span class="requirement-mark" aria-hidden="true">○</span>
+                            Uma letra minúscula</li>
+                        <li data-password-rule="number"><span class="requirement-mark" aria-hidden="true">○</span> Um
+                            número</li>
+                    </ul>
+
+                    <button class="buttoncadastro" id="resetPasswordButton" type="submit">
+                        Redefinir senha
+                    </button>
                 </form>
 
                 <a href="login-professor.html" class="auth-link auth-link--small">Voltar para o login</a>

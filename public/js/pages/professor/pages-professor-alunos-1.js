@@ -529,8 +529,54 @@ function renderStudentCards() {
 
     elements.studentsGrid.innerHTML = "";
 
-    const fragment =
-        document.createDocumentFragment();
+    const fragment = document.createDocumentFragment();
+
+    const visibleLevels = [
+        ...new Set(
+            state.visibleStudents.map(
+                (student) => Number(student.level?.number) || 0,
+            ),
+        ),
+    ].sort((a, b) => a - b);
+
+    const levelGrids = new Map();
+
+    visibleLevels.forEach((levelNumber) => {
+        const levelInfo =
+            LEVEL_STYLES[levelNumber] ?? LEVEL_STYLES[0];
+
+        const studentsInLevel =
+            state.visibleStudents.filter(
+                (student) =>
+                    (Number(student.level?.number) || 0) === levelNumber,
+            );
+
+        const section = document.createElement("section");
+        section.className =
+            `students-level-group ${levelInfo.cardClass}`;
+
+        const heading = document.createElement("div");
+        heading.className = "students-level-group__heading";
+
+        const title = document.createElement("h2");
+        title.id = `students-level-${levelNumber}-title`;
+        title.textContent = levelInfo.text;
+
+        const count = document.createElement("span");
+        count.className = "students-level-group__count";
+        count.textContent =
+            `${studentsInLevel.length} ` +
+            `${studentsInLevel.length === 1 ? "aluno" : "alunos"}`;
+
+        const cardsGrid = document.createElement("div");
+        cardsGrid.className = "students-level-group__grid";
+
+        heading.append(title, count);
+        section.append(heading, cardsGrid);
+        fragment.appendChild(section);
+
+        levelGrids.set(levelNumber, cardsGrid);
+    });
 
     state.visibleStudents.forEach(
         (student) => {
@@ -668,7 +714,10 @@ function renderStudentCards() {
                 },
             );
 
-            fragment.appendChild(card);
+            const levelNumber =
+                Number(student.level?.number) || 0;
+
+            levelGrids.get(levelNumber)?.appendChild(card);
         },
     );
 
@@ -1168,7 +1217,7 @@ async function saveSelectedStudent(event) {
             {
                 name: elements.editName.value,
                 email: elements.editEmail.value,
-                schoolYear:elements.editSchoolYear.value,
+                schoolYear: elements.editSchoolYear.value,
                 level: newLevel,
                 teaSupportLevel: elements.editTeaSupportLevel.value,
             },
