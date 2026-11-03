@@ -40,6 +40,8 @@ function createPracticeActivity(context, kind) {
     function render() {
         if (lifecycle.destroyed || completed) return;
         dragController?.destroy();
+        document.body.classList.add("is-practice");
+        elements.stage.classList.add("practice-stage");
         answered = false;
         let selected = false;
         const round = rounds[index];
@@ -67,9 +69,11 @@ function createPracticeActivity(context, kind) {
         // for this practice card, keeping the source vocabulary and other games intact.
         const isLeg = round.item.en.trim().toUpperCase() === "LEG";
         const legImage = "/public/assets/imagens/modulos/corpo_humano/leg-complete.svg";
-        const image = createImage({ ...round.item,
+        const image = createImage({
+            ...round.item,
             realImage: isLeg ? legImage : round.item.realImage || round.item.vectorImage,
-            vectorImage: isLeg ? legImage : round.item.vectorImage }, student.supportLevel);
+            vectorImage: isLeg ? legImage : round.item.vectorImage
+        }, student.supportLevel);
         if (isLeg) image.alt = "Perna destacada por um contorno, com pernas e pés inteiros.";
         const caption = document.createElement("span");
         caption.className = "practice-word";
@@ -171,8 +175,10 @@ function createPracticeActivity(context, kind) {
                 elements.setMessage(completed ? "Muito bem! Você completou o jogo." : "Isso! Você encontrou o lugar certo.");
                 elements.nextButton.disabled = false;
                 elements.nextButton.focus?.({ preventScroll: true });
-                onCorrect({ ...round.item, id: `${kind}:${index}:${round.item.id}`,
-                    itemId: `${kind}:${index}:${round.item.itemId}` });
+                onCorrect({
+                    ...round.item, id: `${kind}:${index}:${round.item.id}`,
+                    itemId: `${kind}:${index}:${round.item.itemId}`
+                });
             });
             optionContainer.append(button, dictionary);
             choices.append(optionContainer);
@@ -180,7 +186,8 @@ function createPracticeActivity(context, kind) {
         content.append(heading, counter, card, help, choices);
         elements.stage.replaceChildren(content);
         if (kind === "scene") {
-            dragController = createSceneDrag({ card, targets: buttons,
+            dragController = createSceneDrag({
+                card, targets: buttons,
                 enabled: () => !lifecycle.destroyed && !answered && !completed,
                 onSelect: selectCard,
                 onDrop: target => target.click(),
@@ -207,7 +214,13 @@ function createPracticeActivity(context, kind) {
             selectedButton.focus?.({ preventScroll: true });
             return true;
         },
-        destroy() { dragController?.destroy(); lifecycle.destroy(); audioService.stop(); },
+        destroy() {
+            document.body.classList.remove("is-practice");
+            elements.stage.classList.remove("practice-stage");
+            dragController?.destroy();
+            lifecycle.destroy();
+            audioService.stop();
+        },
     });
 }
 
