@@ -45,9 +45,35 @@
 }
 
 @media (max-width: 760px) {
+    /* Treat header, game and controls as one compact group and center that
+       group in the viewport instead of pinning its ends to the screen edges. */
+    .activity-page {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow-y: auto;
+    }
+
+    .activity-page .activity-header,
+    .activity-page .activity-footer {
+        flex: 0 0 auto;
+    }
+
+    .activity-page .activity-stage {
+        flex: 0 1 auto;
+        min-height: 0;
+        max-height: 62dvh;
+    }
+
+    .activity-page .activity-stage > .activity-content {
+        height: auto;
+        min-height: 0;
+    }
+
     .activity-page .association-game { gap: 12px; }
     .activity-page .association-prompt-button {
         width: min(280px, 76vw);
         height: clamp(150px, 27vh, 230px);
     }
+
 }
