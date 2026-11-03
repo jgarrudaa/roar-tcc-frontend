@@ -7,10 +7,10 @@ import { createValidateActivity, } from "./validar.js?v=4";
 import { createAudioImageActivity, } from "./audio-imagem.js?v=4";
 import { createTrueFalseActivity, } from "./verdadeiro-falso.js?v=4";
 import { createMemoryActivity, } from "./memoria.js?v=4";
-import { createCompleteSentenceActivity,} from "./completar-frase.js";
-import { createOrderSentenceActivity,} from "./ordenar-frase.js?v=1";
-import { createWritingActivity,} from "./escrita.js";
-import { createWordBankActivity,} from "./banco-palavras.js";
+import { createCompleteSentenceActivity, } from "./completar-frase.js";
+import { createOrderSentenceActivity, } from "./ordenar-frase.js?v=1";
+import { createWritingActivity, } from "./escrita.js";
+import { createWordBankActivity, } from "./banco-palavras.js";
 import { createShadowPuzzleActivity } from "./quebra-cabeca-sombra.js";
 import { createShadowActivity } from "./sombra.js";
 import { getModulePracticePhases } from "./module-practice.js";
@@ -22,16 +22,16 @@ import { createBodyPuzzleActivity } from './body-puzzle.js';
 
 
 const ACTIVITY_FACTORIES = Object.freeze({
-   recognize: createRecognizeActivity,
+    recognize: createRecognizeActivity,
     associate: createAssociateActivity,
     validate: createValidateActivity,
     audioImage: createAudioImageActivity,
     trueFalse: createTrueFalseActivity,
     memory: createMemoryActivity,
     completeSentence: createCompleteSentenceActivity,
-    orderSentence:createOrderSentenceActivity,
-    writing:createWritingActivity,
-    wordBank:createWordBankActivity,
+    orderSentence: createOrderSentenceActivity,
+    writing: createWritingActivity,
+    wordBank: createWordBankActivity,
     shadowPuzzle: createShadowPuzzleActivity,
     shadow: createShadowActivity,
     categories: createCategoriesActivity,
@@ -135,19 +135,49 @@ function setControlsDisabled(
         disabled;
 }
 
-export async function createActivityController({ moduleId, stage, elements }) {
-    const context = await atividadeService.getContext(moduleId, stage);
+export async function createActivityController({
+    moduleId,
+    stage,
+    elements,
+    moduleContext = null,
+    onStageChange = null,
+}) {
+    const context = moduleContext
+        ? atividadeService.getActivityContext(moduleContext, stage)
+        : await atividadeService.getContext(moduleId, stage);
+
     const { activity, module, student } = context;
+
     const currentIndex = findCurrentActivityIndex(module, activity);
+
+    if (currentIndex < 0) {
+        throw new Error("A atividade atual não foi encontrada no módulo.");
+    }
+
     const previousActivity = module.activities[currentIndex - 1];
-    const previousUrl = previousActivity ? buildNextUrl(module.id, previousActivity) : "atividades.html";
+    const previousUrl = previousActivity
+        ? buildNextUrl(module.id, previousActivity)
+        : "atividades.html";
+
     elements.title.textContent = module.title;
-    if (elements.levelBadge) elements.levelBadge.textContent = student.supportMode;
+
+    if (elements.levelBadge) {
+        elements.levelBadge.textContent = student.supportMode;
+    }
+
     if (elements.backButton) {
         elements.backButton.href = previousUrl;
-        elements.backButton.setAttribute("aria-label", previousActivity ? "Voltar à atividade anterior" : "Voltar para atividades");
-        elements.backButton.title = previousActivity ? "Atividade anterior" : "Atividades";
+        elements.backButton.setAttribute(
+            "aria-label",
+            previousActivity
+                ? "Voltar à atividade anterior"
+                : "Voltar para atividades",
+        );
+        elements.backButton.title = previousActivity
+            ? "Atividade anterior"
+            : "Atividades";
     }
+
     elements.setInstruction(activity.instruction);
     if (activity.status !== "active") {
         createBlockedMessage(elements);
@@ -156,15 +186,16 @@ export async function createActivityController({ moduleId, stage, elements }) {
         setControlsDisabled(elements, true);
         return null;
     }
-    if (currentIndex < 0) throw new Error("A atividade atual não foi encontrada no módulo.");
     if (!ACTIVITY_FACTORIES[activity.type]) throw new Error(`Motor não encontrado para o tipo '${activity.type}'.`);
 
     // The additional level-two game belongs to the same saved activity. The API
     // receives one completion only, after memory AND the puzzle are finished.
     const phases = [activity];
     if (activity.type === "memory" && Number(student.supportLevel) === 2) {
-        phases.push({ ...activity, type: "shadow", instruction:
-            "Agora monte a imagem! Arraste cada peça até a sombra ou toque para encaixar." });
+        phases.push({
+            ...activity, type: "shadow", instruction:
+                "Agora monte a imagem! Arraste cada peça até a sombra ou toque para encaixar."
+        });
     }
     if (currentIndex === module.activities.length - 1) {
         phases.push(...getModulePracticePhases(context));
@@ -286,9 +317,23 @@ export async function createActivityController({ moduleId, stage, elements }) {
             elements.setMessage(earnedXp > 0 ? `Atividade concluída! Você ganhou ${earnedXp} XP.` :
                 "Atividade concluída! Seu progresso foi salvo.");
             navigationStarted = true;
+
             const nextActivity = module.activities[currentIndex + 1];
             destroy();
-            navigateTo(nextActivity ? buildNextUrl(module.id, nextActivity) : "atividades.html");
+
+            if (
+                nextActivity &&
+                typeof onStageChange === "function"
+            ) {
+                await onStageChange(nextActivity.order);
+            } else {
+                navigateTo(
+                    nextActivity
+                        ? buildNextUrl(module.id, nextActivity)
+                        : "atividades.html",
+                );
+            }
+
             return true;
         } catch (error) {
             if (disposed) return false;
@@ -340,7 +385,17 @@ export async function createActivityController({ moduleId, stage, elements }) {
         toggleAutoAdvance,
         previous() {
             if (disposed || navigationStarted) return;
+
             destroy();
+
+            if (
+                previousActivity &&
+                typeof onStageChange === "function"
+            ) {
+                void onStageChange(previousActivity.order);
+                return;
+            }
+
             navigateTo(previousUrl);
         },
         destroy,

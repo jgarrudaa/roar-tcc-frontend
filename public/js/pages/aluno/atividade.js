@@ -1,8 +1,12 @@
 import { showToast } from "../../components/toast.js";
 import { createActivityController } from "../../features/atividades/atividade-controller.js?v=4";
+import { atividadeService } from "../../services/atividade-service.js"
+
 
 let activeController = null;
 let pageClosed = false;
+let moduleContext = null;
+let stageRequestId = 0;
 window.addEventListener("pagehide", () => {
     pageClosed = true;
     activeController?.destroy();
@@ -120,41 +124,80 @@ function validateElements() {
     }
 }
 
+
+async function openStage(stageToOpen) {
+    if (pageClosed) return;
+
+    const requestId = ++stageRequestId;
+
+    activeController?.destroy();
+    activeController = null;
+
+    const controller = await createActivityController({
+        moduleId,
+        stage: stageToOpen,
+        elements,
+        moduleContext,
+        onStageChange: openStage,
+    });
+
+    if (
+        pageClosed ||
+        requestId !== stageRequestId
+    ) {
+        controller?.destroy();
+        return;
+    }
+
+    if (!controller) return;
+
+    activeController = controller;
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("modulo", String(moduleId));
+    url.searchParams.set("etapa", String(stageToOpen));
+
+    window.history.replaceState(
+        window.history.state,
+        "",
+        url,
+    );
+
+    controller.start();
+}
+
 async function initialize() {
     try {
         validateElements();
 
-        const controller =
-            await createActivityController({
-                moduleId,
-                stage,
-                elements,
-            });
-
-        if (!controller || pageClosed) {
-            controller?.destroy();
-            return;
-        }
-        activeController = controller;
         elements.backButton?.addEventListener("click", (event) => {
-            if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+            if (
+                event.ctrlKey ||
+                event.metaKey ||
+                event.shiftKey ||
+                event.altKey
+            ) {
+                return;
+            }
+
             event.preventDefault();
-            controller.previous();
+            activeController?.previous();
         });
 
-        elements.repeatButton
-            .addEventListener(
-                "click",
-                controller.repeatInstruction,
-            );
+        elements.repeatButton.addEventListener("click", () => {
+            activeController?.repeatInstruction();
+        });
 
-        elements.nextButton
-            .addEventListener(
-                "click",
-                controller.next,
-            );
+        elements.nextButton.addEventListener("click", () => {
+            activeController?.next();
+        });
 
-        controller.start();
+        moduleContext =
+            await atividadeService.loadModuleContext(moduleId);
+
+        if (pageClosed) return;
+
+        await openStage(stage);
     } catch (error) {
         if (pageClosed) return;
         console.error(
