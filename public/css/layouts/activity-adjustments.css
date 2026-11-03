@@ -127,4 +127,43 @@
         width: min(280px, 76vw);
         height: clamp(150px, 27vh, 230px);
     }
+
+}
+
+.activity-page .activity-home {
+    width: 56px;
+    height: 56px;
+    justify-self: end;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--roar-blue);
+    background: var(--roar-blue-light);
+    box-shadow: 0 5px 14px rgba(15, 79, 125, 0.16);
+    text-decoration: none;
+    transition: transform 160ms ease, background-color 160ms ease;
+}
+
+.activity-page .activity-home:hover {
+    transform: translateY(-2px);
+    background: #d5edfb;
+}
+
+.activity-page .activity-home:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 3px;
+}
+
+@media (max-width: 1024px) {
+    .activity-page .activity-home {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+@media (max-width: 760px) {
+    .activity-page .activity-home {
+        width: 44px;
+        height: 44px;
+    }
 }
