@@ -81,6 +81,12 @@
     z-index: 1;
 }
 
+@media (min-width: 761px) and (max-width: 1024px) {
+    .activity-page .lex-feedback img {
+        transform: translate(-8px, -14px) scale(1.6);
+    }
+}
+
 @media (max-width: 760px) {
     .activity-page .association-game { gap: 12px; }
     .activity-page .association-prompt-button {
@@ -89,7 +95,7 @@
     }
 
     .activity-page .lex-feedback img {
-        transform: translate(-6px, -5px) scale(1.0);
+        transform: translate(-6px, -11px) scale(1.4);
     }
 
 }
