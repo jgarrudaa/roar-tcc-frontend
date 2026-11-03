@@ -33,7 +33,7 @@ export function createBodyPuzzleActivity(context) {
         root.classList.add('body-jigsaw');
         const heading = document.createElement('h2');
         heading.className = 'body-jigsaw-title';
-        heading.textContent = 'Monte o corpo';
+        heading.textContent = activity.title || 'Monte o corpo';
         const counter = document.createElement('p');
         counter.className = 'body-jigsaw-round';
         counter.textContent = `Imagem ${index + 1} de ${activity.cards.length}`;

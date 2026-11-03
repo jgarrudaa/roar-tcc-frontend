@@ -183,6 +183,7 @@ export function createShadowActivity(context) {
             root.classList.add("is-complete");
             elements.nextButton.disabled = false;
             setMessage(`Você montou o quebra-cabeça! ${item.en} significa ${item.pt}.`);
+            if (context.module?.title?.toLowerCase().includes('fazenda')) playWord();
             if (!reportedCorrect) {
                 reportedCorrect = true;
                 onCorrect?.(item);

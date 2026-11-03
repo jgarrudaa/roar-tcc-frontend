@@ -17,6 +17,8 @@ import { getModulePracticePhases } from "./module-practice.js";
 import { createCategoriesActivity, createSceneActivity } from "./module-practice-games.js";
 import { storage } from "../../utils/storage.js";
 import { createBodyPuzzleActivity } from './body-puzzle.js';
+import { createVocabularyReviewActivity } from './vocabulary-review.js';
+import { createVocabularyPracticeActivity } from './vocabulary-practice.js';
 
 
 
@@ -37,6 +39,9 @@ const ACTIVITY_FACTORIES = Object.freeze({
     categories: createCategoriesActivity,
     scene: createSceneActivity,
     bodyPuzzle: createBodyPuzzleActivity,
+    vocabularyReview: createVocabularyReviewActivity,
+    vocabularyPractice: createVocabularyPracticeActivity,
+    animalPuzzle: createBodyPuzzleActivity,
 });
 
 function navigateTo(url) {
@@ -162,13 +167,14 @@ export async function createActivityController({ moduleId, stage, elements }) {
     // The additional level-two game belongs to the same saved activity. The API
     // receives one completion only, after memory AND the puzzle are finished.
     const phases = [activity];
-    if (activity.type === "memory" && Number(student.supportLevel) === 2) {
+    const practicePhases = currentIndex === module.activities.length - 1
+        ? getModulePracticePhases(context) : [];
+    if (activity.type === "memory" && Number(student.supportLevel) === 2 &&
+        !practicePhases.some(phase => phase.type === 'animalPuzzle')) {
         phases.push({ ...activity, type: "shadow", instruction:
             "Agora monte a imagem! Arraste cada peça até a sombra ou toque para encaixar." });
     }
-    if (currentIndex === module.activities.length - 1) {
-        phases.push(...getModulePracticePhases(context));
-    }
+    phases.push(...practicePhases);
     const statistics = { correct: 0, wrong: 0 };
     const correctItems = new Set();
     let engine;

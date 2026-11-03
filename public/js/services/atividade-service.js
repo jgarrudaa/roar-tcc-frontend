@@ -94,6 +94,14 @@ function normalizeMediaUrl(value) {
         return "";
     }
 
+    // Older database entries omit the public directory used by this frontend.
+    if (/^\/?assets\//.test(mediaUrl)) {
+        return new URL(
+            `../../${mediaUrl.replace(/^\//, "")}`,
+            import.meta.url,
+        ).href;
+    }
+
     const isAbsoluteUrl =
         mediaUrl.startsWith("http://") ||
         mediaUrl.startsWith("https://") ||

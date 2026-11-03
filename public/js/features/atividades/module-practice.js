@@ -18,6 +18,22 @@ export function getModulePracticePhases({ activity, module }) {
     const usable = module.items.filter(item => item.en && (item.realImage || item.vectorImage));
     const unique = [...new Map(usable.map(item => [item.en.trim().toUpperCase(), item])).values()];
     if (!unique.length) return [];
+    const moduleName = module.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    if (moduleName.includes('fazenda')) {
+        const phases = [
+            { ...activity, type: 'animalPuzzle', title: 'Monte os animais',
+                cards: unique.map(item => ({ item })), instruction:
+                'Monte os animais. Arraste cada peça até sua sombra para completar a imagem.' },
+            { ...activity, type: 'vocabularyPractice', practiceType: 'audioImage', cards: unique,
+                title: 'Ouça e encontre o animal', instruction: 'Ouça e escolha o animal.' },
+            { ...activity, type: 'vocabularyPractice', practiceType: 'associate', cards: unique,
+                title: 'Associe o animal à palavra', instruction:
+                'Observe o animal e escolha a palavra em inglês.' },
+        ];
+        phases.push({ ...activity, type: 'vocabularyReview', cards: unique, instruction:
+            'Revise os animais. Toque em cada imagem para ouvir a palavra em inglês.' });
+        return phases;
+    }
     const phases = [];
     for (const groups of CATEGORY_SETS) {
         const members = groups.map(group => unique.filter(item => group.words.includes(item.en.trim().toUpperCase())));
