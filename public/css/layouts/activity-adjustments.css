@@ -63,11 +63,33 @@
     flex: 0 0 auto;
 }
 
+/* Center the back arrow's visual weight inside the circular control. */
+.activity-back svg {
+    transform: translateX(-2px);
+}
+
+/* Enlarge Lex without changing the feedback text's flex position. */
+.lex-feedback img {
+    transform: translate(-28px, -30px) scale(2);
+    transform-origin: center;
+    position: relative;
+    z-index: 0;
+}
+
+.lex-feedback p {
+    position: relative;
+    z-index: 1;
+}
+
 @media (max-width: 760px) {
     .activity-page .association-game { gap: 12px; }
     .activity-page .association-prompt-button {
         width: min(280px, 76vw);
         height: clamp(150px, 27vh, 230px);
+    }
+
+    .activity-page .lex-feedback img {
+        transform: translate(-6px, -5px) scale(1.0);
     }
 
 }
