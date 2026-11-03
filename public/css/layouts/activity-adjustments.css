@@ -1,3 +1,22 @@
+/* =====================================================================
+   Centralização vertical do conteúdo em todas as atividades
+   O .activity-stage ocupa toda a altura disponível no grid (1fr) mas
+   o conteúdo interno era menor e ficava colado ao topo. Flex + center
+   garante que qualquer tipo de atividade fique centralizado.
+   ===================================================================== */
+.activity-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* O .activity-content já usa place-items:center mas precisa preencher
+   o espaço do flex parent para o centering funcionar corretamente */
+.activity-stage .activity-content {
+    width: 100%;
+}
+
 /* Keep the prompt image and its margins consistent across vocabulary items. */
 .activity-page .activity-content :is(button, input):focus-visible {
     outline: 3px solid var(--roar-blue);
