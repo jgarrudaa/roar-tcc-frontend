@@ -1,5 +1,6 @@
 import { alunosApi } from "../api/alunos-api.js";
 import { atividadesApi } from "../api/atividades-api.js";
+import { gameSettingsService } from "./game-settings-service.js";
 
 const LEARNING_MODES = Object.freeze({
     "Nível 1 - Suporte Visual Puro": Object.freeze({
@@ -516,7 +517,7 @@ async function loadModuleContext(moduleId) {
         "moduleId",
     );
 
-    const profile = await alunosApi.getCurrent();
+    const [profile, gameSettings] = await Promise.all([alunosApi.getCurrent(), gameSettingsService.getCurrent()]);
     const student = normalizeStudent(profile);
 
     const payload = await atividadesApi.getModuleForStudent(
@@ -541,7 +542,7 @@ async function loadModuleContext(moduleId) {
         normalizedActivities,
     );
 
-    return Object.freeze({ student, module });
+    return Object.freeze({ student, module, gameSettings });
 }
 
 function createActivityContext(moduleContext, stage) {
@@ -628,6 +629,8 @@ export const atividadeService = Object.freeze({
             tempo_segundos:
                 completion.elapsedSeconds,
             concluido: true,
+            id_tentativa: resultData.attemptId,
+            palavras: resultData.words || [],
         });
     },
 });

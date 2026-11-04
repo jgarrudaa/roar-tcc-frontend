@@ -154,6 +154,18 @@
     outline-offset: 3px;
 }
 
+.activity-error-recovery {
+    align-content: center;
+    justify-items: center;
+    gap: 16px;
+    padding: 20px;
+}
+.activity-error-recovery p { max-width: 620px; line-height: 1.6; }
+.activity-error-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+.activity-error-actions .next-button { min-height: 44px; }
+.activity-error-back { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 16px; color: var(--roar-blue); }
+.activity-error-back:focus-visible { outline: 3px solid var(--roar-blue); outline-offset: 3px; }
+
 @media (max-width: 1024px) {
     .activity-page .activity-home {
         width: 48px;

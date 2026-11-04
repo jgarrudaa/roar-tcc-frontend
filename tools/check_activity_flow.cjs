@@ -20,17 +20,17 @@ function deferred() {
     return { promise, resolve, reject };
 }
 
-async function fixture({ type = 'recognize', level = 1, index = 1, items = [], paused = false,
+async function fixture({ type = 'recognize', level = 1, index = 1, items = [], paused = false, checkpointStore = new Map(), settings = {},
     complete = async () => ({ xp_ganho: 10 }) } = {}) {
     let now = 100, nextTimerId = 0;
     const timers = new Map(), navigations = [], requests = [], engines = [], messages = [];
     const activities = [{ activityId: 11, order: 2 }, { activityId: 22, order: 7 },
         { activityId: 33, order: 12 }];
-    const context = {
+    const context = { gameSettings: settings,
         activity: { id: activities[index].activityId, status: 'active', type,
             instruction: 'Find the cow', item: { id: 77, en: 'cow', pt: 'vaca' } },
         module: { id: 9, title: 'Animals', activities, items },
-        student: { supportLevel: level, supportMode: `Nível ${level}` },
+        student: { id: 91, supportLevel: level, supportMode: `Nível ${level}` },
     };
     const elements = { title: {}, levelBadge: {}, stage: { inert: false,
         replaceChildren() {}, setAttribute() {}, removeAttribute() {}, contains() { return false; } },
@@ -40,7 +40,9 @@ async function fixture({ type = 'recognize', level = 1, index = 1, items = [], p
     const makeEngine = kind => options => {
         const engine = { kind, options, completed: false, starts: 0, destroys: 0, roundComplete: false, roundsAdvanced: 0,
             nextCalls: 0, repeats: 0,
-            start() { this.starts++; },
+            start() { this.starts++; if (options.resumeState) { this.completed = options.resumeState.completed; this.roundsAdvanced = options.resumeState.index; } },
+            getState() { return { index: this.roundsAdvanced, completed: this.completed }; },
+            help() { options.onHelp(context.activity.item); },
             next() { this.nextCalls++; return this.completed; },
             destroy() { this.destroys++; },
             repeatInstruction() { this.repeats++; },
@@ -69,7 +71,7 @@ async function fixture({ type = 'recognize', level = 1, index = 1, items = [], p
         document: { activeElement: null },
         performance: { now: () => now },
         console: { error() {}, warn() {}, log() {} },
-        window: { setTimeout, clearTimeout, roarNavigate: url => navigations.push(url),
+        window: { setTimeout, clearTimeout, localStorage: { getItem(key) { return checkpointStore.get(key) || null; }, setItem(key, value) { checkpointStore.set(key, value); }, removeItem(key) { checkpointStore.delete(key); } }, roarNavigate: url => navigations.push(url),
             location: { assign: url => navigations.push(url) } },
         soundFx: { playSuccess() {}, playTryAgain() {}, playAchievement() {} },
         audioService: { stop() {}, speak() {} },
@@ -83,6 +85,7 @@ async function fixture({ type = 'recognize', level = 1, index = 1, items = [], p
     vm.createContext(sandbox);
     vm.runInContext(fs.readFileSync(path.join(__dirname,
         '../public/js/features/atividades/module-practice.js'), 'utf8').replace(/^export /gm, ''), sandbox);
+    vm.runInContext(fs.readFileSync(path.join(__dirname, '../public/js/services/activity-progress-service.js'), 'utf8').replace(/^export /gm, ''), sandbox);
     vm.runInContext(controllerSource, sandbox);
     const controller = await sandbox.createActivityController({ moduleId: 9,
         stage: activities[index].order, elements });
@@ -103,7 +106,7 @@ async function fixture({ type = 'recognize', level = 1, index = 1, items = [], p
         await flush();
     }
     return { controller, elements, engines, requests, navigations, messages, tick, context,
-        getPreferences: () => preferences };
+        getPreferences: () => preferences, checkpointStore };
 }
 
 const tests = [];
@@ -330,6 +333,48 @@ test('other learning levels complete memory without inserting a shadow round', a
         assert.equal(f.engines.length, 1);
         assert.equal(f.requests.length, 1);
     }
+});
+
+test('resumes the saved memory/shadow phase without repeating earned answers', async () => {
+    const store = new Map();
+    const first = await fixture({ type: 'memory', level: 2, checkpointStore: store });
+    first.engines[0].correct();
+    await first.tick(1000);
+    assert.equal(first.engines.length, 2);
+    first.controller.destroy();
+    const resumed = await fixture({ type: 'memory', level: 2, checkpointStore: store });
+    assert.equal(resumed.engines[0].kind, 'Shadow');
+    resumed.engines[0].correct();
+    await resumed.tick(1000);
+    assert.equal(resumed.requests[0].stats.correct, 2);
+    assert.equal(store.size, 0, 'Successful completion removes only its own draft.');
+});
+
+test('retry after reload keeps the same attempt UUID and complete word statistics', async () => {
+    const store = new Map();
+    const item = { id: 77, en: 'cow', pt: 'vaca' };
+    const first = await fixture({ items: [item], checkpointStore: store,
+        complete: async () => { throw new Error('offline'); } });
+    first.engines[0].help();
+    first.engines[0].wrong();
+    first.engines[0].correct();
+    await first.tick(1000);
+    const before = first.requests[0].stats;
+    first.controller.destroy();
+    const resumed = await fixture({ items: [item], checkpointStore: store });
+    await resumed.tick(1000);
+    assert.equal(resumed.requests[0].stats.attemptId, before.attemptId);
+    assert.deepEqual(JSON.parse(JSON.stringify(resumed.requests[0].stats.words)),
+        [{ palavra: 'COW', acertos: 1, erros: 1, ajudas: 1 }]);
+});
+
+test('teacher-selected delay is respected without changing manual advancement', async () => {
+    const f = await fixture({ settings: { advanceDelaySeconds: 3 } });
+    f.engines[0].correct();
+    await f.tick(2999);
+    assert.equal(f.requests.length, 0);
+    await f.tick(1);
+    assert.equal(f.requests.length, 1);
 });
 
 test('spoken question preserves Portuguese/English order and learner sound preferences', async () => {

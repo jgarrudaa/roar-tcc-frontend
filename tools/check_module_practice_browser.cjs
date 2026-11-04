@@ -39,7 +39,7 @@ const server = http.createServer((req, res) => {
     try {
         await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
         const origin = `http://127.0.0.1:${server.address().port}`;
-        browser = await chromium.launch({ channel: 'msedge', headless: true });
+        browser = await chromium.launch({ headless: true, ...(process.platform === 'win32' ? { channel: 'msedge' } : {}) });
         for (const viewport of [{ width: 320, height: 740 }, { width: 390, height: 844 }, { width: 1280, height: 800 }]) {
             const bodyModule = viewport.width >= 390;
             if (bodyModule) {
@@ -85,7 +85,7 @@ const server = http.createServer((req, res) => {
                 assert.equal(await page.locator('.practice-drag-ghost, .shadow-ghost, .is-drop-hover, .is-over, .is-dragging').count(), 0, 'Drag clears on drop/cancel.');
             }
             const errors = [];
-            page.on('pageerror', error => errors.push(error.message));
+            page.on('pageerror', error => { errors.push(error.message); console.error('Browser error:', error.message); });
             await context.route('**/*', async route => {
                 const url = new URL(route.request().url());
                 if (url.origin !== origin) return route.fulfill({ body: '', contentType: 'text/css' });
@@ -93,6 +93,8 @@ const server = http.createServer((req, res) => {
                 if (url.pathname.endsWith('/atividade-service.js')) return route.fulfill({
                     contentType: 'text/javascript', body: `export const atividadeService = {
                         getContext: async () => (${JSON.stringify(fixture)}),
+                        loadModuleContext: async () => (${JSON.stringify(fixture)}),
+                        getActivityContext: (context) => context,
                         complete: async (id, stats) => { const response = await fetch('/test-save', {method:'POST', body: JSON.stringify({id,stats})}); return response.json(); }
                     };`,
                 });
@@ -140,7 +142,7 @@ const server = http.createServer((req, res) => {
             assert.equal(saves.length, countBefore);
             await page.clock.runFor(1000);
             if (bodyModule) {
-                await page.getByRole('heading', { name: 'Monte o corpo' }).waitFor();
+                await page.getByRole('heading', { name: 'Monte o corpo' }).waitFor({ timeout: 5000 }).catch(async error => { console.error(await page.locator('body').innerText()); throw error; });
                 await page.locator('.shadow-piece').first().waitFor();
                 assert.equal(await page.locator('.practice-place, .body-puzzle-board').count(), 0);
                 await page.getByText('Como jogar', { exact: true }).click();
@@ -159,6 +161,18 @@ const server = http.createServer((req, res) => {
                     assert.ok(urls.every(url => url === fixture.module.items[i].vectorImage), 'All pieces crop the registered image.');
                     await dragCard('.shadow-target[data-piece-id="0"]');
                     assert.equal(await page.locator('.shadow-target.is-matched').count(), 1);
+                    if (viewport.width === 390 && i === 0) {
+                        const before = await page.evaluate(() => JSON.parse(localStorage.getItem('roarActivityDraft:999:9')));
+                        assert.equal(before.engineState.round.placed.length, 1);
+                        await page.reload();
+                        await page.getByRole('heading', { name: 'Monte o corpo', exact: true }).waitFor();
+                        await page.locator('.shadow-target.is-matched').waitFor();
+                        assert.equal(await page.locator('.shadow-target.is-matched').count(), 1,
+                            'Reload restores the actual piece placed in the current body round.');
+                        const resumed = await page.evaluate(() => JSON.parse(localStorage.getItem('roarActivityDraft:999:9')));
+                        assert.equal(resumed.attemptId, before.attemptId, 'A reload keeps the retry UUID.');
+                        assert.equal(saves.length, countBefore, 'Restoring is not a saved completion.');
+                    }
                     await page.clock.runFor(1000);
                     assert.equal(await page.locator('.shadow-target.is-matched').count(), 1, 'Partial puzzle must not advance.');
                     for (let id = 1; id < pieces; id++) {
@@ -243,7 +257,7 @@ const server = http.createServer((req, res) => {
                     await page.locator(`[data-choice="${categoryFor(word)}"]`).click();
                     await page.locator('#next-button').click();
                 }
-                await page.getByRole('heading', { name: 'Monte o corpo' }).waitFor();
+                await page.getByRole('heading', { name: 'Monte o corpo' }).waitFor({ timeout: 5000 }).catch(async error => { console.error(await page.locator('body').innerText()); throw error; });
                 await page.locator('.shadow-piece').first().waitFor();
                 await dragCard('.shadow-target[data-piece-id="0"]', { leaveHeld: true });
                 await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide')));

@@ -1,0 +1,67 @@
+.student-game-settings,
+.word-learning-section {
+    margin-top: 24px;
+    padding: 22px;
+    border: 1px solid var(--c-border, #d9e2eb);
+    border-radius: 16px;
+    background: var(--c-card, #fff);
+    color: var(--c-text, #1c2837);
+}
+.student-game-settings h2,
+.word-learning-section h2 { margin: 0 0 10px; font-size: 1.2rem; }
+.student-games-help,
+.student-games-message { font-size: .88rem; line-height: 1.6; color: var(--c-text-soft, #526176); }
+.student-games-grid {
+    margin: 18px 0 0;
+    padding: 0;
+    border: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+.student-games-field { display: grid; gap: 8px; min-width: 0; font-size: .88rem; font-weight: 600; }
+.student-games-field select {
+    min-height: 44px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--c-border, #ccd6e2);
+    border-radius: 10px;
+    background: var(--c-card, #fff);
+    color: inherit;
+    font: inherit;
+}
+.student-games-field select:focus-visible,
+.student-learning-retry:focus-visible { outline: 3px solid #28599a; outline-offset: 3px; }
+.student-games-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.student-games-actions .btn { min-height: 44px; }
+.student-games-message { min-height: 1.5em; }
+.word-learning-table-wrap { overflow-x: auto; }
+.word-learning-table { width: 100%; border-collapse: collapse; text-align: left; font-size: .88rem; }
+.word-learning-table th,
+.word-learning-table td { padding: 12px 10px; border-bottom: 1px solid var(--c-border, #d9e2eb); }
+.word-learning-table th { font-weight: 700; }
+.word-learning-table td:first-child { font-weight: 700; color: var(--c-blue-dark, #28599a); }
+.word-learning-summary { line-height: 1.6; font-weight: 600; }
+.student-learning-retry { margin-top: 12px; min-height: 44px; }
+.student-games-actions [hidden],
+.student-learning-retry[hidden] { display: none !important; }
+.student-games-grid legend.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+@media (max-width: 620px) {
+    .student-games-grid { grid-template-columns: minmax(0, 1fr); }
+    .student-game-settings,
+    .word-learning-section { padding: 16px; }
+    .student-games-actions { flex-direction: column; align-items: stretch; }
+}
+@media print {
+    .student-games-actions,
+    .student-learning-retry { display: none; }
+    .word-learning-table-wrap { overflow: visible; }
+}

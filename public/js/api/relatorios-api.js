@@ -48,6 +48,11 @@ export const relatoriosApi = Object.freeze({
         );
     },
 
+    getStudentWords(studentId) {
+        const validStudentId = requirePositiveInteger(studentId, "studentId");
+        return apiClient.get(`/relatorios/aluno/${validStudentId}/palavras`);
+    },
+
     generateStudentAiAnalysis(studentId) {
         const validStudentId = requirePositiveInteger(
             studentId,

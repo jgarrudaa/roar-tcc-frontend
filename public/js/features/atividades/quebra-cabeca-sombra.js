@@ -30,6 +30,17 @@ export function createShadowPuzzleActivity(context) {
     const lifecycle = createActivityLifecycle();
     const { activity, module, student, elements, onCorrect, onWrong } = context;
     const item = activity.item;
+    const itemKey = value => JSON.stringify([value.id ?? null, value.en]);
+    const knownItems = new Map([item, ...module.items].map(value => [itemKey(value), value]));
+    const optionLimit = student.supportLevel === 1 ? 2 : student.supportLevel === 2 ? 3 : 4;
+    const stateKey = JSON.stringify([itemKey(item), student.supportLevel,
+        [...knownItems.keys()].sort(), item.vectorImage || item.realImage]);
+    const candidate = context.resumeState;
+    const savedState = candidate?.version === 1 && candidate.key === stateKey &&
+        typeof candidate.resolved === "boolean" && Array.isArray(candidate.options) &&
+        candidate.options.length === Math.min(optionLimit, knownItems.size) &&
+        new Set(candidate.options).size === candidate.options.length && candidate.options.includes(itemKey(item)) &&
+        candidate.options.every(key => knownItems.has(key)) ? candidate : null;
 
     function getDefaultInstruction() {
         if (student.supportLevel === 1) {
@@ -58,7 +69,7 @@ export function createShadowPuzzleActivity(context) {
         }
     }
 
-    function placePiece(piece, tile) {
+    function placePiece(piece, tile, restoring = false) {
         if (resolved) {
             return;
         }
@@ -89,8 +100,11 @@ export function createShadowPuzzleActivity(context) {
             elements.setProgress(1, 1);
             elements.nextButton.disabled = false;
 
-            onCorrect(item);
-            audioService.speak(item.en, "en-US");
+            if (!restoring) {
+                onCorrect(item);
+                audioService.speak(item.en, "en-US");
+                context.onStateChange?.();
+            }
             return;
         }
 
@@ -303,9 +317,7 @@ export function createShadowPuzzleActivity(context) {
         tray.className = "shadow-puzzle-pieces";
         tray.setAttribute("aria-label", "Peças disponíveis para encaixar");
 
-        const optionLimit =
-            student.supportLevel === 1 ? 2 : student.supportLevel === 2 ? 3 : 4;
-        options = getPieces(item, module.items, optionLimit);
+        options = savedState ? savedState.options.map(key => knownItems.get(key)) : getPieces(item, module.items, optionLimit);
         tiles = [];
 
         options.forEach((piece, index) => {
@@ -390,6 +402,11 @@ export function createShadowPuzzleActivity(context) {
                 : "Observe a sombra e escolha a figura correspondente.",
         );
         elements.setProgress(0, 1);
+        if (savedState?.resolved) {
+            const correctIndex = options.findIndex(option => itemKey(option) === itemKey(item));
+            placePiece(options[correctIndex], tiles[correctIndex], true);
+        }
+        context.onStateChange?.();
     }
 
     return Object.freeze({
@@ -402,6 +419,7 @@ export function createShadowPuzzleActivity(context) {
             audioService.stop();
         },
         start: render,
+        getState: () => ({ version: 1, key: stateKey, resolved, options: options.map(itemKey) }),
         repeatInstruction() {
             if (lifecycle.destroyed) return;
             audioService.speak(instruction, "pt-BR");

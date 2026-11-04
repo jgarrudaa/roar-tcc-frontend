@@ -17,6 +17,7 @@ import { getModulePracticePhases } from "./module-practice.js";
 import { createCategoriesActivity, createSceneActivity } from "./module-practice-games.js";
 import { storage } from "../../utils/storage.js";
 import { createBodyPuzzleActivity } from './body-puzzle.js';
+import { activityProgressService, activityFingerprint, createAttemptId } from '../../services/activity-progress-service.js';
 
 
 
@@ -200,10 +201,25 @@ export async function createActivityController({
     if (currentIndex === module.activities.length - 1) {
         phases.push(...getModulePracticePhases(context));
     }
-    const statistics = { correct: 0, wrong: 0 };
-    const correctItems = new Set();
+    const fingerprint = activityFingerprint(context);
+    const saved = activityProgressService.read(student.id, module.id, fingerprint);
+    const draft = saved?.stage === Number(stage) && saved?.activityId === activity.id &&
+        saved.phaseIndex < phases.length ? saved : null;
+    const count = value => Number.isInteger(value) && value >= 0 && value <= 100000 ? value : 0;
+    const statistics = { correct: count(draft?.statistics?.correct), wrong: count(draft?.statistics?.wrong) };
+    const correctItems = new Set(Array.isArray(draft?.correctItems) ? draft.correctItems.filter(key => typeof key === 'string').slice(0, 2000) : []);
+    const words = new Map();
+    const vocabulary = new Map(module.items.map(item => [String(item.en).trim().toUpperCase(), item]));
+    for (const row of Array.isArray(draft?.words) ? draft.words : []) {
+        if (row && vocabulary.has(row.palavra)) words.set(row.palavra, { palavra: row.palavra,
+            acertos: count(row.acertos), erros: count(row.erros), ajudas: count(row.ajudas) });
+    }
+    const attemptId = draft?.attemptId || createAttemptId();
+    let elapsedBeforeStart = count(draft?.elapsedSeconds);
+    let restoredPhaseComplete = draft?.phaseComplete === true;
+    let restoredEngineState = draft?.engineState ?? null;
     let engine;
-    let phaseIndex = 0;
+    let phaseIndex = draft?.phaseIndex || 0;
     let epoch = 0;
     let phaseLocked = false;
     let autoAdvanceTimer = null;
@@ -214,13 +230,38 @@ export async function createActivityController({
     let disposed = false;
     let autoAdvancePaused = storage.getPreferences()?.autoAdvancePaused === true;
 
+    function elapsedSeconds() {
+        return elapsedBeforeStart + calculateElapsedSeconds(startedAt);
+    }
+
+    function recordWord(item, field) {
+        const word = String(item?.en || activity.item.en).trim().toUpperCase();
+        if (!vocabulary.has(word)) return;
+        if (!words.has(word)) words.set(word, { palavra: word, acertos: 0, erros: 0, ajudas: 0 });
+        words.get(word)[field] += 1;
+    }
+
+    function persistDraft() {
+        if (disposed || navigationStarted || !activityStarted) return;
+        activityProgressService.save(student.id, module.id, {
+            fingerprint, stage: Number(stage), activityId: activity.id, phaseIndex, attemptId,
+            statistics, correctItems: [...correctItems], words: [...words.values()],
+            elapsedSeconds: elapsedSeconds(),
+            phaseComplete: restoredPhaseComplete || Boolean(engine?.next()),
+            engineState: engine?.getState?.() ?? null,
+        });
+    }
+
+    function phaseComplete() { return restoredPhaseComplete || engine.next(); }
+    function phaseReady() { return phaseComplete() || engine.isRoundComplete?.(); }
+
     function scheduleAutoAdvance() {
         clearAutoAdvance();
         if (autoAdvancePaused || disposed || completionPromise || !phaseLocked) return;
         autoAdvanceTimer = window.setTimeout(() => {
             autoAdvanceTimer = null;
             next();
-        }, 1000);
+        }, (context.gameSettings?.advanceDelaySeconds || 1) * 1000);
     }
 
     function toggleAutoAdvance() {
@@ -263,28 +304,44 @@ export async function createActivityController({
         elements.setInstruction(phases[phaseIndex].instruction);
         setModuleProgress(0, 1);
         engine = ACTIVITY_FACTORIES[phases[phaseIndex].type]({
-            ...context, activity: phases[phaseIndex],
+            ...context, activity: phases[phaseIndex], resumeState: restoredEngineState,
+            onStateChange() {
+                queueMicrotask(() => {
+                    if (!disposed && activeEpoch === epoch) persistDraft();
+                });
+            },
+            onHelp(item) {
+                if (disposed || phaseLocked || activeEpoch !== epoch) return;
+                recordWord(item, 'ajudas');
+                persistDraft();
+            },
             elements: { ...elements, setProgress: setModuleProgress },
             onCorrect(item) {
                 if (disposed || phaseLocked || activeEpoch !== epoch) return;
-                const key = `${phaseIndex}:${item?.itemId ?? item?.id ?? activity.id}`;
+                const round = engine?.getState?.()?.index ?? 0;
+                const key = `${phaseIndex}:${round}:${item?.itemId ?? item?.id ?? activity.id}`;
                 if (!correctItems.has(key)) {
                     correctItems.add(key);
                     statistics.correct += 1;
+                    recordWord(item, 'acertos');
                     soundFx.playSuccess();
                 }
                 // Some engines report the answer immediately before updating their
                 // resolved flag. Check after the complete input handler has returned.
                 queueMicrotask(() => {
                     if (disposed || activeEpoch !== epoch || phaseLocked || completionPromise) return;
-                    if (!engine.next() && !engine.isRoundComplete?.()) return;
+                    persistDraft();
+                    if (!phaseReady()) return;
                     lockCompletedStage();
+                    persistDraft();
                     scheduleAutoAdvance();
                 });
             },
-            onWrong() {
+            onWrong(item) {
                 if (disposed || phaseLocked || activeEpoch !== epoch) return;
                 statistics.wrong += 1;
+                recordWord(item, 'erros');
+                persistDraft();
                 soundFx.playTryAgain();
             },
         });
@@ -295,6 +352,7 @@ export async function createActivityController({
 
     function destroy() {
         if (disposed) return;
+        persistDraft();
         disposed = true;
         epoch += 1;
         clearAutoAdvance();
@@ -309,7 +367,7 @@ export async function createActivityController({
         setControlsDisabled(elements, true);
         try {
             const result = await atividadeService.complete(activity.id, {
-                ...statistics, timeSeconds: calculateElapsedSeconds(startedAt),
+                ...statistics, timeSeconds: elapsedSeconds(), attemptId, words: [...words.values()],
             });
             if (disposed) return false;
             const earnedXp = Number(result?.data?.xp_ganho ?? result?.xp_ganho) || 0;
@@ -317,6 +375,7 @@ export async function createActivityController({
             elements.setMessage(earnedXp > 0 ? `Atividade concluída! Você ganhou ${earnedXp} XP.` :
                 "Atividade concluída! Seu progresso foi salvo.");
             navigationStarted = true;
+            activityProgressService.clear(student.id, module.id, attemptId);
 
             const nextActivity = module.activities[currentIndex + 1];
             destroy();
@@ -348,12 +407,14 @@ export async function createActivityController({
     function next() {
         if (completionPromise) return completionPromise;
         if (disposed || navigationStarted || !activityStarted) return Promise.resolve(false);
-        if (!engine.next() && !engine.isRoundComplete?.()) return Promise.resolve(false);
+        if (!phaseReady()) return Promise.resolve(false);
         clearAutoAdvance();
-        if (!engine.next() && engine.advanceRound) {
+        if (!phaseComplete() && engine.advanceRound) {
             phaseLocked = false;
             elements.stage.inert = false;
-            return Promise.resolve(engine.advanceRound());
+            const advanced = engine.advanceRound();
+            persistDraft();
+            return Promise.resolve(advanced);
         }
         lockCompletedStage();
         if (phaseIndex + 1 < phases.length) {
@@ -361,8 +422,11 @@ export async function createActivityController({
             audioService.stop();
             soundFx.stop?.();
             phaseIndex += 1;
+            restoredPhaseComplete = false;
+            restoredEngineState = null;
             prepareEngine();
             engine.start();
+            persistDraft();
             return Promise.resolve(true);
         }
         completionPromise = finishActivity();
@@ -376,6 +440,15 @@ export async function createActivityController({
             activityStarted = true;
             startedAt = performance.now();
             engine.start();
+            persistDraft();
+            if (draft) {
+                elements.setMessage('Vamos continuar de onde você parou!');
+                if (phaseReady()) {
+                    elements.nextButton.disabled = false;
+                    lockCompletedStage();
+                    scheduleAutoAdvance();
+                }
+            }
         },
         repeatInstruction() {
             if (disposed || navigationStarted || completionPromise) return;
@@ -400,7 +473,7 @@ export async function createActivityController({
         },
         destroy,
         getStatistics() {
-            return Object.freeze({ ...statistics, timeSeconds: calculateElapsedSeconds(startedAt) });
+            return Object.freeze({ ...statistics, timeSeconds: elapsedSeconds() });
         },
     });
 }
