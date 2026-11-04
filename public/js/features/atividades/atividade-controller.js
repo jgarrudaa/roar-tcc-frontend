@@ -13,11 +13,11 @@ import { createWritingActivity, } from "./escrita.js";
 import { createWordBankActivity, } from "./banco-palavras.js";
 import { createShadowPuzzleActivity } from "./quebra-cabeca-sombra.js";
 import { createShadowActivity } from "./sombra.js";
-import { getModulePracticePhases } from "./module-practice.js";
+import { getModulePracticePhases } from "./module-practice.js?v=2";
 import { createCategoriesActivity, createSceneActivity } from "./module-practice-games.js";
 import { storage } from "../../utils/storage.js";
-import { createBodyPuzzleActivity } from './body-puzzle.js';
-import { activityProgressService, activityFingerprint, createAttemptId } from '../../services/activity-progress-service.js';
+import { createBodyPuzzleActivity } from './body-puzzle.js?v=2';
+import { activityProgressService, activityFingerprint, createAttemptId } from '../../services/activity-progress-service.js?v=2';
 
 
 

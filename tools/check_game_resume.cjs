@@ -218,6 +218,11 @@ function fixture() {
     assert.equal(bodyResume.engine.next(), true);
     const noBodyHints = f.create('BodyPuzzle', { activity: bodyActivity, gameSettings: { pieceCount: 2, showHints: false } });
     assert.equal(noBodyHints.elements.stage.querySelector('.body-jigsaw-help'), null);
+    const animalsPuzzle = f.create('BodyPuzzle', { activity: { ...bodyActivity, puzzleTitle: 'Monte os animais' } });
+    assert.equal(animalsPuzzle.elements.stage.querySelector('.body-jigsaw-title').textContent, 'Monte os animais');
+    const animalsHelp = animalsPuzzle.elements.stage.querySelector('.body-jigsaw-help');
+    assert.ok(animalsHelp.children[1].textContent.includes('montar a imagem'));
+    assert.ok(!animalsHelp.children[1].textContent.includes('parte do corpo'));
 
     const whole = f.create('ShadowPuzzle');
     const wholeTiles = whole.elements.stage.querySelectorAll('.shadow-puzzle-piece');

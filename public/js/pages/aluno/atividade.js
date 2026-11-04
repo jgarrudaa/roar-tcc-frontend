@@ -1,7 +1,7 @@
 import { showToast } from "../../components/toast.js";
-import { createActivityController } from "../../features/atividades/atividade-controller.js?v=4";
+import { createActivityController } from "../../features/atividades/atividade-controller.js?v=5";
 import { atividadeService } from "../../services/atividade-service.js";
-import { activityProgressService, activityFingerprint } from "../../services/activity-progress-service.js";
+import { activityProgressService, activityFingerprint } from "../../services/activity-progress-service.js?v=2";
 
 
 let activeController = null;

@@ -177,7 +177,7 @@ test('saved pause allows manual next and remains in effect in the next phase', a
     assert.equal(f.requests.length, 1);
 });
 
-test('final module stage adds categories and scene, saves once after both and returns to modules', async () => {
+test('final module stage adds categories and image puzzles, saves once after both and returns to modules', async () => {
     const items = ['COW', 'DUCK', 'HORSE', 'HEN'].map((en, i) => ({ id: i + 1, itemId: i + 1, en, vectorImage: '/image.png' }));
     const f = await fixture({ index: 2, items });
     f.engines[0].correct();
@@ -186,7 +186,8 @@ test('final module stage adds categories and scene, saves once after both and re
     assert.equal(f.requests.length, 0);
     f.engines[1].correct();
     await f.tick(1000);
-    assert.equal(f.engines[2].kind, 'Scene');
+    assert.equal(f.engines[2].kind, 'BodyPuzzle');
+    assert.deepEqual(Array.from(f.engines[2].options.activity.cards, card => card.item.en), ['COW', 'DUCK', 'HORSE', 'HEN']);
     assert.equal(f.requests.length, 0);
     f.engines[2].correct();
     await f.tick(1000);
@@ -195,11 +196,12 @@ test('final module stage adds categories and scene, saves once after both and re
     assert.deepEqual(f.navigations, ['atividades.html']);
 });
 
-test('unclassified vocabulary gets scene only and intermediate stages keep their original sequence', async () => {
+test('unclassified vocabulary uses the same image puzzle and intermediate stages keep their original sequence', async () => {
     const items = [{ id: 1, itemId: 1, en: 'BLUE', realImage: '/blue.png' }];
     const last = await fixture({ index: 2, items });
     last.engines[0].correct(); await last.tick(1000);
-    assert.equal(last.engines[1].kind, 'Scene');
+    assert.equal(last.engines[1].kind, 'BodyPuzzle');
+    assert.equal(last.engines[1].options.activity.cards[0].item.en, 'BLUE');
     last.engines[1].correct(); await last.tick(1000);
     assert.equal(last.engines.length, 2);
     const middle = await fixture({ index: 1, items });

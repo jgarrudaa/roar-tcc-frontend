@@ -45,7 +45,7 @@ export function createBodyPuzzleActivity(context) {
         root.classList.add('body-jigsaw');
         const title = document.createElement('h2');
         title.className = 'body-jigsaw-title';
-        title.textContent = 'Monte o corpo';
+        title.textContent = activity.puzzleTitle || 'Monte o corpo';
         const counter = document.createElement('p');
         counter.className = 'body-jigsaw-round';
         counter.textContent = `Imagem ${index + 1} de ${activity.cards.length}`;
@@ -56,7 +56,7 @@ export function createBodyPuzzleActivity(context) {
             const summary = document.createElement('summary');
             summary.textContent = 'Como jogar';
             const explanation = document.createElement('p');
-            explanation.textContent = 'Arraste cada peça até a sombra correspondente para montar esta parte do corpo. Você também pode tocar na peça e depois na sombra. Pelo teclado, use Tab para escolher e Enter ou Espaço para encaixar. Escape cancela a seleção.';
+            explanation.textContent = 'Arraste cada peça até a sombra correspondente para montar a imagem. Você também pode tocar na peça e depois na sombra. Pelo teclado, use Tab para escolher e Enter ou Espaço para encaixar. Escape cancela a seleção.';
             help.append(summary, explanation);
             help.addEventListener('toggle', () => {
                 if (!destroyed && round === index && help.open) context.onHelp?.(item);

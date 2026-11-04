@@ -33,14 +33,14 @@ export function getModulePracticePhases({ activity, module }) {
             instruction: "Separe por categorias. Escolha o grupo de cada cartão." });
         break;
     }
-    const bodyWords = ['HEAD', 'ARM', 'HAND', 'BELLY', 'LEG', 'FOOT'];
-    const bodyCards = unique.filter(item => bodyWords.includes(item.en.trim().toUpperCase())).map(item => ({ item }));
-    if (bodyCards.length) {
-        phases.push({ ...activity, type: 'bodyPuzzle', cards: bodyCards, instruction: 'Monte o corpo. Arraste cada peça até sua sombra para completar a imagem.' });
-        return phases;
-    }
-    const item = unique.find(candidate => candidate.itemId === activity.item.itemId) || unique[0];
-    phases.push({ ...activity, item, type: "scene",
-        instruction: "Complete a cena. Escolha onde colocar o cartão." });
+    // Every theme shares the same puzzle, controls and progression. Only its
+    // registered vocabulary/images and heading change.
+    const theme = String(module.title || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const puzzleTitle = /corpo|body/.test(theme) ? "Monte o corpo"
+        : /animais|fazenda|animals|farm/.test(theme) ? "Monte os animais"
+            : "Monte as imagens";
+    phases.push({ ...activity, type: "bodyPuzzle", puzzleTitle,
+        cards: unique.map(item => ({ item })),
+        instruction: `${puzzleTitle}. Arraste cada peça até sua sombra para completar a imagem.` });
     return phases;
 }

@@ -1,6 +1,6 @@
 import { showToast } from "../../components/toast.js";
 import { moduloService } from "../../services/modulo-service.js";
-import { activityProgressService } from "../../services/activity-progress-service.js";
+import { activityProgressService } from "../../services/activity-progress-service.js?v=2";
 import { storage } from "../../utils/storage.js";
 
 const ICONS = Object.freeze({

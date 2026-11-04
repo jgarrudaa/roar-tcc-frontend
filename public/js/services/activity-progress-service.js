@@ -18,6 +18,8 @@ export function createAttemptId() {
 
 export function activityFingerprint(context) {
     return JSON.stringify({
+        // Discard drafts from the former box/table activity after changing flow.
+        practiceFlow: 2,
         activities: context.module.activities.map(item => [item.activityId, item.order, item.type]),
         items: context.module.items.map(item => [item.itemId ?? item.id, item.en, item.realImage, item.vectorImage]),
         learning: context.student.supportLevel,

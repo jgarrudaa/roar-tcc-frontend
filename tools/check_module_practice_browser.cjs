@@ -40,8 +40,17 @@ const server = http.createServer((req, res) => {
         await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
         const origin = `http://127.0.0.1:${server.address().port}`;
         browser = await chromium.launch({ headless: true, ...(process.platform === 'win32' ? { channel: 'msedge' } : {}) });
-        for (const viewport of [{ width: 320, height: 740 }, { width: 390, height: 844 }, { width: 1280, height: 800 }]) {
-            const bodyModule = viewport.width >= 390;
+        for (const scenario of [
+            { width: 320, height: 740, bodyModule: false },
+            { width: 390, height: 844, bodyModule: true },
+            { width: 1280, height: 800, bodyModule: true },
+            { width: 1280, height: 800, bodyModule: false },
+        ]) {
+            const { bodyModule, ...viewport } = scenario;
+            fixture.module.items = items;
+            fixture.activity.item = items[0];
+            fixture.module.title = 'Animais da fazenda';
+            const puzzleTitle = bodyModule ? 'Monte o corpo' : 'Monte os animais';
             if (bodyModule) {
                 fixture.module.items = ['ARM', 'HEAD', 'LEG', 'BELLY', 'FOOT'].map((en, i) => ({
                     id: String(i + 1), itemId: i + 1, en, pt: en,
@@ -141,95 +150,63 @@ const server = http.createServer((req, res) => {
             }
             assert.equal(saves.length, countBefore);
             await page.clock.runFor(1000);
-            if (bodyModule) {
-                await page.getByRole('heading', { name: 'Monte o corpo' }).waitFor({ timeout: 5000 }).catch(async error => { console.error(await page.locator('body').innerText()); throw error; });
-                await page.locator('.shadow-piece').first().waitFor();
-                assert.equal(await page.locator('.practice-place, .body-puzzle-board').count(), 0);
-                await page.getByText('Como jogar', { exact: true }).click();
-                assert.equal(await page.locator('.body-jigsaw-help p').isVisible(), true);
-                await page.getByText('Como jogar', { exact: true }).click();
-                assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-                await page.screenshot({ path: path.join(os.tmpdir(), `roar-body-jigsaw-${viewport.width}.png`) });
-                await dragCard({ x: 5, y: 100 });
-                assert.match(await page.locator('#lex-message').innerText(), /voltou para o mesmo lugar/);
-                await dragCard('.shadow-target[data-piece-id="0"]', { cancel: true });
-                for (let i = 0; i < fixture.module.items.length; i++) {
-                    await page.locator('.shadow-piece').first().waitFor();
-                    const pieces = await page.locator('.shadow-piece').count();
-                    assert.equal(pieces, 4); // Registered guided learning mode; TEA absent.
-                    const urls = await page.locator('.shadow-piece image').evaluateAll(images => images.map(image => image.getAttribute('href')));
-                    assert.ok(urls.every(url => url === fixture.module.items[i].vectorImage), 'All pieces crop the registered image.');
-                    await dragCard('.shadow-target[data-piece-id="0"]');
-                    assert.equal(await page.locator('.shadow-target.is-matched').count(), 1);
-                    if (viewport.width === 390 && i === 0) {
-                        const before = await page.evaluate(() => JSON.parse(localStorage.getItem('roarActivityDraft:999:9')));
-                        assert.equal(before.engineState.round.placed.length, 1);
-                        await page.reload();
-                        await page.getByRole('heading', { name: 'Monte o corpo', exact: true }).waitFor();
-                        await page.locator('.shadow-target.is-matched').waitFor();
-                        assert.equal(await page.locator('.shadow-target.is-matched').count(), 1,
-                            'Reload restores the actual piece placed in the current body round.');
-                        const resumed = await page.evaluate(() => JSON.parse(localStorage.getItem('roarActivityDraft:999:9')));
-                        assert.equal(resumed.attemptId, before.attemptId, 'A reload keeps the retry UUID.');
-                        assert.equal(saves.length, countBefore, 'Restoring is not a saved completion.');
-                    }
-                    await page.clock.runFor(1000);
-                    assert.equal(await page.locator('.shadow-target.is-matched').count(), 1, 'Partial puzzle must not advance.');
-                    for (let id = 1; id < pieces; id++) {
-                        await page.locator(`.shadow-piece[data-piece-id="${id}"]`).focus();
-                        await page.keyboard.press('Enter');
-                        await page.locator(`.shadow-target[data-piece-id="${id}"]`).focus();
-                        await page.keyboard.press('Enter');
-                    }
-                    assert.equal(await page.locator('.shadow-target.is-matched').count(), pieces);
-                    await page.clock.runFor(999);
-                    assert.equal(saves.length, countBefore);
-                    await page.clock.runFor(1);
-                }
-                await page.waitForURL('**/atividades.html');
-                assert.equal(saves.length, countBefore + 1);
-                assert.equal(saves.at(-1).stats.correct, 10);
-                assert.equal(saves.at(-1).stats.wrong, 1);
-            } else {
-            await page.getByRole('heading', { name: 'Complete a cena' }).waitFor();
-            assert.match(await page.locator('.practice-help').innerText(), /^Arraste o cartão/);
-            if (bodyModule) {
-                assert.match(await page.locator('.practice-card img').getAttribute('src'), /leg-complete.svg$/);
-                await page.waitForFunction(() => [...document.querySelectorAll('.practice-card img')].every(img => img.complete && img.naturalWidth > 0));
-                await page.screenshot({ path: path.join(os.tmpdir(), `roar-leg-scene-${viewport.width}.png`) });
-            }
+            await page.getByRole('heading', { name: puzzleTitle, exact: true }).waitFor({ timeout: 5000 })
+                .catch(async error => { console.error(await page.locator('body').innerText()); throw error; });
+            await page.locator('.shadow-piece').first().waitFor();
+            assert.equal(await page.getByRole('heading', { name: 'Complete a cena', exact: true }).count(), 0,
+                'Every theme uses the same jigsaw instead of the box/table activity.');
+            assert.equal(await page.locator('.practice-place, .body-puzzle-board, [data-choice="in"], [data-choice="on"]').count(), 0);
+            await page.getByText('Como jogar', { exact: true }).click();
+            assert.equal(await page.locator('.body-jigsaw-help p').isVisible(), true);
+            await page.getByText('Como jogar', { exact: true }).click();
             assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-            await page.locator('[data-choice="in"]').click();
-            assert.match(await page.locator('#lex-message').innerText(), /Pegue o cartão primeiro/);
-            await dragCard({ x: 10, y: 120 });
-            assert.match(await page.locator('#lex-message').innerText(), /voltou ao início/);
-            assert.equal(await page.locator('.module-practice .practice-card').getAttribute('aria-pressed'), 'false');
-            await dragCard('[data-choice="in"]', { cancel: true });
-            assert.equal(await page.locator('.practice-placed-card').count(), 0);
-            await dragCard('[data-choice="on"]');
-            assert.match(await page.locator('#lex-message').innerText(), /tentar de novo/);
-            await dragCard('[data-choice="in"]');
-            assert.equal(await page.locator('.practice-placed-card').count(), 1);
-            await page.waitForFunction(() => [...document.querySelectorAll('.practice-placed-card')].every(img => img.complete && img.naturalWidth > 0));
-            if (viewport.width === 390) {
-                const screenshot = path.join(os.tmpdir(), 'roar-module-practice.png');
-                await page.screenshot({ path: screenshot });
-                console.log(`Screenshot: ${screenshot}`);
+            const theme = bodyModule ? 'body' : 'animals';
+            const screenshot = path.join(os.tmpdir(), `roar-${theme}-jigsaw-${viewport.width}.png`);
+            await page.screenshot({ path: screenshot });
+            console.log(`Screenshot: ${screenshot}`);
+            await dragCard({ x: 5, y: 100 });
+            assert.match(await page.locator('#lex-message').innerText(), /voltou para o mesmo lugar/);
+            await dragCard('.shadow-target[data-piece-id="0"]', { cancel: true });
+            await dragCard('.shadow-target[data-piece-id="1"]');
+            assert.match(await page.locator('#lex-message').innerText(), /outra sombra/);
+            for (let i = 0; i < fixture.module.items.length; i++) {
+                await page.locator('.shadow-piece').first().waitFor();
+                const pieces = await page.locator('.shadow-piece').count();
+                assert.equal(pieces, 4, 'Both themes use the registered guided-mode piece count.');
+                const urls = await page.locator('.shadow-piece image').evaluateAll(images => images.map(image => image.getAttribute('href')));
+                assert.ok(urls.every(url => url === fixture.module.items[i].vectorImage),
+                    'Every word in the module is mounted with its registered image.');
+                await dragCard('.shadow-target[data-piece-id="0"]');
+                assert.equal(await page.locator('.shadow-target.is-matched').count(), 1);
+                if (touch && i === 0) {
+                    const before = await page.evaluate(() => JSON.parse(localStorage.getItem('roarActivityDraft:999:9')));
+                    assert.equal(before.engineState.round.placed.length, 1);
+                    await page.reload();
+                    await page.getByRole('heading', { name: puzzleTitle, exact: true }).waitFor();
+                    await page.locator('.shadow-target.is-matched').waitFor();
+                    assert.equal(await page.locator('.shadow-target.is-matched').count(), 1,
+                        'Reload restores a piece already placed in either theme.');
+                    const resumed = await page.evaluate(() => JSON.parse(localStorage.getItem('roarActivityDraft:999:9')));
+                    assert.equal(resumed.attemptId, before.attemptId);
+                    assert.equal(saves.length, countBefore, 'Restoring is not a saved completion.');
+                }
+                await page.clock.runFor(1000);
+                assert.equal(await page.locator('.shadow-target.is-matched').count(), 1, 'Partial puzzle must not advance.');
+                for (let id = 1; id < pieces; id++) {
+                    await page.locator(`.shadow-piece[data-piece-id="${id}"]`).focus();
+                    await page.keyboard.press('Enter');
+                    await page.locator(`.shadow-target[data-piece-id="${id}"]`).focus();
+                    await page.keyboard.press('Enter');
+                }
+                assert.equal(await page.locator('.shadow-target.is-matched').count(), pieces);
+                await page.clock.runFor(999);
+                assert.equal(saves.length, countBefore);
+                await page.clock.runFor(1);
             }
-            await page.clock.runFor(999);
-            assert.equal(await page.locator('.practice-placed-card').count(), 1);
-            await page.clock.runFor(1);
-            await page.locator('.module-practice .practice-card').focus();
-            await page.keyboard.press('Enter');
-            await page.locator('[data-choice="on"]').focus();
-            await page.keyboard.press('Space');
-            assert.equal(saves.length, countBefore);
-            await page.clock.runFor(1000);
             await page.waitForURL('**/atividades.html');
             assert.equal(saves.length, countBefore + 1);
-            assert.equal(saves.at(-1).stats.correct, 7);
+            assert.equal(saves.at(-1).stats.correct, 1 + 4 + fixture.module.items.length);
             assert.equal(saves.at(-1).stats.wrong, 2);
-            }
             if (bodyModule) {
                 await page.goto(origin + '/pages/aluno/configuracoes.html');
                 assert.deepEqual(errors, [], 'Settings should initialize without JavaScript errors.');
@@ -268,7 +245,7 @@ const server = http.createServer((req, res) => {
                 assert.equal(saves.length, countBefore + 1);
             }
             assert.deepEqual(errors, []);
-            console.log(`PASS ${viewport.width}px: arrasto ${touch ? 'por toque' : 'por mouse'}, cancelamento, teclado, erro/acerto, avanço em 1s, conclusão única, sem erros JS.`);
+            console.log(`PASS ${theme} ${viewport.width}px: arrasto ${touch ? 'por toque' : 'por mouse'}, cancelamento, teclado, erro/acerto, avanço em 1s, conclusão única, sem erros JS.`);
             await context.close();
         }
     } finally {
