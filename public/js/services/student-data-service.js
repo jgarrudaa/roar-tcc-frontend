@@ -1,9 +1,8 @@
 import { ApiError, apiClient } from '../api/api-client.js';
 import { APP_CONFIG } from '../config/app-config.js';
 
-const updateRequiredMessage = 'A exportação ainda não está disponível no servidor. É necessário publicar a atualização da API.';
-
-async function explainExportError(error, path) {
+async function explainExportError(error, path, pdf) {
+    const updateRequiredMessage = `${pdf ? 'O relatório PDF ainda não está disponível' : 'A exportação ainda não está disponível'} no servidor. É necessário publicar a atualização da API.`;
     if (error instanceof ApiError && error.status === 404) return new Error(updateRequiredMessage);
     if (!(error instanceof ApiError) || error.code !== 'NETWORK_ERROR') return error;
 
@@ -27,26 +26,39 @@ async function explainExportError(error, path) {
     return error;
 }
 
+async function requestExport(studentId, requester, verified, pdf = false) {
+    const id = Number(studentId);
+    if (!Number.isInteger(id) || id <= 0) throw new Error('Selecione um aluno válido.');
+    if (!['titular', 'responsavel'].includes(requester) || verified !== true) {
+        throw new Error('Confirme a identidade e a autorização do solicitante.');
+    }
+    const path = `/professores/alunos/${id}/${pdf ? 'relatorio-dados.pdf' : 'exportacao-dados'}`;
+    let result;
+    try {
+        result = await apiClient.post(path, {
+            solicitante: requester,
+            verificacao_confirmada: true,
+        }, pdf ? { responseType: 'blob', timeoutMs: 30000, headers: { Accept: 'application/pdf' } } : {});
+    } catch (error) {
+        throw await explainExportError(error, path, pdf);
+    }
+    return { id, result };
+}
+
 export const studentDataService = Object.freeze({
     async exportForStudent(studentId, requester, verified) {
-        const id = Number(studentId);
-        if (!Number.isInteger(id) || id <= 0) throw new Error('Selecione um aluno válido.');
-        if (!['titular', 'responsavel'].includes(requester) || verified !== true) {
-            throw new Error('Confirme a identidade e a autorização do solicitante.');
-        }
-        const path = `/professores/alunos/${id}/exportacao-dados`;
-        let result;
-        try {
-            result = await apiClient.post(path, {
-                solicitante: requester,
-                verificacao_confirmada: true,
-            });
-        } catch (error) {
-            throw await explainExportError(error, path);
-        }
+        const { id, result } = await requestExport(studentId, requester, verified);
         if (result?.versao !== 1 || result.cadastro?.id !== id ||
             !result.exportacao?.id || !Array.isArray(result.historico_atividades)) {
             throw new Error('A exportação retornou dados inválidos. Tente novamente.');
+        }
+        return result;
+    },
+    async exportPdfForStudent(studentId, requester, verified) {
+        const { result } = await requestExport(studentId, requester, verified, true);
+        if (!(result instanceof Blob) || result.type.split(';')[0] !== 'application/pdf' ||
+            await result.slice(0, 5).text() !== '%PDF-') {
+            throw new Error('O servidor não retornou um PDF válido. Tente novamente.');
         }
         return result;
     },

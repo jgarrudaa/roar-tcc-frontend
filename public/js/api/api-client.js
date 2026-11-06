@@ -143,20 +143,23 @@ function createFetchOptions(options, controller) {
 }
 
 async function request(path, options = {}) {
+    const { responseType = 'json', timeoutMs = APP_CONFIG.requestTimeoutMs, ...fetchOptions } = options;
     const controller = new AbortController();
 
     const timeoutId = window.setTimeout(
         () => controller.abort(),
-        APP_CONFIG.requestTimeoutMs,
+        timeoutMs,
     );
 
     try {
         const response = await fetch(
             createRequestUrl(path),
-            createFetchOptions(options, controller),
+            createFetchOptions(fetchOptions, controller),
         );
 
-        const responseData = await parseResponse(response);
+        const responseData = response.ok && responseType === 'blob'
+            ? await response.blob()
+            : await parseResponse(response);
 
         if (!response.ok) {
             const error = createHttpError(response, responseData);

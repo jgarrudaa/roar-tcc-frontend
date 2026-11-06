@@ -16,6 +16,8 @@
 .student-data-confirmation input { margin-top: 6px; min-width: 20px; min-height: 20px; }
 .student-data-management :is(input, select, button):focus-visible { outline: 3px solid #28599a; outline-offset: 3px; }
 .student-data-message { min-height: 1.5em; }
+.student-data-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.student-data-actions .btn { min-height: 44px; white-space: normal; }
 .student-game-settings h2,
 .word-learning-section h2 { margin: 0 0 10px; font-size: 1.2rem; }
 .student-games-help,
@@ -64,6 +66,7 @@
     white-space: nowrap;
 }
 @media (max-width: 620px) {
+    .student-data-actions { flex-direction: column; align-items: stretch; }
     .student-games-grid { grid-template-columns: minmax(0, 1fr); }
     .student-game-settings,
     .word-learning-section { padding: 16px; }

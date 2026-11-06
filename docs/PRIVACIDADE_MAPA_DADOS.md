@@ -75,7 +75,7 @@ O professor declara o tipo de solicitante e confirma a verificação a cada
 download. O checkbox registra uma declaração do professor, sem substituir a
 checagem de identidade. A equipe ainda deve definir como será feita essa checagem.
 
-## Exportação implementada no código local
+## Exportação assistida
 
 Rota `POST /professores/alunos/<aluno_id>/exportacao-dados`, com corpo
 `{"solicitante":"titular"|"responsavel","verificacao_confirmada":true}`.
@@ -142,6 +142,50 @@ Para liberar a função no endereço existente:
 Os testes locais não substituem a validação do ambiente publicado. O envio
 ao GitHub e a publicação dependem da aprovação combinada com o responsável
 pelo projeto.
+
+### Relatório em PDF
+
+No perfil do aluno, em Gerenciar dados, o professor pode escolher **Gerar
+relatório em PDF** após selecionar o solicitante e confirmar a verificação.
+O JSON continua disponível ao lado. A confirmação é exigida novamente após
+cada download e ambos os botões ficam indisponíveis durante uma geração.
+
+Rota adicional: `POST /professores/alunos/<aluno_id>/relatorio-dados.pdf`,
+com o mesmo corpo e as mesmas verificações de sessão, perfil, vínculo e
+solicitante da exportação JSON. A geração ocorre em memória com ReportLab
+4.4.9. Não há envio à IA ou outro serviço de geração de documentos, nem
+armazenamento de PDFs no servidor.
+
+O PDF mostra cadastro atual, resumo dos registros, histórico com nome da
+atividade e módulo, data de emissão e identificador. Os nomes vêm de
+`atividades.palavra_chave` e `modulos.nome`, consultados pelo cliente
+administrativo apenas depois de validar o vínculo do professor. Atividades
+removidas ou sem título são identificadas pelo código preservado no histórico.
+Uma consulta somente de catálogo confirmou os campos utilizados, sem consultar
+cadastros de alunos.
+
+- Dados não preenchidos aparecem como não informados. Suporte TEA não é
+  inferido pelo modo de aprendizagem.
+- Atividades distintas e concluídas são contadas por atividade, sem duplicar
+  uma conclusão por haver várias tentativas.
+- Erros e tempos somam somente os valores registrados, com indicação da
+  quantidade de registros que possuem essas medidas. Zero é preservado.
+- Horários com fuso são apresentados em Brasília (UTC-3); datas sem fuso são
+  preservadas e identificadas como tal.
+- O histórico ocupa quantas páginas forem necessárias, repetindo o cabeçalho
+  da tabela e numerando as páginas.
+- O limite do PDF é 500 registros para manter a geração leve. Acima disso,
+  a API responde 422 e orienta a usar o JSON, sem entregar um PDF truncado.
+- O navegador aceita somente um arquivo com tipo PDF e assinatura `%PDF-`,
+  ignora respostas após fechar o perfil e permite tentar novamente após falha.
+- O download usa nome com identificador numérico do aluno, sem seu nome no
+  arquivo. O conteúdo continua contendo dados pessoais, com entrega restrita
+  ao solicitante verificado e resposta privada sem cache.
+
+A nova rota e a dependência ReportLab precisam estar na mesma publicação do
+backend. Conferir OPTIONS 200 e POST sem token 401 também para essa rota.
+
+Referência técnica: [tabelas e paginação no ReportLab](https://docs.reportlab.com/reportlab/userguide/ch7_tables/).
 
 ## Achados de segurança que precedem a publicação
 
@@ -210,13 +254,20 @@ Fontes oficiais consultadas em 06/11/2026.
 - `back-tcc-version-2/tests/test_privacidade.py` usa as rotas reais com Flask e
   JWT, banco simulado e dados fictícios. Cobre sessão, perfil, vínculo,
   confirmação, campos, paginação, falhas, repetição e requisições de diagnóstico.
-- A verificação de navegador exercita confirmação, download, falha/repetição,
+- A verificação de navegador JSON exercita confirmação, download, falha/repetição,
   troca de perfil, descarte de resposta tardia, API não publicada, falha de
   acesso, falta de conexão e orientações ao aluno.
-- Com as dependências de cada projeto instaladas, executar
+- A verificação PDF conecta o navegador à rota real Flask/JWT, com banco e
+  alunos fictícios. Cobre download, confirmação, outro professor, perfil aluno,
+  sessão inválida, falha/repetição, arquivos inválidos, concorrência dos dois
+  formatos, descarte de resposta tardia, teclado e tela de 1280 e 390 pixels.
+- Instalar as dependências de teste do backend com
+  `python -m pip install -r back-tcc-version-2/requirements-dev.txt`. Executar
   `python -m unittest discover -s back-tcc-version-2/tests -p test_privacidade.py -v`
-  e `node tools/check_student_data_browser.cjs` na raiz do frontend.
-- Os nove testes de rota e os cenários de navegador em 1280 e 390 pixels
+  e `npm run test:privacy` na raiz do frontend. Para usar outro interpretador
+  Python no teste de navegador, definir `ROAR_TEST_PYTHON` ou passar seu caminho
+  como terceiro argumento a `node tools/check_student_report_browser.cjs playwright`.
+- Os quinze testes de rota e os cenários de navegador em 1280 e 390 pixels
   passaram nesta entrega. `npm test` também passou.
 - O uso no backend hospedado e a restrição das tabelas legadas dependem das
   próximas etapas de publicação e revisão de autorização.

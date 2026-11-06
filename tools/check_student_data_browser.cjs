@@ -120,7 +120,7 @@ const server = http.createServer(async (request, response) => {
             await page.locator('#studentDataManagement select').selectOption('titular');
             await page.locator('#studentDataManagement input').check();
             const second = page.waitForEvent('download');
-            await page.locator('#studentDataManagement button[type="submit"]').click();
+            await page.locator('#studentDataManagement button[value="json"]').click();
             assert.equal((await second).suggestedFilename(), 'roar-aluno-18.json');
             const currentForm = page.locator('#studentDataManagement form');
             await currentForm.locator('input').check();
@@ -136,7 +136,7 @@ const server = http.createServer(async (request, response) => {
                 await currentForm.getByRole('status').filter({hasText:expected}).waitFor();
                 assert.equal(requests.length, previousRequests + 1, 'Diagnostics must not repeat the export POST.');
                 assert.equal(downloads.length, 2, 'An unavailable export never downloads a file.');
-                assert.equal(await currentForm.getByRole('button').isEnabled(),true);
+                assert.equal(await currentForm.getByRole('button',{name:'Exportar cadastro e histórico'}).isEnabled(),true);
             }
             assert.equal(diagnostics.length,3);
             assert.ok(diagnostics.every(headers => !headers.authorization), 'Diagnostics never send the session token.');
