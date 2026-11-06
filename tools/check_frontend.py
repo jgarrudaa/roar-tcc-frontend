@@ -27,6 +27,8 @@ def resolve(source: Path, value: str) -> Path | None:
 def main() -> int:
     failures: list[str] = []
     for source in ROOT.rglob("*.html"):
+        if any(part in {"node_modules", ".git", ".venv", "test-results", "playwright-report"} for part in source.relative_to(ROOT).parts):
+            continue
         content = source.read_text(encoding="utf-8")
         for value in HTML_URL.findall(content):
             target = resolve(source, value)

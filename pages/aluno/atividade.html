@@ -24,16 +24,31 @@
 <body class="activity-page" data-auth-role="student">
     <header class="activity-header">
         <a class="activity-back" href="atividades.html" aria-label="Voltar para atividades">
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6"/><path d="M8 12h13"/></svg>
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m14 6-6 6 6 6" />
+                <path d="M8 12h13" />
+            </svg>
         </a>
         <div class="activity-heading">
             <h1 id="activity-title">Carregando atividade</h1>
             <button class="audio-button" id="repeat-instruction" type="button" aria-label="Ouvir instrução novamente">
-                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m11 4-6 5H2v6h3l6 5z"/><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg>
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m11 4-6 5H2v6h3l6 5z" />
+                    <path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14" />
+                </svg>
             </button>
             <p id="activity-instruction">Aguarde um momento.</p>
         </div>
-        <div class="activity-header-spacer" aria-hidden="true"></div>
+        <a class="activity-home" href="inicio.html" aria-label="Voltar ao início" title="Início">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.4"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m3 10 9-7 9 7"></path>
+                <path d="M5 9v11h14V9"></path>
+                <path d="M9 20v-6h6v6"></path>
+            </svg>
+        </a>
     </header>
 
     <main class="activity-stage" id="activity-stage" aria-live="polite">
@@ -59,7 +74,7 @@
     <script type="module" src="../../public/js/pages/auth/route-guard.js"></script>
     <script src="../../public/js/roar-page-transition.js"></script>
     <script src="../../public/js/roar-avatar.js"></script>
-    <script type="module" src="../../public/js/pages/aluno/atividade.js?v=4"></script>
+    <script type="module" src="../../public/js/pages/aluno/atividade.js?v=5"></script>
 </body>
 
 </html>

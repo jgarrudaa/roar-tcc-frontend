@@ -2,6 +2,7 @@ import { showToast } from "../../components/toast.js";
 import { relatoriosService } from "../../services/relatorios-service.js";
 import { sessionService } from "../../services/session-service.js";
 import { assistenteService } from "../../services/assistente-service.js";
+import { createStudentWordProgress } from "../../components/student-word-progress.js";
 
 const AVATAR_COLORS = Object.freeze([
     "#244D8C",
@@ -1210,6 +1211,7 @@ function renderStudentReport(report) {
     elements.dashboard.replaceChildren(
         createStudentHeader(report),
         createSummarySection(report),
+        createStudentWordProgress(report.student.id),
         createModulesSection(report),
         createHistorySection(report),
         createAiAssistantSection(report),

@@ -69,6 +69,40 @@ export function createMemoryActivity(
     let previewing = false;
     let destroyed = false;
     const timers = new Set();
+    let cards = [];
+    const previewSeconds = [3, 5, 8, 10].includes(context.gameSettings?.memoryPreviewSeconds)
+        ? context.gameSettings.memoryPreviewSeconds : 5;
+    const knownItems = new Map([activity.item, ...module.items].map(item => [String(item.id), item]));
+    const stateKey = JSON.stringify([activity.item.itemId ?? activity.item.id ?? activity.item.en,
+        Number(student.supportLevel), Number(student.teaSupportLevel) || null, previewSeconds,
+        [...knownItems.values()].map(item => [String(item.id), item.en, item.vectorImage || item.realImage])]);
+    const candidate = context.resumeState;
+    const pairLimit = Math.min(getPairLimit(Number(student.supportLevel)), knownItems.size);
+    const savedState = (() => {
+        if (candidate?.version !== 1 || candidate.key !== stateKey ||
+            !Array.isArray(candidate.items) || candidate.items.length !== pairLimit ||
+            new Set(candidate.items).size !== pairLimit || !candidate.items.includes(String(activity.item.id)) ||
+            !candidate.items.every(id => typeof id === "string" && knownItems.has(id)) ||
+            !Array.isArray(candidate.order) || candidate.order.length !== pairLimit * 2 ||
+            !candidate.order.every(card => candidate.items.includes(card?.id) && ["image", "word"].includes(card.type)) ||
+            new Set(candidate.order.map(card => `${card.id}:${card.type}`)).size !== pairLimit * 2 ||
+            !Array.isArray(candidate.matched) || new Set(candidate.matched).size !== candidate.matched.length ||
+            !candidate.matched.every(id => candidate.items.includes(id)) ||
+            typeof candidate.previewCompleted !== "boolean") return null;
+        // Matched cards can only exist after the initial preview has ended.
+        if (!candidate.previewCompleted && candidate.matched.length) return null;
+        return candidate;
+    })();
+
+    function getState() {
+        return { version: 1, key: stateKey, items: memoryItems.map(item => String(item.id)),
+            order: cards.map(card => ({ id: card.dataset.pair, type: card.dataset.cardType })),
+            matched: [...new Set(cards.filter(card => card.classList.contains("is-matched")).map(card => card.dataset.pair))],
+            previewCompleted: !previewing,
+            openCard: !lockBoard && firstCard ? `${firstCard.dataset.pair}:${firstCard.dataset.cardType}` : null };
+    }
+
+    function saveState() { context.onStateChange?.(); }
 
     function schedule(callback, delay) {
         const timer = window.setTimeout(() => {
@@ -228,6 +262,7 @@ export function createMemoryActivity(
 
         if (!firstCard) {
             firstCard = card;
+            saveState();
             return;
         }
 
@@ -244,12 +279,14 @@ export function createMemoryActivity(
             );
 
             firstCard = null;
+            saveState();
             return;
         }
 
         lockBoard = true;
 
-        onWrong(activity.item);
+        onWrong(findMatchedItem(firstCard));
+        saveState();
 
         elements.setMessage(
             "Essas cartas são diferentes. Observe e tente novamente.",
@@ -262,6 +299,7 @@ export function createMemoryActivity(
 
                 firstCard = null;
                 lockBoard = false;
+                saveState();
             },
             1000,
         );
@@ -356,22 +394,23 @@ export function createMemoryActivity(
         totalPairs =
             memoryItems.length;
 
-        const cards =
-            shuffle(
-                memoryItems.flatMap(
-                    (item) => [
-                        createCard(
-                            item,
-                            "image",
-                        ),
-
-                        createCard(
-                            item,
-                            "word",
-                        ),
-                    ],
-                ),
-            );
+        cards = savedState
+            ? savedState.order.map(card => createCard(knownItems.get(card.id), card.type))
+            : shuffle(memoryItems.flatMap(item => [createCard(item, "image"), createCard(item, "word")]));
+        if (savedState) {
+            cards.forEach(card => {
+                if (savedState.matched.includes(card.dataset.pair)) {
+                    revealCard(card);
+                    card.classList.add("is-matched");
+                    card.disabled = true;
+                }
+            });
+            matchedPairs = savedState.matched.length;
+            if (savedState.previewCompleted && typeof savedState.openCard === "string") {
+                firstCard = cards.find(card => !card.disabled && `${card.dataset.pair}:${card.dataset.cardType}` === savedState.openCard) || null;
+                if (firstCard) revealCard(firstCard);
+            }
+        }
 
         const content =
             document.createElement("div");
@@ -391,7 +430,7 @@ export function createMemoryActivity(
         const previewText = document.createElement("p");
         const startButton = createButton("Começar agora", "memory-start-button");
         controls.className = "memory-preview-controls";
-        previewText.textContent = "Observe os pares. As cartas viram em 5 segundos.";
+        previewText.textContent = `Observe os pares. As cartas viram em ${previewSeconds} segundos.`;
         controls.append(previewText, startButton);
         controls.hidden = !previewing;
         content.append(controls, grid);
@@ -412,6 +451,7 @@ export function createMemoryActivity(
             elements.setMessage("Vire duas cartas para encontrar um par.");
             if (restoreFocus) cards[0]?.focus();
             audioService.speak(getInstruction(), "pt-BR");
+            saveState();
         }
         if (previewing) {
             cards.forEach((card) => {
@@ -419,7 +459,7 @@ export function createMemoryActivity(
                 card.disabled = true;
             });
             startButton.addEventListener("click", finishPreview);
-            schedule(finishPreview, 5000);
+            schedule(finishPreview, previewSeconds * 1000);
         }
 
         elements.stage.append(
@@ -436,18 +476,23 @@ export function createMemoryActivity(
         );
 
         elements.setProgress(
-            0,
+            matchedPairs,
             totalPairs,
         );
+        if (matchedPairs === totalPairs) {
+            elements.nextButton.disabled = false;
+            elements.setMessage("Muito bem! Todos os pares foram encontrados.");
+        }
+        saveState();
     }
 
 
     function render() {
         clearTimers();
         destroyed = false;
-        previewing = [1, 2].includes(Number(student.supportLevel));
+        previewing = savedState ? !savedState.previewCompleted : [1, 2].includes(Number(student.supportLevel));
         window.addEventListener("pagehide", destroy);
-        memoryItems =
+        memoryItems = savedState ? savedState.items.map(id => knownItems.get(id)) :
             createMemoryItems(
                 activity.item,
                 module.items,
@@ -464,6 +509,7 @@ export function createMemoryActivity(
     return Object.freeze({
         start: render,
         destroy,
+        getState,
 
         repeatInstruction() {
             audioService.speak(

@@ -28,6 +28,9 @@ function edgePath(startX, startY, endX, endY, tab, depth) {
 }
 
 export function getShadowPieceCount(context) {
+    // A teacher's explicit pedagogical choice is independent from the TEA field.
+    const configured = context.gameSettings?.pieceCount;
+    if ([2, 4, 6].includes(configured)) return configured;
     // Suporte TEA e modo de aprendizagem são campos independentes.
     const teaLevel = context.student?.teaSupportLevel;
     if (teaLevel === 1) return 6;

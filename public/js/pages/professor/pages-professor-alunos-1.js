@@ -2,6 +2,8 @@ import { relatoriosService } from "../../services/relatorios-service.js";
 import { sessionService } from "../../services/session-service.js";
 import { alunoService } from "../../services/aluno-service.js";
 import { showToast } from "../../components/toast.js";
+import { mountStudentGameSettings } from "../../components/student-game-settings.js";
+import { createStudentWordProgress } from "../../components/student-word-progress.js";
 
 const LEVEL_STYLES = Object.freeze({
     0: {
@@ -177,6 +179,8 @@ const elements = {
 };
 
 const state = {
+    gameSettings: null,
+    savingGameSettings: false,
     dashboard: null,
     students: [],
     visibleStudents: [],
@@ -255,33 +259,6 @@ function formatLastAccess(date) {
     }
 
     return `há ${difference} dias`;
-}
-
-function calculateAccuracy(
-    completions,
-    errors,
-) {
-    const validCompletions = Math.max(
-        0,
-        Number(completions) || 0,
-    );
-
-    const validErrors = Math.max(
-        0,
-        Number(errors) || 0,
-    );
-
-    const interactions =
-        validCompletions + validErrors;
-
-    return interactions
-        ? clampPercentage(
-            (
-                validCompletions /
-                interactions
-            ) * 100,
-        )
-        : 0;
 }
 
 function calculateProgress(student) {
@@ -529,8 +506,54 @@ function renderStudentCards() {
 
     elements.studentsGrid.innerHTML = "";
 
-    const fragment =
-        document.createDocumentFragment();
+    const fragment = document.createDocumentFragment();
+
+    const visibleLevels = [
+        ...new Set(
+            state.visibleStudents.map(
+                (student) => Number(student.level?.number) || 0,
+            ),
+        ),
+    ].sort((a, b) => a - b);
+
+    const levelGrids = new Map();
+
+    visibleLevels.forEach((levelNumber) => {
+        const levelInfo =
+            LEVEL_STYLES[levelNumber] ?? LEVEL_STYLES[0];
+
+        const studentsInLevel =
+            state.visibleStudents.filter(
+                (student) =>
+                    (Number(student.level?.number) || 0) === levelNumber,
+            );
+
+        const section = document.createElement("section");
+        section.className =
+            `students-level-group ${levelInfo.cardClass}`;
+
+        const heading = document.createElement("div");
+        heading.className = "students-level-group__heading";
+
+        const title = document.createElement("h2");
+        title.id = `students-level-${levelNumber}-title`;
+        title.textContent = levelInfo.text;
+
+        const count = document.createElement("span");
+        count.className = "students-level-group__count";
+        count.textContent =
+            `${studentsInLevel.length} ` +
+            `${studentsInLevel.length === 1 ? "aluno" : "alunos"}`;
+
+        const cardsGrid = document.createElement("div");
+        cardsGrid.className = "students-level-group__grid";
+
+        heading.append(title, count);
+        section.append(heading, cardsGrid);
+        fragment.appendChild(section);
+
+        levelGrids.set(levelNumber, cardsGrid);
+    });
 
     state.visibleStudents.forEach(
         (student) => {
@@ -540,11 +563,7 @@ function renderStudentCards() {
             const progress =
                 calculateProgress(student);
 
-            const accuracy =
-                calculateAccuracy(
-                    student.totalAttempts,
-                    student.totalErrors,
-                );
+            const completionRate = clampPercentage(student.completionRate);
 
             const card =
                 document.createElement(
@@ -605,11 +624,11 @@ function renderStudentCards() {
 
                     <div class="mini-stat">
                         <div class="mini-stat__val">
-                            ${accuracy}%
+                            ${completionRate}%
                         </div>
 
                         <div class="mini-stat__lbl">
-                            Aproveit.
+                            Conclusão
                         </div>
                     </div>
 
@@ -668,7 +687,10 @@ function renderStudentCards() {
                 },
             );
 
-            fragment.appendChild(card);
+            const levelNumber =
+                Number(student.level?.number) || 0;
+
+            levelGrids.get(levelNumber)?.appendChild(card);
         },
     );
 
@@ -814,20 +836,16 @@ function renderModalReport(report) {
         history,
     } = report;
 
-    const accuracy =
-        calculateAccuracy(
-            summary.totalAttempts,
-            summary.totalErrors,
-        );
+    const completionRate = clampPercentage(summary.completionRate);
 
     elements.modalStatistics.innerHTML = `
         <div class="mstat">
             <div class="mstat__val">
-                ${accuracy}%
+                ${completionRate}%
             </div>
 
             <div class="mstat__lbl">
-                Aproveitamento
+                Taxa de conclusão
             </div>
         </div>
 
@@ -837,7 +855,7 @@ function renderModalReport(report) {
             </div>
 
             <div class="mstat__lbl">
-                Conclusões
+                Registros de atividade
             </div>
         </div>
 
@@ -928,21 +946,6 @@ function renderModalReport(report) {
         history.length
             ? history.map(
                 (record) => {
-                    const percentage =
-                        calculateAccuracy(
-                            record.completed
-                                ? 1
-                                : 0,
-                            record.errors,
-                        );
-
-                    const percentageClass =
-                        percentage >= 70
-                            ? "pct-green"
-                            : percentage >= 40
-                                ? "pct-yellow"
-                                : "pct-red";
-
                     const status =
                         record.completed
                             ? `
@@ -976,20 +979,7 @@ function renderModalReport(report) {
                                 ${formatInteger(record.errors)}
                             </td>
 
-                            <td>
-                                <div class="u-pages-professor-alunos-026">
-                                    <div class="pct-bar-wrap">
-                                        <div
-                                            class="pct-bar ${percentageClass}"
-                                            style="width:${percentage}%"
-                                        ></div>
-                                    </div>
-
-                                    <span class="u-pages-professor-alunos-027">
-                                        ${percentage}%
-                                    </span>
-                                </div>
-                            </td>
+                            <td>${formatInteger(record.timeSeconds)} s</td>
 
                             <td>
                                 ${status}
@@ -1029,6 +1019,16 @@ async function openStudentModal(
     state.loadingReport = true;
 
     prepareModal(student);
+
+    state.gameSettings?.destroy();
+    state.gameSettings = mountStudentGameSettings(
+        document.getElementById("studentGameSettings"), studentId,
+        { onSaving(value) {
+            state.savingGameSettings = value;
+            setStudentManagementDisabled(value || state.savingStudent || state.deactivatingStudent);
+        } },
+    );
+    document.getElementById("studentWordProgress").replaceChildren(createStudentWordProgress(studentId));
 
     elements.modal.classList.add("open");
 
@@ -1089,6 +1089,7 @@ function closeStudentModal(force = false) {
         !force &&
         (
             state.resettingPin ||
+            state.savingGameSettings ||
             state.savingStudent ||
             state.deactivatingStudent
         )
@@ -1107,6 +1108,10 @@ function closeStudentModal(force = false) {
 
     state.selectedStudent = null;
     state.report = null;
+    state.gameSettings?.destroy();
+    state.gameSettings = null;
+    document.getElementById("studentGameSettings").replaceChildren();
+    document.getElementById("studentWordProgress").replaceChildren();
 
     clearGeneratedPin();
 }
@@ -1168,7 +1173,7 @@ async function saveSelectedStudent(event) {
             {
                 name: elements.editName.value,
                 email: elements.editEmail.value,
-                schoolYear:elements.editSchoolYear.value,
+                schoolYear: elements.editSchoolYear.value,
                 level: newLevel,
                 teaSupportLevel: elements.editTeaSupportLevel.value,
             },
@@ -1437,17 +1442,11 @@ function showReportSummary() {
         return;
     }
 
-    const accuracy =
-        calculateAccuracy(
-            state.report.summary
-                .totalAttempts,
-            state.report.summary
-                .totalErrors,
-        );
+    const completionRate = clampPercentage(state.report.summary.completionRate);
 
     showToast(
         `${state.report.student.name}: ` +
-        `${accuracy}% de aproveitamento geral.`,
+        `${completionRate}% das atividades concluídas.`,
         "success",
     );
 }

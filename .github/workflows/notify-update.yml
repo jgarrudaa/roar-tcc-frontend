@@ -1,10 +1,7 @@
-```yaml
 name: Avisar sobre atualização do projeto
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   notify:
@@ -34,44 +31,16 @@ jobs:
 
             const title = `🔄 Nova atualização disponível — ${commitSha.substring(0, 7)}`;
 
-            const body = `
-## 🔄 Nova atualização disponível
-
-O projeto colaborativo recebeu uma nova atualização na branch \`main\`.
-
-### Commit
-
-**Mensagem:**
-> ${commitMessage}
-
-**Autor:** ${author}
-
-**Commit:** [${commitSha.substring(0, 7)}](${commitUrl})
-
----
-
-## 📥 Para atualizar minha cópia
-
-Execute no terminal:
-
-\`\`\`bash
-git fetch upstream
-git merge upstream/main
-git push origin main
-\`\`\`
-
-Depois do \`push\`, a Vercel fará o deploy da nova versão automaticamente.
-
-> ⚠️ Esta Issue é apenas uma notificação. A sua cópia **não foi atualizada automaticamente**.
-
-### Repositórios
-
-**Projeto colaborativo:**  
-https://github.com/${context.repo.owner}/${context.repo.repo}
-
-**Minha cópia:**  
-https://github.com/${personalOwner}/${personalRepo}
-`;
+            const body = [
+              'O projeto colaborativo recebeu uma atualização na branch main.',
+              '',
+              `Mensagem: ${commitMessage}`,
+              `Autor: ${author}`,
+              `Commit: [${commitSha.substring(0, 7)}](${commitUrl})`,
+              '',
+              'Para atualizar a cópia: git fetch upstream, git merge upstream/main e git push origin main.',
+              'Esta notificação não atualiza a cópia automaticamente.'
+            ].join('\n');
 
             await github.rest.issues.create({
               owner: personalOwner,
@@ -79,4 +48,3 @@ https://github.com/${personalOwner}/${personalRepo}
               title: title,
               body: body
             });
-```

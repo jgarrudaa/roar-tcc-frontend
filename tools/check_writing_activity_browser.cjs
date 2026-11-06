@@ -35,7 +35,7 @@ const server = http.createServer((req, res) => {
     try {
         await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
         const origin = `http://127.0.0.1:${server.address().port}`;
-        browser = await chromium.launch({ channel: 'msedge', headless: true });
+        browser = await chromium.launch({ headless: true, ...(process.platform === 'win32' ? { channel: 'msedge' } : {}) });
         for (const mode of ['mouse', 'touch', 'keyboard']) {
             const context = await browser.newContext({ viewport: mode === 'touch' ? { width: 390, height: 844 } : { width: 1280, height: 800 }, hasTouch: mode === 'touch' });
             const page = await context.newPage();
@@ -47,6 +47,8 @@ const server = http.createServer((req, res) => {
                 if (/route-guard.js|roar-avatar.js|roar-page-transition.js/.test(url.pathname)) return route.fulfill({ body: '', contentType: 'text/javascript' });
                 if (url.pathname.endsWith('/atividade-service.js')) return route.fulfill({ contentType: 'text/javascript', body: `export const atividadeService = {
                     getContext: async () => (${JSON.stringify(fixture)}),
+                    loadModuleContext: async () => (${JSON.stringify(fixture)}),
+                    getActivityContext: (context, stage) => ({...context, activity:{...context.activity,id:100+stage}}),
                     complete: async (id, stats) => { const response = await fetch('/test-save', {method:'POST', body: JSON.stringify({id,stats})}); return response.json(); }
                 };` });
                 if (url.pathname.endsWith('/atividade.html') && url.searchParams.get('etapa') === '10') return route.fulfill({ contentType: 'text/html', body: '<h1>Etapa 10</h1>' });

@@ -1,5 +1,6 @@
 import { alunosApi } from "../api/alunos-api.js";
 import { atividadesApi } from "../api/atividades-api.js";
+import { gameSettingsService } from "./game-settings-service.js";
 
 const LEARNING_MODES = Object.freeze({
     "Nível 1 - Suporte Visual Puro": Object.freeze({
@@ -108,7 +109,11 @@ function normalizeMediaUrl(value) {
         mediaUrl.startsWith("data:") ||
         mediaUrl.startsWith("blob:");
 
-    if (isAbsoluteUrl || mediaUrl.startsWith("/")) {
+    if (isAbsoluteUrl) {
+        return mediaUrl;
+    }
+
+    if (mediaUrl.startsWith("/")) {
         return mediaUrl;
     }
 
@@ -460,8 +465,8 @@ function createActivity(
         id: selectedActivity.activityId,
         stage: selectedActivity.order,
         type: selectedActivity.type,
-        originalType:selectedActivity.originalType,
-        instruction:selectedActivity.instruction,
+        originalType: selectedActivity.originalType,
+        instruction: selectedActivity.instruction,
         answer: selectedActivity.answer || item.en,
         status: "active",
 
@@ -506,96 +511,82 @@ function normalizeCompletionData(
     });
 }
 
+async function loadModuleContext(moduleId) {
+    const validModuleId = requirePositiveInteger(
+        moduleId,
+        "moduleId",
+    );
+
+    const [profile, gameSettings] = await Promise.all([alunosApi.getCurrent(), gameSettingsService.getCurrent()]);
+    const student = normalizeStudent(profile);
+
+    const payload = await atividadesApi.getModuleForStudent(
+        validModuleId,
+        student.id,
+    );
+
+    validatePayload(payload);
+    validatePayloadStudent(payload, student);
+
+    const normalizedActivities = payload.atividades
+        .map(normalizeActivity)
+        .sort((a, b) => a.order - b.order);
+
+    const normalizedItems = payload.itens
+        .map(normalizeModuleItem)
+        .sort((a, b) => a.order - b.order);
+
+    const module = createModule(
+        payload,
+        normalizedItems,
+        normalizedActivities,
+    );
+
+    return Object.freeze({ student, module, gameSettings });
+}
+
+function createActivityContext(moduleContext, stage) {
+    const validStage = requirePositiveInteger(
+        stage,
+        "stage",
+    );
+
+    const selectedActivity = selectActivity(
+        moduleContext.module.activities,
+        validStage,
+    );
+
+    const activity = createActivity(
+        selectedActivity,
+        moduleContext.module.items,
+    );
+
+    return Object.freeze({
+        ...moduleContext,
+        activity,
+    });
+}
+
+
+
+
+
 export const atividadeService = Object.freeze({
     async getCurrentStudent() {
         return normalizeStudent(await alunosApi.getCurrent());
     },
 
+    async loadModuleContext(moduleId) {
+        return loadModuleContext(moduleId);
+    },
+
+    getActivityContext(moduleContext, stage) {
+        return createActivityContext(moduleContext, stage);
+    },
+
     async getContext(moduleId, stage) {
-        const validModuleId =
-            requirePositiveInteger(
-                moduleId,
-                "moduleId",
-            );
-
-        const validStage =
-            requirePositiveInteger(
-                stage,
-                "stage",
-            );
-
-        /*
-         * Primeiro busca o aluno autenticado.
-         */
-        const profile =
-            await alunosApi.getCurrent();
-
-        const student =
-            normalizeStudent(profile);
-
-        /*
-         * Depois busca as atividades e os itens
-         * correspondentes ao aluno.
-         */
-        const payload =
-            await atividadesApi.getModuleForStudent(
-                validModuleId,
-                student.id,
-            );
-
-        validatePayload(payload);
-
-        validatePayloadStudent(
-            payload,
-            student,
-        );
-
-        const normalizedActivities =
-            payload.atividades
-                .map(normalizeActivity)
-                .sort(
-                    (
-                        firstActivity,
-                        secondActivity,
-                    ) =>
-                        firstActivity.order -
-                        secondActivity.order,
-                );
-
-        const normalizedItems =
-            payload.itens
-                .map(normalizeModuleItem)
-                .sort(
-                    (
-                        firstItem,
-                        secondItem,
-                    ) =>
-                        firstItem.order -
-                        secondItem.order,
-                );
-
-        const module = createModule(
-            payload,
-            normalizedItems,
-            normalizedActivities,
-        );
-
-        const selectedActivity =
-            selectActivity(
-                normalizedActivities,
-                validStage,
-            );
-
-        const activity = createActivity(
-            selectedActivity,
-            normalizedItems,
-        );
-
-        return Object.freeze({
-            student,
-            module,
-            activity,
-        });
+        const moduleContext = await loadModuleContext(moduleId);
+        return createActivityContext(moduleContext, stage);
     },
 
     async registerAttempt(
@@ -638,6 +629,8 @@ export const atividadeService = Object.freeze({
             tempo_segundos:
                 completion.elapsedSeconds,
             concluido: true,
+            id_tentativa: resultData.attemptId,
+            palavras: resultData.words || [],
         });
     },
 });

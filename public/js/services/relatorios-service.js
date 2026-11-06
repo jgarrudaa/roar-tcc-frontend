@@ -1182,6 +1182,45 @@ async function generateStudentAiAnalysis(studentId) {
     return normalizeAiAnalysis(payload);
 }
 
+function normalizeWordCount(value) {
+    // A missing measurement is unknown, not a zero-error or unassisted answer.
+    if (value === undefined || value === null) return null;
+    if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0) {
+        throw new Error("O relatório contém uma contagem de palavras inválida.");
+    }
+    return value;
+}
+
+export function normalizeStudentWords(payload) {
+    if (!payload || !Array.isArray(payload.palavras)) {
+        throw new Error("O servidor retornou um relatório de palavras inválido.");
+    }
+    const words = payload.palavras.map(record => {
+        const word = normalizeText(record?.palavra).toLocaleUpperCase("en-US");
+        if (!word || word.length > 120) throw new Error("O relatório contém uma palavra inválida.");
+        const correct = normalizeWordCount(record.acertos);
+        const errors = normalizeWordCount(record.erros);
+        const hints = normalizeWordCount(record.ajudas);
+        return Object.freeze({
+            word, correct, errors, hints,
+            sessions: normalizeWordCount(record.tentativas),
+            lastPractice: normalizeDate(record.ultima_pratica),
+            needsReview: (errors ?? 0) > 0 || (hints ?? 0) > 0,
+        });
+    });
+    return Object.freeze({
+        studentId: requirePositiveInteger(payload.aluno_id, "aluno_id"),
+        words: Object.freeze(words),
+    });
+}
+
+async function getStudentWords(studentId) {
+    const id = requirePositiveInteger(studentId, "studentId");
+    const result = normalizeStudentWords(await relatoriosApi.getStudentWords(id));
+    if (result.studentId !== id) throw new Error("O relatório de palavras não corresponde ao aluno selecionado.");
+    return result;
+}
+
 async function getModuleReport(moduleId) {
     const validModuleId =
         requirePositiveInteger(
@@ -1200,6 +1239,7 @@ async function getModuleReport(moduleId) {
 export const relatoriosService = Object.freeze({
     getTeacherDashboard,
     getStudentReport,
+    getStudentWords,
     generateStudentAiAnalysis,
     getModuleReport,
 });

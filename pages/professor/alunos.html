@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
 
     <link rel="stylesheet" href="../../public/css/pages/pages-professor-alunos.css">
+    <link rel="stylesheet" href="../../public/css/components/student-learning.css">
 </head>
 
 <body class="teacher-area" data-auth-role="teacher">
@@ -287,13 +288,16 @@
                 </form>
             </section>
 
+            <div id="studentGameSettings"></div>
+            <div id="studentWordProgress"></div>
+
             <div class="section-header mb-md">
                 <h2 class="u-pages-professor-alunos-012">
                     Desempenho por atividade
                 </h2>
 
                 <span class="u-pages-professor-alunos-013">
-                    Acertos × erros
+                    Conclusões × erros
                 </span>
             </div>
 
@@ -302,7 +306,7 @@
             <div class="chart-legend">
                 <span>
                     <span class="legend-dot u-pages-professor-alunos-014"></span>
-                    Acertos
+                    Conclusões
                 </span>
 
                 <span>
@@ -325,14 +329,14 @@
                             <th>Módulo</th>
 
                             <th class="u-pages-professor-alunos-016">
-                                Acertos
+                                Conclusões
                             </th>
 
                             <th class="u-pages-professor-alunos-016">
                                 Erros
                             </th>
 
-                            <th>Aproveitamento</th>
+                            <th>Tempo registrado</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -415,7 +419,7 @@
     <script src="../../public/js/roar-sidebar.js"></script>
     <script src="../../public/js/roar-theme.js"></script>
 
-    <script type="module" src="../../public/js/pages/professor/pages-professor-alunos-1.js?v=5"></script>
+    <script type="module" src="../../public/js/pages/professor/pages-professor-alunos-1.js?v=6"></script>
 </body>
 
 </html>

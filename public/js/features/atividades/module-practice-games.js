@@ -13,7 +13,14 @@ function createPracticeActivity(context, kind) {
         { item: activity.item, destination: "in" },
         { item: activity.item, destination: "on" },
     ];
-    let index = 0;
+    const stateKey = JSON.stringify([kind, student.supportLevel, student.teaSupportLevel,
+        rounds.map(round => [round.item.itemId ?? round.item.id ?? round.item.en,
+            round.item.vectorImage || round.item.realImage, round.category || round.destination])]);
+    const candidate = context.resumeState;
+    const savedState = candidate?.version === 1 && candidate.key === stateKey &&
+        Number.isInteger(candidate.index) && candidate.index >= 0 && candidate.index < rounds.length &&
+        typeof candidate.answered === "boolean" ? candidate : null;
+    let index = savedState?.index ?? 0;
     let answered = false;
     let completed = false;
     let selectedButton;
@@ -38,9 +45,12 @@ function createPracticeActivity(context, kind) {
     }
 
     function render() {
-        if (lifecycle.destroyed || completed) return;
+        if (lifecycle.destroyed) return;
         dragController?.destroy();
-        answered = false;
+        document.body.classList.add("is-practice");
+        elements.stage.classList.add("practice-stage");
+        answered = savedState?.index === index && savedState.answered;
+        completed = answered && index === rounds.length - 1;
         let selected = false;
         const round = rounds[index];
         const content = document.createElement("section");
@@ -67,9 +77,11 @@ function createPracticeActivity(context, kind) {
         // for this practice card, keeping the source vocabulary and other games intact.
         const isLeg = round.item.en.trim().toUpperCase() === "LEG";
         const legImage = "/public/assets/imagens/modulos/corpo_humano/leg-complete.svg";
-        const image = createImage({ ...round.item,
+        const image = createImage({
+            ...round.item,
             realImage: isLeg ? legImage : round.item.realImage || round.item.vectorImage,
-            vectorImage: isLeg ? legImage : round.item.vectorImage }, student.supportLevel);
+            vectorImage: isLeg ? legImage : round.item.vectorImage
+        }, student.supportLevel);
         if (isLeg) image.alt = "Perna destacada por um contorno, com pernas e pés inteiros.";
         const caption = document.createElement("span");
         caption.className = "practice-word";
@@ -79,9 +91,9 @@ function createPracticeActivity(context, kind) {
         illustration.className = "practice-illustration";
         illustration.append(image);
         const highlight = armHighlight(image.src);
-        if (highlight) illustration.append(highlight);
+        if (highlight && context.gameSettings?.showHints !== false) illustration.append(highlight);
         const bodyGuide = isLeg ? null : itemPictogram(round.item.en);
-        if (bodyGuide) {
+        if (bodyGuide && context.gameSettings?.showHints !== false) {
             bodyGuide.classList.add("practice-body-guide");
             illustration.append(bodyGuide);
         }
@@ -138,6 +150,9 @@ function createPracticeActivity(context, kind) {
             const listen = createButton("Ouvir em inglês", "practice-listen");
             lifecycle.listen(listen, "click", () => audioService.speak(option.en, "en-US"));
             dictionary.append(summary, portuguese, listen);
+            lifecycle.listen(dictionary, "toggle", () => {
+                if (dictionary.open && !answered && !completed) context.onHelp?.(round.item);
+            });
             buttons.push(button);
             lifecycle.listen(button, "click", () => {
                 if (answered || completed) return;
@@ -171,16 +186,21 @@ function createPracticeActivity(context, kind) {
                 elements.setMessage(completed ? "Muito bem! Você completou o jogo." : "Isso! Você encontrou o lugar certo.");
                 elements.nextButton.disabled = false;
                 elements.nextButton.focus?.({ preventScroll: true });
-                onCorrect({ ...round.item, id: `${kind}:${index}:${round.item.id}`,
-                    itemId: `${kind}:${index}:${round.item.itemId}` });
+                context.onStateChange?.();
+                onCorrect({
+                    ...round.item, id: `${kind}:${index}:${round.item.id}`,
+                    itemId: `${kind}:${index}:${round.item.itemId}`
+                });
             });
-            optionContainer.append(button, dictionary);
+            optionContainer.append(button);
+            if (context.gameSettings?.showHints !== false) optionContainer.append(dictionary);
             choices.append(optionContainer);
         });
         content.append(heading, counter, card, help, choices);
         elements.stage.replaceChildren(content);
         if (kind === "scene") {
-            dragController = createSceneDrag({ card, targets: buttons,
+            dragController = createSceneDrag({
+                card, targets: buttons,
                 enabled: () => !lifecycle.destroyed && !answered && !completed,
                 onSelect: selectCard,
                 onDrop: target => target.click(),
@@ -188,14 +208,28 @@ function createPracticeActivity(context, kind) {
             });
         }
         elements.stage.scrollTop = 0;
-        elements.nextButton.disabled = true;
+        elements.nextButton.disabled = !answered;
         elements.setInstruction(instruction());
-        elements.setProgress(index, rounds.length);
-        elements.setMessage("Sem pressa. Você pode ouvir e tentar novamente.");
+        elements.setProgress(index + (answered ? 1 : 0), rounds.length);
+        elements.setMessage(answered ? "Vamos continuar de onde você parou." : "Sem pressa. Você pode ouvir e tentar novamente.");
+        if (answered) {
+            const correct = buttons.find(button => button.dataset.choice === (round.category || round.destination));
+            correct?.classList.add("is-correct");
+            buttons.forEach(button => { button.disabled = true; });
+            if (kind === "scene" && correct) {
+                card.classList.add("is-placed");
+                const placed = image.cloneNode(true);
+                placed.alt = "";
+                placed.className = "practice-placed-card";
+                correct.querySelector(".practice-place").append(placed);
+            }
+        }
+        context.onStateChange?.();
     }
 
     return Object.freeze({
         start: render,
+        getState: () => ({ version: 1, key: stateKey, index, answered: Boolean(answered) }),
         repeatInstruction,
         next: () => !lifecycle.destroyed && completed,
         isRoundComplete: () => !lifecycle.destroyed && answered,
@@ -207,7 +241,13 @@ function createPracticeActivity(context, kind) {
             selectedButton.focus?.({ preventScroll: true });
             return true;
         },
-        destroy() { dragController?.destroy(); lifecycle.destroy(); audioService.stop(); },
+        destroy() {
+            document.body.classList.remove("is-practice");
+            elements.stage.classList.remove("practice-stage");
+            dragController?.destroy();
+            lifecycle.destroy();
+            audioService.stop();
+        },
     });
 }
 

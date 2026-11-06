@@ -43,6 +43,16 @@ export function createShadowActivity(context) {
     const item = activity.item;
     const puzzle = createShadowPuzzle(getShadowPieceCount(context));
     const source = String(item.vectorImage || item.realImage || "").trim();
+    const stateKey = JSON.stringify([item.itemId ?? item.id ?? item.en, source,
+        context.student?.supportLevel, context.student?.teaSupportLevel, puzzle.pieces.length]);
+    const candidate = context.resumeState;
+    const validIds = (ids, full = false) => Array.isArray(ids) &&
+        (!full || ids.length === puzzle.pieces.length) && new Set(ids).size === ids.length &&
+        ids.every(id => Number.isInteger(id) && id >= 0 && id < puzzle.pieces.length);
+    const savedState = candidate?.version === 1 && candidate.key === stateKey &&
+        validIds(candidate.placed) && validIds(candidate.order, true) ? candidate : null;
+    const pieceOrder = savedState?.order || shuffledPieces(puzzle.pieces).map(piece => piece.id);
+    const hintsEnabled = context.gameSettings?.showHints !== false;
     const instruction = activity.instruction ||
         "Arraste cada peça até sua sombra. Você também pode tocar na peça e na sombra.";
     const placed = new Set();
@@ -141,7 +151,7 @@ export function createShadowActivity(context) {
             pieceButton.classList.toggle("is-selected", selected);
             pieceButton.setAttribute("aria-pressed", String(selected));
         });
-        hintButton.disabled = false;
+        hintButton.disabled = !hintsEnabled;
         if (announce) {
             setMessage("Peça selecionada. Arraste até a sombra ou toque no lugar de encaixe.");
         }
@@ -152,7 +162,7 @@ export function createShadowActivity(context) {
         elements.setProgress(placed.size, puzzle.pieces.length);
     }
 
-    function placePiece(pieceId, targetId) {
+    function placePiece(pieceId, targetId, restoring = false) {
         if (!loaded || resolved || placed.has(pieceId) || placed.has(targetId)) return;
         if (pieceId !== targetId) {
             setMessage("Essa peça encaixa em outra sombra. Vamos tentar de novo, com calma.");
@@ -183,18 +193,19 @@ export function createShadowActivity(context) {
             root.classList.add("is-complete");
             elements.nextButton.disabled = false;
             setMessage(`Você montou o quebra-cabeça! ${item.en} significa ${item.pt}.`);
-            if (context.module?.title?.toLowerCase().includes('fazenda')) playWord();
-            if (!reportedCorrect) {
+            if (!restoring && context.module?.title?.toLowerCase().includes('fazenda')) playWord();
+            if (!reportedCorrect && !restoring) {
                 reportedCorrect = true;
                 onCorrect?.(item);
             }
-            if (wasFocused) elements.nextButton.focus({ preventScroll: true });
+            if (wasFocused && !restoring) elements.nextButton.focus({ preventScroll: true });
         } else {
             setMessage("Encaixou! Escolha outra peça quando quiser.");
-            if (wasFocused) {
+            if (wasFocused && !restoring) {
                 [...pieceButtons.values()].find((piece) => !piece.disabled)?.focus({ preventScroll: true });
             }
         }
+        if (!restoring) context.onStateChange?.();
     }
 
     function containsPoint(target, x, y) {
@@ -346,10 +357,11 @@ export function createShadowActivity(context) {
     }
 
     function hint() {
-        if (selectedId === null || placed.has(selectedId) || !loaded || resolved) return;
+        if (!hintsEnabled || selectedId === null || placed.has(selectedId) || !loaded || resolved) return;
         clearHighlights();
         targetButtons.get(selectedId).classList.add("is-hinted");
         setMessage("A sombra destacada é o lugar desta peça. Você pode tocar nela para encaixar.");
+        context.onHelp?.(item);
     }
 
     function renderPuzzle() {
@@ -395,7 +407,7 @@ export function createShadowActivity(context) {
             board.append(target);
         }
 
-        for (const piece of shuffledPieces(puzzle.pieces)) {
+        for (const piece of pieceOrder.map(id => puzzle.pieces[id])) {
             const pieceButton = button("", "shadow-piece");
             pieceButton.dataset.pieceId = String(piece.id);
             pieceButton.setAttribute("aria-label", `Selecionar peça ${piece.id + 1} de ${item.pt}`);
@@ -427,6 +439,11 @@ export function createShadowActivity(context) {
         root.append(workspace);
         updateProgress();
         setMessage("Escolha uma peça para começar. Você pode ouvir a palavra quantas vezes quiser.");
+        if (savedState) {
+            savedState.placed.forEach(id => placePiece(id, id, true));
+            if (!resolved && placed.size) setMessage("Vamos continuar de onde você parou. Escolha outra peça.");
+        }
+        context.onStateChange?.();
     }
 
     function showLoadError(status) {
@@ -498,6 +515,7 @@ export function createShadowActivity(context) {
         listen.addEventListener("click", playWord, { signal: listeners.signal });
         hintButton = button("Mostrar dica", "shadow-hint-button");
         hintButton.disabled = true;
+        hintButton.hidden = !hintsEnabled;
         hintButton.addEventListener("click", hint, { signal: listeners.signal });
         controls.append(listen, hintButton);
         const status = node("div", "shadow-status", "Carregando o quebra-cabeça…");
@@ -535,6 +553,10 @@ export function createShadowActivity(context) {
             speak(instruction, "pt-BR");
         },
         next: () => loaded && resolved && !destroyed,
+        // An image may still be loading when the controller persists on exit.
+        // Keep restored progress until renderPuzzle has rebuilt its matched DOM.
+        getState: () => ({ version: 1, key: stateKey, order: [...pieceOrder],
+            placed: !loaded && savedState ? [...savedState.placed] : [...placed] }),
         destroy,
     });
 }

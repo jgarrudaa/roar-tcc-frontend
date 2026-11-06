@@ -1,5 +1,7 @@
 import { showToast } from "../../components/toast.js";
 import { moduloService } from "../../services/modulo-service.js";
+import { activityProgressService } from "../../services/activity-progress-service.js?v=2";
+import { storage } from "../../utils/storage.js";
 
 const ICONS = Object.freeze({
     "corpo-humano": "fi fi-br-portrait",
@@ -20,6 +22,8 @@ function progressText(module) {
 }
 
 function createModuleCard(module, index) {
+    const studentId = storage.getSession()?.user?.id;
+    const savedStage = activityProgressService.savedStage(studentId, module.id);
     const card = document.createElement("button");
     card.type = "button";
     card.className = `module-card module-card--${index % 2 === 0 ? "blue" : "green"}`;
@@ -35,7 +39,8 @@ function createModuleCard(module, index) {
 
     const progress = document.createElement("span");
     progress.className = "module-card__progress";
-    progress.textContent = progressText(module);
+    progress.textContent = savedStage ? "Continuar de onde parei" : progressText(module);
+    if (savedStage) card.setAttribute("aria-label", `${module.title}. Continuar de onde parei.`);
 
     const bar = document.createElement("span");
     bar.className = "module-card__bar";
@@ -46,8 +51,8 @@ function createModuleCard(module, index) {
 
     card.append(icon, title, progress, bar);
     card.addEventListener("click", () => {
-        const etapa = module.nextStage ?? 1;
-        const url = `atividade.html?modulo=${encodeURIComponent(module.id)}&etapa=${etapa}`;
+        const etapa = savedStage ?? module.nextStage ?? 1;
+        const url = `atividade.html?modulo=${encodeURIComponent(module.id)}&etapa=${etapa}${savedStage ? "&retomar=1" : ""}`;
         if (window.roarNavigate) {
             window.roarNavigate(url);
         } else {

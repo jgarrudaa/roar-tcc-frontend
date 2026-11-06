@@ -1,10 +1,16 @@
 import { showToast } from "../../components/toast.js";
-import { createActivityController } from "../../features/atividades/atividade-controller.js?v=4";
+import { createActivityController } from "../../features/atividades/atividade-controller.js?v=5";
+import { atividadeService } from "../../services/atividade-service.js";
+import { activityProgressService, activityFingerprint } from "../../services/activity-progress-service.js?v=2";
+
 
 let activeController = null;
 let pageClosed = false;
+let moduleContext = null;
+let stageRequestId = 0;
 window.addEventListener("pagehide", () => {
     pageClosed = true;
+    stageRequestId += 1;
     activeController?.destroy();
 });
 window.addEventListener("pageshow", (event) => {
@@ -120,96 +126,156 @@ function validateElements() {
     }
 }
 
-async function initialize() {
-    try {
-        validateElements();
 
-        const controller =
-            await createActivityController({
-                moduleId,
-                stage,
-                elements,
-            });
+function requestIsCurrent(requestId) {
+    return !pageClosed && requestId === stageRequestId;
+}
 
-        if (!controller || pageClosed) {
-            controller?.destroy();
-            return;
-        }
-        activeController = controller;
-        elements.backButton?.addEventListener("click", (event) => {
-            if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-            event.preventDefault();
-            controller.previous();
-        });
+function activityErrorMessage(error) {
+    if (error?.code === "NETWORK_ERROR") {
+        return "O serviço de atividades não respondeu. Tente novamente ou volte aos módulos.";
+    }
+    if (error?.code === "REQUEST_TIMEOUT" || error?.status === 408) {
+        return "O serviço de atividades demorou para responder. Tente novamente.";
+    }
+    if (error?.status === 503 || error?.status === 502 || error?.status === 404) {
+        return "O serviço de atividades está temporariamente indisponível. Tente novamente ou volte aos módulos.";
+    }
+    if (error?.status === 401) {
+        return "Sua sessão expirou. Entre novamente para continuar.";
+    }
+    return "Não foi possível abrir esta atividade. Tente novamente ou escolha outro módulo.";
+}
 
-        elements.repeatButton
-            .addEventListener(
-                "click",
-                controller.repeatInstruction,
-            );
-
-        elements.nextButton
-            .addEventListener(
-                "click",
-                controller.next,
-            );
-
-        controller.start();
-    } catch (error) {
-        if (pageClosed) return;
-        console.error(
-            "Erro ao abrir atividade:",
-            error,
-        );
-
-        if (elements.stage) {
-            const errorContainer =
-                document.createElement("div");
-
-            const errorTitle =
-                document.createElement("h2");
-
-            const errorDescription =
-                document.createElement("p");
-
-            errorContainer.className =
-                "activity-error";
-
-            errorTitle.textContent =
-                "Não foi possível abrir a atividade";
-
-            errorDescription.textContent =
-                error?.message ||
-                "Ocorreu um erro inesperado.";
-
-            errorContainer.append(
-                errorTitle,
-                errorDescription,
-            );
-
-            elements.stage.replaceChildren(
-                errorContainer,
-            );
-        }
-
-        if (elements.instruction) {
-            elements.setInstruction(
-                "Tente novamente em alguns instantes.",
-            );
-        }
-
-        if (elements.message) {
-            elements.setMessage(
-                "Não se preocupe. Seus dados continuam seguros.",
-            );
-        }
-
-        showToast(
-            error?.message ||
-            "Não foi possível abrir a atividade.",
-            "error",
-        );
+function showLoading() {
+    elements.title.textContent = "Carregando atividade";
+    elements.setInstruction("Preparando a próxima atividade.");
+    elements.setMessage("Aguarde um momento.");
+    elements.nextButton.disabled = true;
+    elements.repeatButton.disabled = true;
+    elements.stage.inert = false;
+    elements.stage.classList.remove("memory-stage", "practice-stage");
+    document.body.classList.remove("is-practice");
+    const status = document.createElement("p");
+    status.className = "activity-loading";
+    status.setAttribute("role", "status");
+    status.textContent = "Carregando atividade...";
+    elements.stage.replaceChildren(status);
+    if (elements.backButton) {
+        elements.backButton.href = "atividades.html";
+        elements.backButton.setAttribute("aria-label", "Voltar aos módulos");
     }
 }
 
-initialize();
+function renderFailure(error, failedStage, requestId) {
+    if (!requestIsCurrent(requestId)) return;
+    activeController?.destroy();
+    activeController = null;
+    // A retry obtains fresh profile/module/settings instead of reusing bad context.
+    moduleContext = null;
+    console.error("Erro ao abrir atividade:", error);
+    const message = activityErrorMessage(error);
+    elements.title.textContent = "Atividade indisponível";
+    elements.setInstruction("Você pode tentar novamente ou voltar aos módulos.");
+    elements.setMessage("Vamos continuar assim que a atividade estiver disponível.");
+    elements.nextButton.disabled = true;
+    elements.repeatButton.disabled = true;
+    elements.stage.inert = false;
+    elements.stage.classList.remove("memory-stage", "practice-stage");
+    document.body.classList.remove("is-practice");
+    if (elements.backButton) {
+        elements.backButton.href = "atividades.html";
+        elements.backButton.setAttribute("aria-label", "Voltar aos módulos");
+    }
+    const panel = document.createElement("section");
+    panel.className = "activity-error activity-error-recovery";
+    const heading = document.createElement("h2");
+    heading.textContent = "Não foi possível abrir a atividade";
+    const description = document.createElement("p");
+    description.textContent = message;
+    const actions = document.createElement("div");
+    actions.className = "activity-error-actions";
+    const retry = document.createElement("button");
+    retry.type = "button";
+    retry.className = "next-button";
+    retry.textContent = "Tentar novamente";
+    retry.addEventListener("click", () => {
+        if (!requestIsCurrent(requestId) || retry.disabled) return;
+        retry.disabled = true;
+        void openStage(failedStage);
+    });
+    const back = document.createElement("a");
+    back.href = "atividades.html";
+    back.className = "activity-error-back";
+    back.textContent = "Voltar aos módulos";
+    actions.append(retry, back);
+    panel.append(heading, description, actions);
+    elements.stage.replaceChildren(panel);
+    showToast(message, "error");
+}
+
+async function openStage(stageToOpen, { resumeRequested = false } = {}) {
+    if (pageClosed) return false;
+    const requestId = ++stageRequestId;
+    let targetStage = stageToOpen;
+    let controller = null;
+    activeController?.destroy();
+    activeController = null;
+    if (!moduleContext) {
+        showLoading();
+    }
+    try {
+        if (!moduleContext) {
+            const loaded = await atividadeService.loadModuleContext(moduleId);
+            if (!requestIsCurrent(requestId)) return false;
+            moduleContext = loaded;
+        }
+        if (resumeRequested) {
+            const draft = activityProgressService.read(moduleContext.student.id, moduleContext.module.id,
+                activityFingerprint(moduleContext));
+            const requestedStageExists = moduleContext.module.activities.some(item => item.order === stageToOpen);
+            targetStage = draft && moduleContext.module.activities.some(item => item.order === draft.stage)
+                ? draft.stage : (!requestedStageExists ? moduleContext.module.activities[0].order : stageToOpen);
+        }
+        controller = await createActivityController({
+            moduleId,
+            stage: targetStage,
+            elements,
+            moduleContext,
+            onStageChange: nextStage => openStage(nextStage),
+        });
+        if (!requestIsCurrent(requestId)) {
+            controller?.destroy();
+            return false;
+        }
+        if (!controller) return false;
+        activeController = controller;
+        const url = new URL(window.location.href);
+        url.searchParams.set("modulo", String(moduleId));
+        url.searchParams.set("etapa", String(targetStage));
+        window.history.replaceState(window.history.state, "", url);
+        controller.start();
+        return true;
+    } catch (error) {
+        if (!requestIsCurrent(requestId)) {
+            controller?.destroy();
+            return false;
+        }
+        renderFailure(error, targetStage, requestId);
+        return false;
+    }
+}
+
+async function initialize() {
+    validateElements();
+    elements.backButton?.addEventListener("click", event => {
+        if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || !activeController) return;
+        event.preventDefault();
+        activeController.previous();
+    });
+    elements.repeatButton.addEventListener("click", () => activeController?.repeatInstruction());
+    elements.nextButton.addEventListener("click", () => activeController?.next());
+    await openStage(stage, { resumeRequested: parameters.get("retomar") === "1" });
+}
+
+void initialize();
