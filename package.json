@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "test": "node tools/run_checks.cjs",
-    "test:browser": "node tools/check_module_practice_browser.cjs && node tools/check_writing_activity_browser.cjs && node tools/check_activity_error_browser.cjs"
+    "test:browser": "node tools/check_module_practice_browser.cjs && node tools/check_writing_activity_browser.cjs && node tools/check_activity_error_browser.cjs",
+    "test:privacy": "node tools/check_student_data_browser.cjs && node tools/check_student_report_browser.cjs"
   },
   "devDependencies": {
     "playwright": "1.64.1",
