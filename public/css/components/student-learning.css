@@ -1,4 +1,5 @@
 .student-game-settings,
+.student-data-management,
 .word-learning-section {
     margin-top: 24px;
     padding: 22px;
@@ -7,6 +8,14 @@
     background: var(--c-card, #fff);
     color: var(--c-text, #1c2837);
 }
+.student-data-management h2 { margin: 0 0 10px; font-size: 1.2rem; }
+.student-data-management p { font-size: .9rem; line-height: 1.6; }
+.student-data-field { display: grid; gap: 8px; font-weight: 600; min-width: 0; }
+.student-data-field select { font: inherit; color: inherit; background: var(--c-card, #fff); min-height: 44px; border: 1px solid var(--c-border, #ccd6e2); border-radius: 8px; padding: 8px; width: 100%; min-width: 0; box-sizing: border-box; }
+.student-data-confirmation { display: flex; align-items: flex-start; gap: 10px; margin-block: 16px; line-height: 1.6; }
+.student-data-confirmation input { margin-top: 6px; min-width: 20px; min-height: 20px; }
+.student-data-management :is(input, select, button):focus-visible { outline: 3px solid #28599a; outline-offset: 3px; }
+.student-data-message { min-height: 1.5em; }
 .student-game-settings h2,
 .word-learning-section h2 { margin: 0 0 10px; font-size: 1.2rem; }
 .student-games-help,

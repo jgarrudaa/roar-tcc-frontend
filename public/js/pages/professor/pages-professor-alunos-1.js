@@ -4,6 +4,7 @@ import { alunoService } from "../../services/aluno-service.js";
 import { showToast } from "../../components/toast.js";
 import { mountStudentGameSettings } from "../../components/student-game-settings.js";
 import { createStudentWordProgress } from "../../components/student-word-progress.js";
+import { mountStudentDataManagement } from "../../components/student-data-management.js";
 
 const LEVEL_STYLES = Object.freeze({
     0: {
@@ -179,6 +180,7 @@ const elements = {
 };
 
 const state = {
+    dataManagement: null,
     gameSettings: null,
     savingGameSettings: false,
     dashboard: null,
@@ -1020,6 +1022,11 @@ async function openStudentModal(
 
     prepareModal(student);
 
+    state.dataManagement?.destroy();
+    state.dataManagement = mountStudentDataManagement(
+        document.getElementById("studentDataManagement"), studentId,
+    );
+
     state.gameSettings?.destroy();
     state.gameSettings = mountStudentGameSettings(
         document.getElementById("studentGameSettings"), studentId,
@@ -1107,6 +1114,9 @@ function closeStudentModal(force = false) {
     );
 
     state.selectedStudent = null;
+    state.dataManagement?.destroy();
+    state.dataManagement = null;
+    document.getElementById("studentDataManagement").replaceChildren();
     state.report = null;
     state.gameSettings?.destroy();
     state.gameSettings = null;

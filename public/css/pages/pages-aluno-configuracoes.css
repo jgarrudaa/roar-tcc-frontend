@@ -174,3 +174,19 @@ html.reduced-motion *,html.reduced-motion *::before,html.reduced-motion *::after
 html.reduced-stimuli .card { box-shadow:none!important; }
 html.reduced-stimuli .fade-in { animation:none!important; }
 button:disabled,select:disabled,input:read-only { cursor:not-allowed;opacity:.65; }
+.data-help-dialog {
+    width: min(540px, calc(100vw - 32px));
+    max-height: calc(100vh - 48px);
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 24px;
+    border: 1px solid var(--c-border, #d9e2eb);
+    border-radius: 16px;
+    background: var(--c-card, #fff);
+    color: var(--c-text, #1c2837);
+    font: inherit;
+    line-height: 1.6;
+}
+.data-help-dialog::backdrop { background: rgb(16 45 82 / 45%); }
+.data-help-dialog h2 { margin-top: 0; font-size: 1.3rem; }
+.data-help-dialog button:focus-visible { outline: 3px solid #28599a; outline-offset: 3px; }

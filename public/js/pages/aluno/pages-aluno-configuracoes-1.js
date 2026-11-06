@@ -285,7 +285,9 @@ function initialize() {
         });
     }
 
-    document.getElementById("btnDados")?.setAttribute("disabled", "");
+    document.getElementById("btnDados")?.addEventListener("click", () => {
+        document.getElementById("dataHelpDialog").showModal();
+    });
 
     document
         .querySelectorAll(
