@@ -51,12 +51,9 @@ export function createBodyPuzzleActivity(context) {
         counter.textContent = `Imagem ${index + 1} de ${activity.cards.length}`;
         root.prepend(title, counter);
         if (context.gameSettings?.showHints !== false) {
-            const help = document.createElement('details');
+         const help = document.createElement('details');
             help.className = 'body-jigsaw-help';
             const summary = document.createElement('summary');
-            summary.textContent = 'Como jogar';
-            const explanation = document.createElement('p');
-            explanation.textContent = 'Arraste cada peça até a sombra correspondente para montar a imagem. Você também pode tocar na peça e depois na sombra. Pelo teclado, use Tab para escolher e Enter ou Espaço para encaixar. Escape cancela a seleção.';
             help.append(summary, explanation);
             help.addEventListener('toggle', () => {
                 if (!destroyed && round === index && help.open) context.onHelp?.(item);

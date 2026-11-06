@@ -88,7 +88,10 @@
 }
 
 @media (max-width: 760px) {
-    .activity-page .association-game { gap: 12px; }
+    .activity-page .association-game {
+        gap: 12px;
+    }
+
     .activity-page .association-prompt-button {
         width: min(280px, 76vw);
         height: clamp(150px, 27vh, 230px);
@@ -160,11 +163,35 @@
     gap: 16px;
     padding: 20px;
 }
-.activity-error-recovery p { max-width: 620px; line-height: 1.6; }
-.activity-error-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
-.activity-error-actions .next-button { min-height: 44px; }
-.activity-error-back { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 16px; color: var(--roar-blue); }
-.activity-error-back:focus-visible { outline: 3px solid var(--roar-blue); outline-offset: 3px; }
+
+.activity-error-recovery p {
+    max-width: 620px;
+    line-height: 1.6;
+}
+
+.activity-error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+}
+
+.activity-error-actions .next-button {
+    min-height: 44px;
+}
+
+.activity-error-back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 16px;
+    color: var(--roar-blue);
+}
+
+.activity-error-back:focus-visible {
+    outline: 3px solid var(--roar-blue);
+    outline-offset: 3px;
+}
 
 @media (max-width: 1024px) {
     .activity-page .activity-home {
@@ -177,5 +204,86 @@
     .activity-page .activity-home {
         width: 44px;
         height: 44px;
+    }
+}
+
+/* Monte o corpo: encaixa o jogo no quadro em telas desktop */
+@media (min-width: 761px) {
+    #activity-stage:has(.shadow-puzzle-game) {
+        overflow-y: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #activity-stage .shadow-puzzle-game {
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        align-content: center;
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    #activity-stage .shadow-puzzle-target {
+        width: min(34vh, 280px);
+        height: min(34vh, 280px);
+        min-width: 0;
+        min-height: 0;
+    }
+
+    #activity-stage .shadow-puzzle-piece {
+        height: min(21vh, 165px);
+    }
+}
+
+#activity-stage .activity-content.module-practice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    width: min(100%, 800px);
+    max-width: 800px;
+    height: auto;
+    min-height: 0;
+    margin-inline: auto;
+}
+
+#activity-stage .module-practice>.practice-card,
+#activity-stage .module-practice>.practice-help,
+#activity-stage .module-practice>.practice-choices {
+    flex: 0 0 auto;
+}
+
+#activity-stage .module-practice>.practice-card {
+    margin: 0 auto;
+}
+
+#activity-stage .module-practice>.practice-help {
+    width: 100%;
+    line-height: 1.4;
+}
+
+
+@keyframes activity-step-enter {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.activity-stage>.activity-content {
+    animation: activity-step-enter 240ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .activity-stage>.activity-content {
+        animation: none;
     }
 }

@@ -221,7 +221,9 @@ async function openStage(stageToOpen, { resumeRequested = false } = {}) {
     let controller = null;
     activeController?.destroy();
     activeController = null;
-    showLoading();
+    if (!moduleContext) {
+        showLoading();
+    }
     try {
         if (!moduleContext) {
             const loaded = await atividadeService.loadModuleContext(moduleId);
