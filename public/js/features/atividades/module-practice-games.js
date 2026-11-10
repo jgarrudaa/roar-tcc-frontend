@@ -17,7 +17,7 @@ function createPracticeActivity(context, kind) {
     ];
     const stateKey = JSON.stringify([kind, dragToCategory, student.supportLevel, student.teaSupportLevel,
         rounds.map(round => [round.item.itemId ?? round.item.id ?? round.item.en,
-            round.item.vectorImage || round.item.realImage, round.category || round.destination])]);
+        round.item.vectorImage || round.item.realImage, round.category || round.destination])]);
     const candidate = context.resumeState;
     const savedState = candidate?.version === 1 && candidate.key === stateKey &&
         Number.isInteger(candidate.index) && candidate.index >= 0 && candidate.index < rounds.length &&
@@ -122,7 +122,7 @@ function createPracticeActivity(context, kind) {
         help.textContent = dragToCategory
             ? "Arraste o cartão até o cesto da cor correspondente. Também pode selecionar o cartão e tocar no cesto."
             : kind === "categories" ? "Toque no cartão para ouvir. Depois escolha um grupo." :
-            `Arraste o cartão ${round.destination === "in" ? "para dentro da caixa" : "para cima da mesa"}. Ou selecione o cartão e depois o destino.`;
+                `Arraste o cartão ${round.destination === "in" ? "para dentro da caixa" : "para cima da mesa"}. Ou selecione o cartão e depois o destino.`;
         const choices = document.createElement("div");
         choices.className = "practice-choices";
         const options = kind === "categories" ? shuffle(activity.groups) : [
@@ -210,7 +210,7 @@ function createPracticeActivity(context, kind) {
             if (context.gameSettings?.showHints !== false) optionContainer.append(dictionary);
             choices.append(optionContainer);
         });
-        content.append(heading, counter, card, help, choices);
+        content.append(counter, card, choices);
         elements.stage.replaceChildren(content);
         if (requiresCardSelection) {
             dragController = createSceneDrag({
