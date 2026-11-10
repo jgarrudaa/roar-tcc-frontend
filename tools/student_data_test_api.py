@@ -18,6 +18,16 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 state = {'requests': 0, 'delay': 0}
 
 
+@app.get('/privacidade/atendimento')
+def privacy_configuration():
+    return jsonify(disponivel=False, responsavel=None, contato=None)
+
+
+@app.get('/professores/alunos/<int:aluno_id>/solicitacoes-dados')
+def privacy_tracking(aluno_id):
+    return jsonify(solicitacoes=[], proximo_cursor=None)
+
+
 @app.post('/__test/control')
 def control():
     options = request.get_json() or {}

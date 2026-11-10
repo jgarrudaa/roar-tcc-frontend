@@ -42,6 +42,8 @@ const server = http.createServer(async (request, response) => {
             })));
             await context.route('**/*', async route => {
                 const url = new URL(route.request().url());
+                if (url.pathname === '/privacidade/atendimento') return route.fulfill({json:{disponivel:false,responsavel:null,contato:null}});
+                if (url.pathname.endsWith('/solicitacoes-dados')) return route.fulfill({json:{solicitacoes:[],proximo_cursor:null}});
                 if (/exportacao-dados$/.test(url.pathname)) {
                     if (route.request().method() === 'GET') {
                         diagnostics.push(route.request().headers());
@@ -151,7 +153,7 @@ const server = http.createServer(async (request, response) => {
             await page.goto(origin+'/pages/aluno/configuracoes.html');
             await page.getByRole('button',{name:'Gerenciar dados',exact:true}).click();
             await page.getByRole('dialog',{name:'Seus dados no ROAR'}).waitFor();
-            assert.equal(await page.locator('#dataHelpDialog').getByText(/professor da sua turma/).isVisible(),true);
+            assert.equal(await page.locator('#dataHelpDialog').getByText(/Para pedir uma cópia/).isVisible(),true);
             await page.keyboard.press('Escape');
             assert.equal(await page.locator('#btnDados').evaluate(node => node === document.activeElement),true);
             assert.deepEqual(errors, []);
