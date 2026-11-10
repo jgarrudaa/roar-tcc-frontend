@@ -12,6 +12,10 @@ const CATEGORY_SETS = [
         { id: "fruit", en: "Fruit", pt: "Frutas", words: ["APPLE", "BANANA", "ORANGE", "GRAPE", "GRAPES", "PEAR", "STRAWBERRY", "WATERMELON"] },
         { id: "vegetables", en: "Vegetables", pt: "Verduras e legumes", words: ["CARROT", "BROCCOLI", "LETTUCE", "POTATO", "ONION", "CABBAGE"] },
     ],
+    [
+        { id: "positive-feelings", en: "Pleasant feelings", pt: "Sentimentos agradáveis", words: ["JOY", "LOVE", "CALM", "ENTHUSIASM", "SURPRISE"] },
+        { id: "challenging-feelings", en: "Difficult feelings", pt: "Sentimentos difíceis", words: ["SADNESS", "FEAR", "ANGER", "ANXIETY", "GUILT", "SHAME", "DISGUST"] },
+    ],
 ];
 
 export function getModulePracticePhases({ activity, module }) {
@@ -45,8 +49,7 @@ export function getModulePracticePhases({ activity, module }) {
     const puzzleTitle = /corpo|body/.test(theme) ? "Monte o corpo"
         : /animais|fazenda|animals|farm/.test(theme) ? "Monte os animais"
             : "Monte as imagens";
-    phases.push({
-        ...activity, type: "bodyPuzzle", puzzleTitle,
+    phases.push({ ...activity, type: "bodyPuzzle", puzzleTitle,
         cards: unique.map(item => ({ item })),
         instruction: `${puzzleTitle}. Arraste cada peça até sua sombra para completar a imagem.`
     });

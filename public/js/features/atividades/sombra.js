@@ -42,7 +42,8 @@ export function createShadowActivity(context) {
     const { activity, elements, onCorrect, onWrong } = context;
     const item = activity.item;
     const puzzle = createShadowPuzzle(getShadowPieceCount(context));
-    const source = String(item.vectorImage || item.realImage || "").trim();
+    const level = Number(context.student?.supportLevel) || 1;
+    const source = String((level === 1 ? (item.realImage || item.vectorImage) : (item.vectorImage || item.realImage)) || "").trim();
     const stateKey = JSON.stringify([item.itemId ?? item.id ?? item.en, source,
         context.student?.supportLevel, context.student?.teaSupportLevel, puzzle.pieces.length]);
     const candidate = context.resumeState;

@@ -10,7 +10,6 @@ const root = path.resolve(__dirname, '..');
 const items = ['COW', 'DUCK', 'HORSE', 'HEN'].map((en, i) => ({
     id: String(i + 1), itemId: i + 1, en, pt: ['vaca', 'pato', 'cavalo', 'galinha'][i],
     vectorImage: `/public/assets/imagens/modulos/fazenda/${en.toLowerCase()}.png`,
-    realImage: `/public/assets/imagens/modulos/fazenda/${en.toLowerCase()}.png`,
 }));
 const fixture = {
     student: { id: 999, supportLevel: 2, supportMode: 'Aprendiz Guiado' },

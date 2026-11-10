@@ -4,9 +4,11 @@ import { audioService } from '../../services/audio-service.js';
 // Reuse the registered images and Jogo das Sombras engine, including profile piece counts.
 export function createBodyPuzzleActivity(context) {
     const { activity, elements } = context;
+    const level = Number(context.student?.supportLevel) || 1;
+    const cardImage = card => String((level === 1 ? (card.item.realImage || card.item.vectorImage) : (card.item.vectorImage || card.item.realImage)) || "").trim();
     const stateKey = JSON.stringify([context.student?.supportLevel, context.student?.teaSupportLevel,
         context.gameSettings?.pieceCount, activity.cards.map(card => [card.item.itemId ?? card.item.id ?? card.item.en,
-            card.item.vectorImage || card.item.realImage])]);
+            cardImage(card)])]);
     const candidate = context.resumeState;
     const savedState = candidate?.version === 1 && candidate.key === stateKey &&
         Number.isInteger(candidate.index) && candidate.index >= 0 && candidate.index < activity.cards.length
