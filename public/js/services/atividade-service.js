@@ -62,6 +62,7 @@ const INTERACTION_TYPES = Object.freeze({
     ordenarfrase: "orderSentence",
     escrita: "writing",
     bancopalavras: "wordBank",
+    separarporcor: "categories",
 });
 
 function requirePositiveInteger(value, fieldName) {
@@ -250,6 +251,46 @@ function normalizeActivity(rawActivity) {
         );
     }
 
+    let groups = [];
+    let cards = [];
+    if (engineType === "categories") {
+        groups = (rawActivity?.grupos || []).map(group => ({
+            id: normalizeText(group?.id),
+            en: normalizeText(group?.palavra_en).toLocaleUpperCase("en-US"),
+            pt: normalizeText(group?.palavra_pt),
+        }));
+        const groupsById = new Map(groups.map(group => [group.id, group]));
+        cards = (rawActivity?.cartoes || []).map(card => {
+            const group = groupsById.get(normalizeText(card?.grupo));
+            const image = normalizeMediaUrl(card?.url_imagem);
+            const itemId = requirePositiveInteger(card?.id, "cartao.id");
+            const englishWord = normalizeText(card?.palavra_en)
+                .toLocaleUpperCase("en-US");
+
+            if (!group || !englishWord || !image) {
+                throw new Error("A atividade de categorias possui um cartão incompleto.");
+            }
+
+            return Object.freeze({
+                item: Object.freeze({
+                    id: `category-card:${itemId}`,
+                    itemId,
+                    order: requirePositiveInteger(card?.ordem, "cartao.ordem"),
+                    en: englishWord,
+                    pt: normalizeText(card?.palavra_pt, "Objeto"),
+                    realImage: image,
+                    vectorImage: image,
+                    progressWord: group.en,
+                }),
+                category: group.id,
+            });
+        });
+
+        if (groups.length < 2 || cards.length < 2) {
+            throw new Error("A atividade de categorias não possui grupos e cartões suficientes.");
+        }
+    }
+
     return Object.freeze({
         id: String(activityId),
         activityId,
@@ -272,6 +313,12 @@ function normalizeActivity(rawActivity) {
 
         type: engineType,
         originalType: originalInteractionType,
+        ...(engineType === "categories" ? {
+            title: "Associe o objeto à cor",
+            groups,
+            cards,
+            dragToCategory: true,
+        } : {}),
 
         learningMode: normalizeText(
             rawActivity?.modo_alvo,
@@ -469,6 +516,12 @@ function createActivity(
         instruction: selectedActivity.instruction,
         answer: selectedActivity.answer || item.en,
         status: "active",
+        ...(selectedActivity.type === "categories" ? {
+            title: selectedActivity.title,
+            groups: selectedActivity.groups,
+            cards: selectedActivity.cards,
+            dragToCategory: selectedActivity.dragToCategory,
+        } : {}),
 
         /*
          * Este precisa ser um item de vocabulário.

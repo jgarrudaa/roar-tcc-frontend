@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="title desc">
+  <title id="title">Green leaf</title><desc id="desc">A large green leaf with a central vein.</desc>
+  <ellipse cx="160" cy="208" rx="79" ry="12" fill="#dce9f5"/>
+  <path d="M71 175C78 93 141 47 253 49c-4 101-56 153-139 150-17 0-31-8-43-24Z" fill="#58c98b" stroke="#238353" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M76 180c53-47 103-81 165-113M123 139l-4-43M158 116l31-38M113 151l35 11M178 109l37 8" fill="none" stroke="#238353" stroke-width="6" stroke-linecap="round"/>
+  <path d="M99 151c24-42 70-73 120-87" fill="none" stroke="#b6f1cf" stroke-width="10" stroke-linecap="round" opacity=".6"/>
+</svg>

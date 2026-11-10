@@ -41,28 +41,8 @@ export function createBodyPuzzleActivity(context) {
             },
         });
         engine.start();
-        const root = elements.stage.querySelector('.shadow-game');
-        root.classList.add('body-jigsaw');
-        const title = document.createElement('h2');
-        title.className = 'body-jigsaw-title';
-        title.textContent = activity.puzzleTitle || activity.title || 'Monte o corpo';
-        const counter = document.createElement('p');
-        counter.className = 'body-jigsaw-round';
-        counter.textContent = `Imagem ${index + 1} de ${activity.cards.length}`;
-        root.prepend(title, counter);
-        if (context.gameSettings?.showHints !== false) {
-         const help = document.createElement('details');
-            help.className = 'body-jigsaw-help';
-            const summary = document.createElement('summary');
-            summary.textContent = 'Como jogar';
-            const explanation = document.createElement('p');
-            explanation.textContent = 'Escolha uma peça e arraste até a sombra com o mesmo formato. Repita para montar a imagem. Você também pode tocar na peça e na sombra, ou usar Tab e Enter. Use “Mostrar dica” para encontrar o encaixe da peça selecionada.';
-            help.append(summary, explanation);
-            help.addEventListener('toggle', () => {
-                if (!destroyed && round === index && help.open) context.onHelp?.(item);
-            }, { signal: helpListeners.signal });
-            root.append(help);
-        }
+  
+       
 
         elements.stage.scrollTop = 0;
     }

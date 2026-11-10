@@ -37,6 +37,39 @@ export function itemPictogram(word) {
 }
 
 export function categoryPictogram(id) {
+
+    const colorSwatches = {
+        "color-red": "#F36B67",
+        "color-blue": "#55A8F5",
+        "color-yellow": "#FFD45E",
+        "color-green": "#58C98B",
+        "color-orange": "#FF9B55",
+        "color-purple": "#A980E8",
+    };
+
+    if (colorSwatches[id]) {
+        const fill = colorSwatches[id];
+
+        return svg(`
+        <circle
+            cx="60"
+            cy="70"
+            r="38"
+            fill="${fill}"
+            stroke="#173F75"
+            stroke-width="7"
+        />
+        <ellipse
+            cx="48"
+            cy="56"
+            rx="13"
+            ry="7"
+            fill="#fff"
+            opacity=".35"
+            transform="rotate(-30 48 56)"
+        />
+    `);
+    }
     if (id === 'limbs') return bodyPictogram(['arm', 'hand', 'leg', 'foot']);
     if (id === 'head-torso') return bodyPictogram(['head', 'neck', 'torso']);
     const drawings = {

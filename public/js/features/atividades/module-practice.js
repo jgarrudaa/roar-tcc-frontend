@@ -19,21 +19,9 @@ export function getModulePracticePhases({ activity, module }) {
     const unique = [...new Map(usable.map(item => [item.en.trim().toUpperCase(), item])).values()];
     if (!unique.length) return [];
     const moduleName = module.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-    if (moduleName.includes('fazenda')) {
-        const phases = [
-            { ...activity, type: 'animalPuzzle', title: 'Monte os animais',
-                cards: unique.map(item => ({ item })), instruction:
-                'Monte os animais. Arraste cada peça até sua sombra para completar a imagem.' },
-            { ...activity, type: 'vocabularyPractice', practiceType: 'audioImage', cards: unique,
-                title: 'Ouça e encontre o animal', instruction: 'Ouça e escolha o animal.' },
-            { ...activity, type: 'vocabularyPractice', practiceType: 'associate', cards: unique,
-                title: 'Associe o animal à palavra', instruction:
-                'Observe o animal e escolha a palavra em inglês.' },
-        ];
-        phases.push({ ...activity, type: 'vocabularyReview', cards: unique, instruction:
-            'Revise os animais. Toque em cada imagem para ouvir a palavra em inglês.' });
-        return phases;
-    }
+    if (moduleName === "cores") return [];
+    
+
     const phases = [];
     for (const groups of CATEGORY_SETS) {
         const members = groups.map(group => unique.filter(item => group.words.includes(item.en.trim().toUpperCase())));
@@ -45,8 +33,10 @@ export function getModulePracticePhases({ activity, module }) {
                 if (items[index]) cards.push({ item: items[index], category: groups[groupIndex].id });
             });
         }
-        phases.push({ ...activity, type: "categories", groups, cards,
-            instruction: "Separe por categorias. Escolha o grupo de cada cartão." });
+        phases.push({
+            ...activity, type: "categories", groups, cards,
+            instruction: "Separe por categorias. Escolha o grupo de cada cartão."
+        });
         break;
     }
     // Every theme shares the same puzzle, controls and progression. Only its
@@ -55,8 +45,10 @@ export function getModulePracticePhases({ activity, module }) {
     const puzzleTitle = /corpo|body/.test(theme) ? "Monte o corpo"
         : /animais|fazenda|animals|farm/.test(theme) ? "Monte os animais"
             : "Monte as imagens";
-    phases.push({ ...activity, type: "bodyPuzzle", puzzleTitle,
+    phases.push({
+        ...activity, type: "bodyPuzzle", puzzleTitle,
         cards: unique.map(item => ({ item })),
-        instruction: `${puzzleTitle}. Arraste cada peça até sua sombra para completar a imagem.` });
+        instruction: `${puzzleTitle}. Arraste cada peça até sua sombra para completar a imagem.`
+    });
     return phases;
 }
