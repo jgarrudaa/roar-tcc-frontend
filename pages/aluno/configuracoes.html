@@ -261,7 +261,7 @@
                                 <div class="config-row">
                                     <div class="config-row__left">
                                         <div class="config-row__label">Gerenciar dados</div>
-                                        <div class="config-row__desc">Exportar ou excluir seus dados</div>
+                                        <div class="config-row__desc">Como solicitar uma cópia ou correção dos seus dados</div>
                                     </div>
                                     <button class="btn btn--ghost btn--sm" id="btnDados"
                                         aria-label="Gerenciar dados">Gerenciar</button>
@@ -294,12 +294,19 @@
         </div>
     </div>
 
+    <dialog id="dataHelpDialog" class="data-help-dialog" aria-labelledby="dataHelpTitle">
+        <h2 id="dataHelpTitle">Seus dados no ROAR</h2>
+        <p>Para pedir uma cópia do seu cadastro e do histórico das atividades, fale com o professor da sua turma.</p>
+        <p>O professor conferirá a identidade de quem fez o pedido. Se o pedido vier de um responsável, também precisará verificar o vínculo e a autorização.</p>
+        <p>Avise o professor se encontrar algum dado incorreto. Pedidos de exclusão precisam ser avaliados pela instituição. Desativar a conta mantém o histórico armazenado.</p>
+        <form method="dialog"><button class="btn btn--primary" autofocus>Entendi</button></form>
+    </dialog>
     <div id="toast-container"></div>
     <script type="module" src="../../public/js/pages/auth/route-guard.js"></script>
     <script src="../../public/js/roar-page-transition.js"></script>
     <script type="module" src="../../public/js/roar-sidebar.js"></script>
     <script src="../../public/js/roar-avatar.js"></script>
-    <script type="module" src="../../public/js/pages/aluno/pages-aluno-configuracoes-1.js"></script>
+    <script type="module" src="../../public/js/pages/aluno/pages-aluno-configuracoes-1.js?v=2"></script>
 </body>
 
 </html>

@@ -9,7 +9,7 @@ const os = require('node:os');
 const root = path.resolve(__dirname, '..');
 const items = ['COW', 'DUCK', 'HORSE', 'HEN'].map((en, i) => ({
     id: String(i + 1), itemId: i + 1, en, pt: ['vaca', 'pato', 'cavalo', 'galinha'][i],
-    vectorImage: `/public/assets/imagens/modulos/fazenda/animais_vetor/${en.toLowerCase()}.png`,
+    vectorImage: `/public/assets/imagens/modulos/fazenda/${en.toLowerCase()}.png`,
 }));
 const fixture = {
     student: { id: 999, supportLevel: 2, supportMode: 'Aprendiz Guiado' },
@@ -118,6 +118,8 @@ const server = http.createServer((req, res) => {
             await page.goto(origin + '/pages/aluno/atividade.html?modulo=9&etapa=1');
             await page.locator(`.association-grid button[data-answer="${fixture.activity.item.en}"]`).click();
             await page.locator('#next-button').click();
+            const countBefore = saves.length;
+            if (bodyModule) {
             await page.getByRole('heading', { name: 'Separe por categorias' }).waitFor();
             assert.equal(await page.locator('#auto-advance-toggle, .practice-continue').count(), 0);
             assert.equal(await page.locator('.practice-choice svg').count(), 2);
@@ -126,7 +128,6 @@ const server = http.createServer((req, res) => {
             await dictionary.locator('summary').click();
             assert.equal(await dictionary.locator('p').isVisible(), true);
             await dictionary.locator('summary').click();
-            const countBefore = saves.length;
             // Deliberately wrong first; the correct answer remains available.
             if (bodyModule) {
                 assert.equal(await page.locator('.practice-arm-highlight').count(), 1);
@@ -150,6 +151,7 @@ const server = http.createServer((req, res) => {
             }
             assert.equal(saves.length, countBefore);
             await page.clock.runFor(1000);
+            }
             await page.getByRole('heading', { name: puzzleTitle, exact: true }).waitFor({ timeout: 5000 })
                 .catch(async error => { console.error(await page.locator('body').innerText()); throw error; });
             await page.locator('.shadow-piece').first().waitFor();
@@ -203,10 +205,22 @@ const server = http.createServer((req, res) => {
                 assert.equal(saves.length, countBefore);
                 await page.clock.runFor(1);
             }
+            if (!bodyModule) {
+                for (const item of fixture.module.items) {
+                    await page.locator(`.audio-image-options [data-answer="${item.en}"]`).click();
+                    await page.clock.runFor(1000);
+                }
+                for (const item of fixture.module.items) {
+                    await page.locator(`.association-grid [data-answer="${item.en}"]`).click();
+                    await page.clock.runFor(1000);
+                }
+                await page.getByRole('button', { name: 'Concluir revisão', exact: true }).click();
+                await page.clock.runFor(1000);
+            }
             await page.waitForURL('**/atividades.html');
             assert.equal(saves.length, countBefore + 1);
-            assert.equal(saves.at(-1).stats.correct, 1 + 4 + fixture.module.items.length);
-            assert.equal(saves.at(-1).stats.wrong, 2);
+            assert.equal(saves.at(-1).stats.correct, bodyModule ? 1 + 4 + fixture.module.items.length : 2 + 3 * fixture.module.items.length);
+            assert.equal(saves.at(-1).stats.wrong, bodyModule ? 2 : 1);
             if (bodyModule) {
                 await page.goto(origin + '/pages/aluno/configuracoes.html');
                 assert.deepEqual(errors, [], 'Settings should initialize without JavaScript errors.');

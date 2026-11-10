@@ -133,6 +133,124 @@
       ]
     },
     {
+      "id": "sentimentos",
+      "title": "Sentimentos",
+      "titleEn": "Feelings",
+      "status": "active",
+      "items": [
+        {
+          "id": "alegria",
+          "pt": "alegria",
+          "en": "JOY",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/alegria.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/alegria.png"
+        },
+        {
+          "id": "amor",
+          "pt": "amor",
+          "en": "LOVE",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/amor.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/amor.png"
+        },
+        {
+          "id": "ansiedade",
+          "pt": "ansiedade",
+          "en": "ANXIETY",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/ansiedade.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/ansiedade.png"
+        },
+        {
+          "id": "calma",
+          "pt": "calma",
+          "en": "CALM",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/calma.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/calma.png"
+        },
+        {
+          "id": "culpa",
+          "pt": "culpa",
+          "en": "GUILT",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/culpa.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/culpa.png"
+        },
+        {
+          "id": "entusiasmo",
+          "pt": "entusiasmo",
+          "en": "ENTHUSIASM",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/entusiasmo.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/entusiasmo.png"
+        },
+        {
+          "id": "medo",
+          "pt": "medo",
+          "en": "FEAR",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/medo.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/medo.png"
+        },
+        {
+          "id": "nojo",
+          "pt": "nojo",
+          "en": "DISGUST",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/nojo.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/nojo.png"
+        },
+        {
+          "id": "raiva",
+          "pt": "raiva",
+          "en": "ANGER",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/raiva.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/raiva.png"
+        },
+        {
+          "id": "surpresa",
+          "pt": "surpresa",
+          "en": "SURPRISE",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/surpresa.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/surpresa.png"
+        },
+        {
+          "id": "tristeza",
+          "pt": "tristeza",
+          "en": "SADNESS",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/tristeza.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/tristeza.png"
+        },
+        {
+          "id": "vergonha",
+          "pt": "vergonha",
+          "en": "SHAME",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/vergonha.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/vergonha.png"
+        }
+      ],
+      "activities": [
+        {
+          "id": "sentimentos-1",
+          "stage": 1,
+          "type": "recognize",
+          "status": "active"
+        },
+        {
+          "id": "sentimentos-2",
+          "stage": 2,
+          "type": "associate",
+          "status": "active"
+        },
+        {
+          "id": "sentimentos-3",
+          "stage": 3,
+          "type": "validate",
+          "status": "active"
+        },
+        {
+          "id": "sentimentos-4",
+          "stage": 4,
+          "type": "shadowPuzzle",
+          "status": "active"
+        }
+      ]
+    },
+    {
       "id": "cores",
       "title": "Cores",
       "status": "preparing",
@@ -142,9 +260,78 @@
     {
       "id": "emocoes",
       "title": "Emoções",
-      "status": "preparing",
-      "items": [],
-      "activities": []
+      "titleEn": "Emotions",
+      "status": "active",
+      "items": [
+        {
+          "id": "alegria",
+          "pt": "alegria",
+          "en": "JOY",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/alegria.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/alegria.png"
+        },
+        {
+          "id": "tristeza",
+          "pt": "tristeza",
+          "en": "SADNESS",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/tristeza.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/tristeza.png"
+        },
+        {
+          "id": "raiva",
+          "pt": "raiva",
+          "en": "ANGER",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/raiva.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/raiva.png"
+        },
+        {
+          "id": "medo",
+          "pt": "medo",
+          "en": "FEAR",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/medo.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/medo.png"
+        },
+        {
+          "id": "amor",
+          "pt": "amor",
+          "en": "LOVE",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/amor.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/amor.png"
+        },
+        {
+          "id": "calma",
+          "pt": "calma",
+          "en": "CALM",
+          "realImage": "/public/assets/imagens/modulos/sentimentos/sentimento_real/calma.png",
+          "vectorImage": "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/calma.png"
+        }
+      ],
+      "activities": [
+        {
+          "id": "emocoes-1",
+          "stage": 1,
+          "type": "recognize",
+          "status": "active"
+        },
+        {
+          "id": "emocoes-2",
+          "stage": 2,
+          "type": "associate",
+          "status": "active"
+        },
+        {
+          "id": "emocoes-3",
+          "stage": 3,
+          "type": "validate",
+          "status": "active"
+        },
+        {
+          "id": "emocoes-4",
+          "stage": 4,
+          "type": "shadowPuzzle",
+          "status": "active"
+        }
+      ]
     },
     {
       "id": "comida",

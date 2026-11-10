@@ -12,12 +12,32 @@ const CATEGORY_SETS = [
         { id: "fruit", en: "Fruit", pt: "Frutas", words: ["APPLE", "BANANA", "ORANGE", "GRAPE", "GRAPES", "PEAR", "STRAWBERRY", "WATERMELON"] },
         { id: "vegetables", en: "Vegetables", pt: "Verduras e legumes", words: ["CARROT", "BROCCOLI", "LETTUCE", "POTATO", "ONION", "CABBAGE"] },
     ],
+    [
+        { id: "positive-feelings", en: "Pleasant feelings", pt: "Sentimentos agradáveis", words: ["JOY", "LOVE", "CALM", "ENTHUSIASM", "SURPRISE"] },
+        { id: "challenging-feelings", en: "Difficult feelings", pt: "Sentimentos difíceis", words: ["SADNESS", "FEAR", "ANGER", "ANXIETY", "GUILT", "SHAME", "DISGUST"] },
+    ],
 ];
 
 export function getModulePracticePhases({ activity, module }) {
     const usable = module.items.filter(item => item.en && (item.realImage || item.vectorImage));
     const unique = [...new Map(usable.map(item => [item.en.trim().toUpperCase(), item])).values()];
     if (!unique.length) return [];
+    const moduleName = module.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    if (moduleName.includes('fazenda')) {
+        const phases = [
+            { ...activity, type: 'animalPuzzle', title: 'Monte os animais',
+                cards: unique.map(item => ({ item })), instruction:
+                'Monte os animais. Arraste cada peça até sua sombra para completar a imagem.' },
+            { ...activity, type: 'vocabularyPractice', practiceType: 'audioImage', cards: unique,
+                title: 'Ouça e encontre o animal', instruction: 'Ouça e escolha o animal.' },
+            { ...activity, type: 'vocabularyPractice', practiceType: 'associate', cards: unique,
+                title: 'Associe o animal à palavra', instruction:
+                'Observe o animal e escolha a palavra em inglês.' },
+        ];
+        phases.push({ ...activity, type: 'vocabularyReview', cards: unique, instruction:
+            'Revise os animais. Toque em cada imagem para ouvir a palavra em inglês.' });
+        return phases;
+    }
     const phases = [];
     for (const groups of CATEGORY_SETS) {
         const members = groups.map(group => unique.filter(item => group.words.includes(item.en.trim().toUpperCase())));
@@ -38,7 +58,8 @@ export function getModulePracticePhases({ activity, module }) {
     const theme = String(module.title || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     const puzzleTitle = /corpo|body/.test(theme) ? "Monte o corpo"
         : /animais|fazenda|animals|farm/.test(theme) ? "Monte os animais"
-            : "Monte as imagens";
+        : /sentimento|emoco|feeling|emotion/.test(theme) ? "Monte os sentimentos"
+        : "Monte as imagens";
     phases.push({ ...activity, type: "bodyPuzzle", puzzleTitle,
         cards: unique.map(item => ({ item })),
         instruction: `${puzzleTitle}. Arraste cada peça até sua sombra para completar a imagem.` });

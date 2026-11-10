@@ -25,8 +25,8 @@ const ROAR = {
 
         recent: [
             { name: 'Corpo Humano', cat: 'Vocabulário', xp: 50, icon: 'fi fi-br-portrait', color: 'a' },
-            { name: 'Cores',        cat: 'Vocabulário', xp: 40, icon: 'fi fi-br-palette',  color: 'b' },
-            { name: 'Emoções',      cat: 'Vocabulário', xp: 35, icon: 'fi fi-br-grin-alt', color: 'b' },
+            { name: 'Animais da Fazenda', cat: 'Vocabulário', xp: 40, icon: 'fi fi-br-paw', color: 'b' },
+            { name: 'Sentimentos',  cat: 'Vocabulário', xp: 35, icon: 'fi fi-br-grin-alt', color: 'a' },
         ]
     },
 

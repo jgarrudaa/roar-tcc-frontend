@@ -37,6 +37,21 @@ const MODULE_PRESENTATION = Object.freeze({
         color: "b",
     },
 
+    sentimentos: {
+        icon: "fi fi-br-grin-alt",
+        color: "a",
+    },
+
+    sentimento: {
+        icon: "fi fi-br-grin-alt",
+        color: "a",
+    },
+
+    "sentimentos e emoções": {
+        icon: "fi fi-br-grin-alt",
+        color: "a",
+    },
+
     comida: {
         icon: "fi fi-br-hamburger",
         color: "b",

@@ -6,6 +6,7 @@ const vm = require('node:vm');
 function loadModule(relativePath) {
     const source = fs.readFileSync(path.join(__dirname, relativePath), 'utf8')
         .replace(/^import .*;\r?\n/gm, '')
+        .replace(/import\.meta\.url/g, JSON.stringify('http://localhost/public/js/services/atividade-service.js'))
         .replace(/^export /gm, '');
     const context = vm.createContext({});
     vm.runInContext(source, context);

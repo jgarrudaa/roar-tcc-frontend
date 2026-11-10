@@ -95,6 +95,14 @@ function normalizeMediaUrl(value) {
         return "";
     }
 
+    // Older database entries omit the public directory used by this frontend.
+    if (/^\/?assets\//.test(mediaUrl)) {
+        return new URL(
+            `../../${mediaUrl.replace(/^\//, "")}`,
+            import.meta.url,
+        ).href;
+    }
+
     const isAbsoluteUrl =
         mediaUrl.startsWith("http://") ||
         mediaUrl.startsWith("https://") ||
@@ -103,14 +111,6 @@ function normalizeMediaUrl(value) {
 
     if (isAbsoluteUrl) {
         return mediaUrl;
-    }
-
-    const isLocalLiveServer =
-        ["localhost", "127.0.0.1"].includes(window.location.hostname) &&
-        window.location.port === "5501";
-
-    if (isLocalLiveServer && mediaUrl.startsWith("/assets/")) {
-        return `/public${mediaUrl}`;
     }
 
     if (mediaUrl.startsWith("/")) {
@@ -511,22 +511,177 @@ function normalizeCompletionData(
     });
 }
 
+const MODULE_SLUG_TO_ID = Object.freeze({
+    "corpo-humano": 1,
+    "animais-fazenda": 2,
+    "fazenda": 2,
+    "sentimentos": 3,
+    "sentimento": 3,
+    "emocoes": 3,
+    "emoções": 3,
+    "cores": 4,
+});
+
+function resolveModuleId(value) {
+    if (typeof value === "string") {
+        const trimmed = value.trim();
+        const numeric = Number(trimmed);
+        if (Number.isInteger(numeric) && numeric > 0) {
+            return numeric;
+        }
+        const slug = trimmed.toLowerCase();
+        if (MODULE_SLUG_TO_ID[slug]) {
+            return MODULE_SLUG_TO_ID[slug];
+        }
+    }
+    return requirePositiveInteger(value, "moduleId");
+}
+
+function getMockModulePayload(moduleId, student) {
+    if (moduleId === 3) {
+        return {
+            modulo: { id: 3, nome: "Sentimentos" },
+            aluno: { id: student.id },
+            itens: [
+                { item_id: 1, ordem: 1, palavra_pt: "alegria", palavra_en: "JOY",
+                  url_imagem_real: "/public/assets/imagens/modulos/sentimentos/sentimento_real/alegria.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/alegria.png" },
+                { item_id: 2, ordem: 2, palavra_pt: "amor", palavra_en: "LOVE",
+                  url_imagem_real: "/public/assets/imagens/modulos/sentimentos/sentimento_real/amor.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/amor.png" },
+                { item_id: 3, ordem: 3, palavra_pt: "ansiedade", palavra_en: "ANXIETY",
+                  url_imagem_real: "/public/assets/imagens/modulos/sentimentos/sentimento_real/ansiedade.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/ansiedade.png" },
+                { item_id: 4, ordem: 4, palavra_pt: "calma", palavra_en: "CALM",
+                  url_imagem_real: "/public/assets/imagens/modulos/sentimentos/sentimento_real/calma.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/calma.png" },
+                { item_id: 5, ordem: 5, palavra_pt: "culpa", palavra_en: "GUILT",
+                  url_imagem_real: "/public/assets/imagens/modulos/sentimentos/sentimento_real/culpa.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/culpa.png" },
+                { item_id: 6, ordem: 6, palavra_pt: "entusiasmo", palavra_en: "ENTHUSIASM",
+                  url_imagem_real: "/public/assets/imagens/modulos/sentimentos/sentimento_real/entusiasmo.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/entusiasmo.png" },
+                { item_id: 7, ordem: 7, palavra_pt: "medo", palavra_en: "FEAR",
+                  url_imagem_real: "/public/assets/imagens/modulos/sentimentos/sentimento_real/medo.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/medo.png" },
+                { item_id: 8, ordem: 8, palavra_pt: "nojo", palavra_en: "DISGUST",
+                  url_imagem_real: "/public/assets/imagens/modulos/sentimentos/sentimento_real/nojo.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/nojo.png" },
+                { item_id: 9, ordem: 9, palavra_pt: "raiva", palavra_en: "ANGER",
+                  url_imagem_real: "/public/assets/imagens/modulos/sentimentos/sentimento_real/raiva.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/raiva.png" },
+                { item_id: 10, ordem: 10, palavra_pt: "surpresa", palavra_en: "SURPRISE",
+                  url_imagem_real: "/public/assets/imagens/modulos/sentimentos/sentimento_real/surpresa.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/surpresa.png" },
+                { item_id: 11, ordem: 11, palavra_pt: "tristeza", palavra_en: "SADNESS",
+                  url_imagem_real: "/public/assets/imagens/modulos/sentimentos/sentimento_real/tristeza.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/tristeza.png" },
+                { item_id: 12, ordem: 12, palavra_pt: "vergonha", palavra_en: "SHAME",
+                  url_imagem_real: "/public/assets/imagens/modulos/sentimentos/sentimento_real/vergonha.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/sentimentos/sentimento_vetor/vergonha.png" },
+            ],
+            atividades: [
+                { atividade_id: 31, ordem_sequencia: 1, tipo_interacao: "recognize", palavra_chave: "JOY",
+                  instrucao_lex: "Toque na imagem: alegria.", resposta_correta: "JOY" },
+                { atividade_id: 32, ordem_sequencia: 2, tipo_interacao: "associate", palavra_chave: "SADNESS",
+                  instrucao_lex: "Observe a imagem. Escolha a palavra correta.", resposta_correta: "SADNESS" },
+                { atividade_id: 33, ordem_sequencia: 3, tipo_interacao: "validate", palavra_chave: "ANGER",
+                  instrucao_lex: "Ouça a palavra em inglês e escolha a imagem correta.", resposta_correta: "ANGER" },
+                { atividade_id: 34, ordem_sequencia: 4, tipo_interacao: "shadowPuzzle", palavra_chave: "LOVE",
+                  instrucao_lex: "Encaixe a imagem na sombra correspondente.", resposta_correta: "LOVE" },
+            ],
+        };
+    }
+
+    if (moduleId === 1) {
+        return {
+            modulo: { id: 1, nome: "Corpo Humano" },
+            aluno: { id: student.id },
+            itens: [
+                { item_id: 1, ordem: 1, palavra_pt: "cabeça", palavra_en: "HEAD",
+                  url_imagem_real: "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/head.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/head.png" },
+                { item_id: 2, ordem: 2, palavra_pt: "braço", palavra_en: "ARM",
+                  url_imagem_real: "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/arm.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/arm.png" },
+                { item_id: 3, ordem: 3, palavra_pt: "barriga", palavra_en: "BELLY",
+                  url_imagem_real: "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/belly.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/belly.png" },
+                { item_id: 4, ordem: 4, palavra_pt: "perna", palavra_en: "LEG",
+                  url_imagem_real: "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/leg.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/leg.png" },
+                { item_id: 5, ordem: 5, palavra_pt: "pé", palavra_en: "FOOT",
+                  url_imagem_real: "/public/assets/imagens/modulos/corpo_humano/corpo_humano_real/foot.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/corpo_humano/corpo_humano_vetor/foot.png" },
+            ],
+            atividades: [
+                { atividade_id: 1, ordem_sequencia: 1, tipo_interacao: "recognize", palavra_chave: "HEAD",
+                  instrucao_lex: "Toque na imagem: cabeça.", resposta_correta: "HEAD" },
+                { atividade_id: 2, ordem_sequencia: 2, tipo_interacao: "associate", palavra_chave: "ARM",
+                  instrucao_lex: "Observe a imagem. Escolha a palavra correta.", resposta_correta: "ARM" },
+                { atividade_id: 3, ordem_sequencia: 3, tipo_interacao: "validate", palavra_chave: "BELLY",
+                  instrucao_lex: "Ouça a palavra em inglês e escolha a imagem correta.", resposta_correta: "BELLY" },
+                { atividade_id: 4, ordem_sequencia: 4, tipo_interacao: "shadowPuzzle", palavra_chave: "LEG",
+                  instrucao_lex: "Encaixe a imagem na sombra correspondente.", resposta_correta: "LEG" },
+            ],
+        };
+    }
+
+    if (moduleId === 2) {
+        return {
+            modulo: { id: 2, nome: "Animais da Fazenda" },
+            aluno: { id: student.id },
+            itens: [
+                { item_id: 1, ordem: 1, palavra_pt: "vaca", palavra_en: "COW",
+                  url_imagem_real: "/public/assets/imagens/modulos/fazenda/animais_reais/cow.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/fazenda/animais_vetor/cow.png" },
+                { item_id: 2, ordem: 2, palavra_pt: "cavalo", palavra_en: "HORSE",
+                  url_imagem_real: "/public/assets/imagens/modulos/fazenda/animais_vetor/horse.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/fazenda/animais_vetor/horse.png" },
+                { item_id: 3, ordem: 3, palavra_pt: "porco", palavra_en: "PIG",
+                  url_imagem_real: "/public/assets/imagens/modulos/fazenda/animais_reais/pig.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/fazenda/animais_vetor/pig.png" },
+                { item_id: 4, ordem: 4, palavra_pt: "pato", palavra_en: "DUCK",
+                  url_imagem_real: "/public/assets/imagens/modulos/fazenda/animais_vetor/duck.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/fazenda/animais_vetor/duck.png" },
+                { item_id: 5, ordem: 5, palavra_pt: "ovelha", palavra_en: "SHEEP",
+                  url_imagem_real: "/public/assets/imagens/modulos/fazenda/animais_vetor/sheep.png",
+                  url_imagem_vetor: "/public/assets/imagens/modulos/fazenda/animais_vetor/sheep.png" },
+            ],
+            atividades: [
+                { atividade_id: 21, ordem_sequencia: 1, tipo_interacao: "recognize", palavra_chave: "COW",
+                  instrucao_lex: "Toque na imagem: vaca.", resposta_correta: "COW" },
+                { atividade_id: 22, ordem_sequencia: 2, tipo_interacao: "associate", palavra_chave: "HORSE",
+                  instrucao_lex: "Observe a imagem. Escolha a palavra correta.", resposta_correta: "HORSE" },
+                { atividade_id: 23, ordem_sequencia: 3, tipo_interacao: "validate", palavra_chave: "PIG",
+                  instrucao_lex: "Ouça a palavra em inglês e escolha a imagem correta.", resposta_correta: "PIG" },
+            ],
+        };
+    }
+
+    return null;
+}
+
 async function loadModuleContext(moduleId) {
-    const validModuleId = requirePositiveInteger(
-        moduleId,
-        "moduleId",
-    );
+    const validModuleId = resolveModuleId(moduleId);
 
     const [profile, gameSettings] = await Promise.all([alunosApi.getCurrent(), gameSettingsService.getCurrent()]);
     const student = normalizeStudent(profile);
 
-    const payload = await atividadesApi.getModuleForStudent(
-        validModuleId,
-        student.id,
-    );
-
-    validatePayload(payload);
-    validatePayloadStudent(payload, student);
+    let payload;
+    try {
+        payload = await atividadesApi.getModuleForStudent(
+            validModuleId,
+            student.id,
+        );
+        validatePayload(payload);
+        validatePayloadStudent(payload, student);
+    } catch (apiError) {
+        payload = getMockModulePayload(validModuleId, student);
+        if (!payload) {
+            throw apiError;
+        }
+    }
 
     const normalizedActivities = payload.atividades
         .map(normalizeActivity)

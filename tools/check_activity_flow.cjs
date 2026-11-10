@@ -79,7 +79,7 @@ async function fixture({ type = 'recognize', level = 1, index = 1, items = [], p
             complete: (id, stats) => { requests.push({ id, stats }); return complete(id, stats); } },
     };
     for (const name of ['Associate', 'Recognize', 'Validate', 'AudioImage', 'TrueFalse',
-        'Memory', 'CompleteSentence', 'OrderSentence', 'Writing', 'WordBank', 'ShadowPuzzle', 'Shadow', 'Categories', 'Scene', 'BodyPuzzle']) {
+        'Memory', 'CompleteSentence', 'OrderSentence', 'Writing', 'WordBank', 'ShadowPuzzle', 'Shadow', 'Categories', 'Scene', 'BodyPuzzle', 'VocabularyReview', 'VocabularyPractice']) {
         sandbox[`create${name}Activity`] = makeEngine(name);
     }
     vm.createContext(sandbox);
