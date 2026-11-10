@@ -1,7 +1,8 @@
 # Dados e privacidade no ROAR
 
-Levantamento de 06/11/2026. Primeira entrega de gerenciamento de dados, com a
-exportação assistida pelo professor escolhida pelo responsável pelo projeto.
+Atualização de 06/11/2026. Exportação assistida pelo professor, proteção de
+acesso ao banco e central de solicitações. A ativação do atendimento aguarda
+a definição institucional de responsável e canal oficial.
 
 ## O que foi conferido
 
@@ -28,6 +29,7 @@ exportação assistida pelo professor escolhida pelo responsável pelo projeto.
 | Personalização de mídia | `personalizacao_aluno.url_foto_real` | Usar mídia específica nas atividades | Composição das atividades | Conferir onde os arquivos de imagem ficam armazenados e seu ciclo de remoção |
 | Loja e recompensas | `aluno_skins_lex`, `recompensas_missoes`, XP e skin do cadastro | Inventário e recompensas dos jogos | Aluno autenticado e operações do servidor | Prazo a definir |
 | Controle de reenvio | `roar_progress_requests`: identificador de tentativa e resposta | Evitar processamento duplicado do progresso | Operações privadas do servidor | Prazo a definir |
+| Atendimento de dados | `solicitacoes_dados` e `solicitacoes_dados_eventos`: pedido, solicitante, protocolo, status, resposta e profissional atendente | Registrar e acompanhar correção e avaliação de exclusão | Professor vinculado; aluno ativo consulta somente os próprios pedidos | Prazo e procedimento institucional a definir. Registro não executa exclusão |
 | Cópia histórica | `backup_historico_desempenho_20260915` contém vínculo por `aluno_id` | Finalidade da cópia precisa ser confirmada pela equipe | Verificar permissões específicas antes de definir seu tratamento | Incluir no planejamento de retenção, correção e exclusão |
 | Preferências locais | `roarPreferences:<perfil>:<id>` em `localStorage` | Tema, fonte, volume, som, animações, estímulos e avanço automático | Navegador usado na sessão | Sem limpeza automática identificada ao sair |
 | Retomada local | `roarActivityDraft:<aluno>:<módulo>`, incluindo fingerprint do perfil, estatísticas e estado do jogo | Retomar uma atividade interrompida | Navegador do aluno | Leitura invalida rascunhos após 14 dias. Isso não remove automaticamente o registro físico do navegador. A conclusão limpa o rascunho correspondente |
@@ -67,7 +69,7 @@ turma, após verificar o solicitante. O aluno não baixa diretamente o arquivo.
 | --- | --- | --- |
 | Professor vinculado | Exportar cadastro atual e histórico do aluno selecionado | JWT com perfil professor e `alunos.professor_id` igual ao professor do token |
 | Professor de outra turma | Acesso recusado | Conferência no backend antes de ler histórico ou suporte TEA |
-| Aluno | Acessar orientações em Configurações > Gerenciar dados | Exportação é assistida pelo professor |
+| Aluno | Consultar orientações e acompanhar seus próprios pedidos em Configurações > Gerenciar dados | JWT do próprio aluno ativo. Exportação é assistida pelo professor |
 | Responsável | Solicitar atendimento ao professor | Identidade, vínculo e autorização conferidos manualmente. Não há perfil de responsável ou verificação automática implementados |
 | Visitante | Exportação recusada | Token obrigatório |
 
@@ -113,10 +115,10 @@ coordenada para o recurso funcionar na aplicação hospedada.
 
 ### Publicação da exportação
 
-O frontend aponta para `https://back-tcc-version-2.vercel.app`. Na verificação
-de 06/11/2026, a raiz dessa API respondeu 200, mas o OPTIONS da rota de
-exportação respondeu 404. A falha de preflight faz o navegador apresentar um
-erro de rede mesmo com a API principal online.
+O frontend aponta para `https://back-tcc-version-2.vercel.app`. A primeira
+verificação identificou OPTIONS 404 na exportação, embora a raiz estivesse
+online. A API atual já inclui as rotas JSON/PDF, conferidas novamente nos
+testes em produção com contas fictícias após a proteção do banco.
 
 O serviço de exportação agora distingue o 404 direto e essa falha de
 preflight: após um erro de rede, faz somente um GET de diagnóstico, sem token
@@ -187,26 +189,45 @@ backend. Conferir OPTIONS 200 e POST sem token 401 também para essa rota.
 
 Referência técnica: [tabelas e paginação no ReportLab](https://docs.reportlab.com/reportlab/userguide/ch7_tables/).
 
-## Achados de segurança que precedem a publicação
+## Correção dos achados de segurança
 
-Consulta de metadados do banco em 06/11/2026 confirmou RLS desligado e permissões
-de SELECT e UPDATE para `anon` em `alunos`, `professores`, `avaliacao_inicial`,
-`historico_desempenho` e `personalizacao_aluno`. As tabelas
-`aluno_suporte_tea` e `aluno_preferencias_jogos` estão com RLS ativo e sem essas
-permissões anônimas. A efetiva exposição depende também da configuração da Data
-API, que deve ser conferida antes da liberação.
+O levantamento inicial encontrou RLS desligado e permissões anônimas em
+tabelas pessoais. A migração `restrict_direct_database_access` foi aplicada
+em 06/11/2026: as 20 tabelas existentes ficaram com RLS e sem SELECT anônimo
+ou UPDATE de clientes. Foram removidas permissões amplas de funções,
+sequências e a política permissiva de `professor_modulos`.
 
-O backend antigo usa `SUPABASE_KEY` em várias rotas com autorização própria.
-Remover permissões ou ativar RLS sem adaptar essas rotas pode interromper login,
-cadastro e relatórios. A próxima correção prioritária deve migrar os acessos
-legítimos para o servidor com autorização por perfil e restringir o acesso
-direto às tabelas. Essa alteração exige testes integrados antes de aplicar a
-migração no banco.
+O backend publicado usa somente o cliente privado com `SUPABASE_SECRET_KEY`,
+sem fallback público. A autorização por perfil e vínculo antecede as leituras
+e escritas. JWTs exigem sujeito válido, perfil, emissão e expiração. Alunos
+desativados não podem continuar usando rotas de atividade com token antigo.
 
-Na rota legada `/alunos/desempenho` do código local inspecionado, o aluno é
-recebido pelo corpo da requisição. Deve-se revisar essa rota e sua relação com
-`/atividades/progresso` para garantir que escritas usem a identidade autenticada.
-Esse achado está registrado para a revisão de autorização, além da exportação.
+A rota legada `/alunos/desempenho` agora delega ao salvamento autenticado e
+transacional de `/atividades/progresso`. Foram verificadas 48 condições na API
+publicada após a restrição, com contas fictícias posteriormente removidas.
+Detalhes e limites estão em `back-tcc-version-2/docs/CONTROLE_ACESSO.md`.
+
+## Central de solicitações
+
+O perfil do aluno na área do professor passa a reunir exportações e registro
+de pedidos de correção ou avaliação de exclusão. Cada pedido tem protocolo,
+status recebida/em análise/respondida e histórico do profissional que recebeu
+e respondeu. O aluno acompanha somente seus pedidos em Configurações.
+
+Criação e respostas permanecem desativadas até configurar responsável e canal
+oficial. A consulta dos pedidos existentes e as exportações não dependem dessa
+ativação. Não foram inventados contatos ou prazos e não há exclusão automática.
+As duas tabelas novas também têm RLS e acesso restrito ao servidor.
+
+Validações de vínculo, campos, confirmação, reenvio com mesmo UUID e versão
+impedem mistura de alunos, duplicação da mesma tentativa e sobrescrita de
+respostas. Trigger registra pedido e evento na mesma transação. A API não
+pode editar/apagar eventos nem apagar pedidos. O proprietário do banco ainda
+pode administrá-los; isso não equivale a um registro inviolável.
+
+Procedimento, configuração e testes: `back-tcc-version-2/docs/SOLICITACOES_DADOS.md`.
+O escopo das cópias JSON/PDF existentes continua sendo cadastro e histórico;
+pedidos de atendimento e demais categorias não foram adicionados a essas cópias.
 
 ## Decisões institucionais pendentes
 
@@ -224,9 +245,9 @@ definidos depois.
    registros, com responsabilidade pela decisão.
 5. Condições de uso do provedor de IA e informações estritamente necessárias.
 
-Após essas definições, implementar solicitações com protocolo, acompanhamento e
-permissões. A desativação existente continua sendo registrada como desativação,
-com preservação de histórico. A equipe definirá o atendimento de exclusão.
+Após essas definições, ativar a central e completar o procedimento institucional
+de atendimento. A desativação existente preserva o histórico. A equipe definirá
+como efetivar exclusão, retenção e eventual anonimização também dos pedidos.
 
 ## Referências e evidências para o TCC
 
@@ -236,9 +257,9 @@ com preservação de histórico. A equipe definirá o atendimento de exclusão.
 | LGPD, art. 9º | Informações sobre o tratamento | Mapeamento para a política, com responsável e canal pendentes |
 | LGPD, arts. 5º, II, e 11 | Tratamento de informação de saúde | Identificação da fonte de suporte TEA e acesso autorizado à exportação |
 | LGPD, art. 14 | Melhor interesse de crianças e adolescentes | Exportação assistida e verificação manual de representação proposta |
-| LGPD, arts. 18 e 19 | Acesso e atendimento ao titular | Exportação de cadastro e histórico, com escopo e limites documentados |
+| LGPD, arts. 18 e 19 | Acesso e atendimento ao titular | Cópias com escopo limitado; pedidos de correção/avaliação de exclusão com protocolo e resposta |
 | LGPD, arts. 15 e 16 | Término e conservação do tratamento | Tabela de retenção pendente e identificação de backup e rascunhos |
-| LGPD, art. 46 | Proteção contra acesso não autorizado | Testes de autenticação, vínculo e isolamento, além do achado de permissões antigas |
+| LGPD, art. 46 | Proteção contra acesso não autorizado | Cliente privado, RLS, permissões restritas e testes entre turmas |
 
 Essas relações orientam a revisão técnica. A existência de um recurso ou teste
 isolado não comprova conformidade integral do projeto.
@@ -267,7 +288,10 @@ Fontes oficiais consultadas em 06/11/2026.
   e `npm run test:privacy` na raiz do frontend. Para usar outro interpretador
   Python no teste de navegador, definir `ROAR_TEST_PYTHON` ou passar seu caminho
   como terceiro argumento a `node tools/check_student_report_browser.cjs playwright`.
-- Os quinze testes de rota e os cenários de navegador em 1280 e 390 pixels
-  passaram nesta entrega. `npm test` também passou.
-- O uso no backend hospedado e a restrição das tabelas legadas dependem das
-  próximas etapas de publicação e revisão de autorização.
+- A suíte completa do backend passou com 66 testes executados e quatro de
+  concorrência ignorados por falta de PostgreSQL local descartável. Os testes
+  de PGlite verificam permissões e transações em uma conexão, sem substituir
+  concorrência real. `npm test` também passou.
+- A central tem testes de navegador em 1280 e 390 pixels para confirmação,
+  teclado, reenvio, versão, texto malicioso, consulta própria e resposta tardia.
+  As exportações JSON/PDF foram revalidadas nas mesmas larguras.

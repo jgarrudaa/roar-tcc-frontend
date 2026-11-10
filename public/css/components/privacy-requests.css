@@ -1,0 +1,37 @@
+.privacy-requests {
+    margin-block: 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--c-border, #d8dce4);
+    border-radius: 16px;
+    background: var(--c-card, #fff);
+    color: var(--c-text, #191716);
+    overflow-wrap: anywhere;
+}
+.privacy-requests h2 { font-size: 1.2rem; margin-block: 0 .75rem; }
+.privacy-requests h3 { font-size: 1rem; margin-block: 1rem .4rem; }
+.privacy-requests p { margin-block: .65rem; line-height: 1.6; }
+.privacy-requests__notice { padding: .75rem; border-inline-start: 3px solid #2c60a5; background: rgb(116 182 237 / 10%); }
+.privacy-requests fieldset { min-width: 0; margin-block: 1rem; border: 0; padding: 0; }
+.privacy-requests legend { font-weight: 700; padding-block: .5rem; }
+.privacy-requests label { display: grid; gap: .4rem; margin-block: .75rem; font-weight: 600; }
+.privacy-requests select, .privacy-requests textarea {
+    width: 100%; min-width: 0; min-height: 44px; border: 1px solid var(--c-border, #bcc8d7);
+    border-radius: 8px; padding: .65rem; background: var(--c-input-bg, #fff); color: inherit;
+    font: inherit; box-sizing: border-box;
+}
+.privacy-requests textarea { resize: vertical; }
+.privacy-requests .privacy-requests__confirmation { display: flex; align-items: flex-start; gap: .65rem; font-weight: 400; }
+.privacy-requests input[type="checkbox"] { flex: 0 0 auto; width: 20px; height: 20px; margin-block-start: .2rem; }
+.privacy-requests__hint { font-size: .875rem; }
+.privacy-requests__list { margin-block: 1rem; display: grid; gap: .75rem; }
+.privacy-requests__entry { border: 1px solid var(--c-border, #ccd6e3); border-radius: 10px; padding: 1rem; }
+.privacy-requests summary { min-height: 44px; cursor: pointer; font-weight: 700; }
+.privacy-requests__protocol { font-size: .85rem; font-weight: 600; }
+.privacy-requests__text { white-space: pre-wrap; }
+.privacy-requests__history { padding-inline-start: 1.25rem; }
+.privacy-requests__history li { margin-block: .5rem; line-height: 1.5; }
+.privacy-requests button { min-height: 44px; white-space: normal; }
+.privacy-requests :is(button, input, select, textarea, summary):focus-visible { outline: 3px solid #2161b3; outline-offset: 3px; }
+.privacy-requests [hidden] { display: none !important; }
+.privacy-requests__controls { margin-block: .75rem; }
+@media (max-width: 600px) { .privacy-requests { padding: .85rem; } .privacy-requests button { width: 100%; } }

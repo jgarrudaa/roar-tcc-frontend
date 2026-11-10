@@ -1,4 +1,5 @@
 import { studentDataService } from '../services/student-data-service.js';
+import { mountPrivacyRequests } from './privacy-requests.js';
 
 export function mountStudentDataManagement(container, studentId) {
     const listeners = new AbortController();
@@ -30,6 +31,9 @@ export function mountStudentDataManagement(container, studentId) {
             <p class="student-data-message" role="status" aria-live="polite"></p>
         </form>`;
     container.replaceChildren(section);
+    const requestsContainer = document.createElement('div');
+    container.append(requestsContainer);
+    const requestsPanel = mountPrivacyRequests(requestsContainer, { studentId });
     const form = section.querySelector('form');
     const select = form.elements.requester;
     const verified = form.elements.verified;
@@ -75,6 +79,6 @@ export function mountStudentDataManagement(container, studentId) {
         }
     }, { signal: listeners.signal });
     return Object.freeze({
-        destroy() { disposed = true; listeners.abort(); },
+        destroy() { disposed = true; listeners.abort(); requestsPanel.destroy(); },
     });
 }

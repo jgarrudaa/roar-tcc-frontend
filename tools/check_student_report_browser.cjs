@@ -66,7 +66,7 @@ const server = http.createServer(async (request, response) => {
             await page.goto(origin);
             const pdf = page.getByRole('button',{name:'Gerar relatório em PDF',exact:true});
             const json = page.getByRole('button',{name:'Exportar cadastro e histórico',exact:true});
-            const message = page.getByRole('status');
+            const message = page.locator('.student-data-management').getByRole('status');
             await pdf.click();
             assert.equal((await control({})).requests,0);
             await page.locator('select').selectOption('responsavel');

@@ -2,6 +2,7 @@ import { showToast } from "../../components/toast.js";
 import { alunosApi } from "../../api/alunos-api.js";
 import { sessionService } from "../../services/session-service.js";
 import { storage } from "../../utils/storage.js";
+import { mountPrivacyRequests } from "../../components/privacy-requests.js";
 
 const DEFAULTS = Object.freeze({
     theme: "light",
@@ -285,9 +286,14 @@ function initialize() {
         });
     }
 
+    const dataDialog = document.getElementById("dataHelpDialog");
+    let requestsPanel = null;
     document.getElementById("btnDados")?.addEventListener("click", () => {
-        document.getElementById("dataHelpDialog").showModal();
+        requestsPanel?.destroy();
+        requestsPanel = mountPrivacyRequests(document.getElementById("privacyRequestTracking"));
+        dataDialog.showModal();
     });
+    dataDialog?.addEventListener('close', () => { requestsPanel?.destroy(); requestsPanel = null; });
 
     document
         .querySelectorAll(
