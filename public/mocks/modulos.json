@@ -79,36 +79,36 @@
           "id": "cow",
           "pt": "vaca",
           "en": "COW",
-          "realImage": "/assets/imagens/modulos/fazenda/cow.png",
-          "vectorImage": "/assets/imagens/modulos/fazenda/cow.png"
+          "realImage": "/public/assets/imagens/modulos/fazenda/animais_reais/cow.png",
+          "vectorImage": "/public/assets/imagens/modulos/fazenda/animais_vetor/cow.png"
         },
         {
           "id": "horse",
           "pt": "cavalo",
           "en": "HORSE",
-          "realImage": "/assets/imagens/modulos/fazenda/horse.png",
-          "vectorImage": "/assets/imagens/modulos/fazenda/horse.png"
+          "realImage": "/public/assets/imagens/modulos/fazenda/animais_vetor/horse.png",
+          "vectorImage": "/public/assets/imagens/modulos/fazenda/animais_vetor/horse.png"
         },
         {
           "id": "pig",
           "pt": "porco",
           "en": "PIG",
-          "realImage": "/assets/imagens/modulos/fazenda/pig.png",
-          "vectorImage": "/assets/imagens/modulos/fazenda/pig.png"
+          "realImage": "/public/assets/imagens/modulos/fazenda/animais_reais/pig.png",
+          "vectorImage": "/public/assets/imagens/modulos/fazenda/animais_vetor/pig.png"
         },
         {
           "id": "duck",
           "pt": "pato",
           "en": "DUCK",
-          "realImage": "/assets/imagens/modulos/fazenda/duck.png",
-          "vectorImage": "/assets/imagens/modulos/fazenda/duck.png"
+          "realImage": "/public/assets/imagens/modulos/fazenda/animais_vetor/duck.png",
+          "vectorImage": "/public/assets/imagens/modulos/fazenda/animais_vetor/duck.png"
         },
         {
           "id": "sheep",
           "pt": "ovelha",
           "en": "SHEEP",
-          "realImage": "/assets/imagens/modulos/fazenda/sheep.png",
-          "vectorImage": "/assets/imagens/modulos/fazenda/sheep.png"
+          "realImage": "/public/assets/imagens/modulos/fazenda/animais_vetor/sheep.png",
+          "vectorImage": "/public/assets/imagens/modulos/fazenda/animais_vetor/sheep.png"
         }
       ],
       "activities": [
