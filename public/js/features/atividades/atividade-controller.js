@@ -239,7 +239,7 @@ export async function createActivityController({
     }
 
     function recordWord(item, field) {
-        const word = String(item?.en || activity.item.en).trim().toUpperCase();
+        const word = String(item?.progressWord || item?.en || activity.item.en).trim().toUpperCase();
         if (!vocabulary.has(word)) return;
         if (!words.has(word)) words.set(word, { palavra: word, acertos: 0, erros: 0, ajudas: 0 });
         words.get(word)[field] += 1;

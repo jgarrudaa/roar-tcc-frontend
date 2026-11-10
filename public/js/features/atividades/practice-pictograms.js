@@ -37,6 +37,39 @@ export function itemPictogram(word) {
 }
 
 export function categoryPictogram(id) {
+
+    const colorSwatches = {
+        "color-red": "#F36B67",
+        "color-blue": "#55A8F5",
+        "color-yellow": "#FFD45E",
+        "color-green": "#58C98B",
+        "color-orange": "#FF9B55",
+        "color-purple": "#A980E8",
+    };
+
+    if (colorSwatches[id]) {
+        const fill = colorSwatches[id];
+
+        return svg(`
+        <circle
+            cx="60"
+            cy="70"
+            r="38"
+            fill="${fill}"
+            stroke="#173F75"
+            stroke-width="7"
+        />
+        <ellipse
+            cx="48"
+            cy="56"
+            rx="13"
+            ry="7"
+            fill="#fff"
+            opacity=".35"
+            transform="rotate(-30 48 56)"
+        />
+    `);
+    }
     if (id === 'limbs') return bodyPictogram(['arm', 'hand', 'leg', 'foot']);
     if (id === 'head-torso') return bodyPictogram(['head', 'neck', 'torso']);
     const drawings = {
@@ -44,6 +77,8 @@ export function categoryPictogram(id) {
         mammals: '<path d="M27 68 L14 41 L41 54 M79 54 L106 41 L93 69" fill="#b78759" stroke="#825224" stroke-width="3"/><rect x="28" y="48" width="64" height="72" rx="28" fill="#d4ad7d"/><ellipse cx="60" cy="98" rx="26" ry="18" fill="#efdbc0"/><circle cx="44" cy="76" r="4"/><circle cx="76" cy="76" r="4"/><ellipse cx="60" cy="94" rx="7" ry="5" fill="#513a2b"/>',
         fruit: '<path d="M60 48 C18 15 7 85 39 116 Q60 125 62 117 Q94 127 105 80 C117 29 79 26 60 48" fill="#dc5151" stroke="#9b3030" stroke-width="3"/><path d="M60 47 Q55 24 65 14" stroke="#825224" stroke-width="6" fill="none"/><path d="M65 28 Q95 2 99 24 Q86 39 65 28" fill="#37824c"/>',
         vegetables: '<path d="M33 50 Q62 28 86 53 L44 125 Z" fill="#ed942c" stroke="#a45c16" stroke-width="3"/><path d="M55 43 L36 12 M63 40 L69 7 M72 43 L95 18" stroke="#37824c" stroke-width="8" stroke-linecap="round"/><path d="M43 66 L62 73 M48 88 L60 93" stroke="#a45c16" stroke-width="4"/>',
+        'positive-feelings': '<circle cx="60" cy="70" r="38" fill="#ffd54f" stroke="#ffb300" stroke-width="4"/><circle cx="48" cy="62" r="5" fill="#2d3748"/><circle cx="72" cy="62" r="5" fill="#2d3748"/><path d="M44 78 Q60 98 76 78" stroke="#2d3748" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M60 18 L64 28 L74 30 L66 37 L69 47 L60 41 L51 47 L54 37 L46 30 L56 28 Z" fill="#ffb300"/>',
+        'challenging-feelings': '<circle cx="60" cy="70" r="38" fill="#90caf9" stroke="#42a5f5" stroke-width="4"/><circle cx="48" cy="64" r="5" fill="#2d3748"/><circle cx="72" cy="64" r="5" fill="#2d3748"/><path d="M46 84 Q60 72 74 84" stroke="#2d3748" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M46 54 Q60 46 74 54" stroke="#42a5f5" stroke-width="3" fill="none" stroke-linecap="round"/>',
     };
     return svg(drawings[id] || '');
 }

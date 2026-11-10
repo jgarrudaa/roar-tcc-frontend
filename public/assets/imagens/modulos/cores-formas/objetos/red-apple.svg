@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="title desc">
+  <title id="title">Red apple</title><desc id="desc">A bright red apple with a green leaf.</desc>
+  <defs><linearGradient id="a" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#ff7770"/><stop offset="1" stop-color="#d93445"/></linearGradient></defs>
+  <ellipse cx="160" cy="208" rx="79" ry="12" fill="#dce9f5"/>
+  <path d="M160 74c-13-20-48-25-68-8-34 28-31 94 7 127 18 16 37 12 61 5 24 7 43 11 61-5 38-33 41-99 7-127-20-17-55-12-68 8Z" fill="url(#a)" stroke="#a7283a" stroke-width="5"/>
+  <path d="M158 75c-2-20 3-37 17-52" fill="none" stroke="#76502b" stroke-width="10" stroke-linecap="round"/>
+  <path d="M169 42c23-26 56-17 58 1-17 18-40 20-58-1Z" fill="#58bf83" stroke="#25875c" stroke-width="4"/>
+  <path d="M119 103c-10 18-11 38-5 54" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".48"/>
+</svg>

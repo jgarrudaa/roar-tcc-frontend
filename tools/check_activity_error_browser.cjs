@@ -8,8 +8,8 @@ const http = require('node:http');
 const root = path.resolve(__dirname, '..');
 const saves = [];
 const item = { id: 1, itemId: 1, en: 'COW', pt: 'vaca',
-    realImage: '/public/assets/imagens/modulos/fazenda/cow.png',
-    vectorImage: '/public/assets/imagens/modulos/fazenda/cow.png' };
+    realImage: '/public/assets/imagens/modulos/fazenda/animais_reais/cow.png',
+    vectorImage: '/public/assets/imagens/modulos/fazenda/animais_vetor/cow.png' };
 const fixture = { student: { id: 999, supportLevel: 1 },
     module: { id: 9, title: 'Animais', items: [item],
         activities: [1, 2, 3].map(order => ({ activityId: order * 11, order })) } };

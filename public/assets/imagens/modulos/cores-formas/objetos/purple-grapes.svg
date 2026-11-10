@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="title desc">
+  <title id="title">Purple grapes</title><desc id="desc">A small bunch of purple grapes with a green leaf.</desc>
+  <ellipse cx="160" cy="208" rx="79" ry="12" fill="#dce9f5"/>
+  <path d="M160 62q12-25 42-20" fill="none" stroke="#79552d" stroke-width="8" stroke-linecap="round"/>
+  <path d="M184 48q35-26 60 0-22 27-56 17" fill="#58bf83" stroke="#25875c" stroke-width="4"/>
+  <g fill="#a980e8" stroke="#6943aa" stroke-width="4">
+    <circle cx="130" cy="91" r="27"/><circle cx="181" cy="91" r="27"/>
+    <circle cx="105" cy="133" r="27"/><circle cx="156" cy="133" r="27"/><circle cx="207" cy="133" r="27"/>
+    <circle cx="130" cy="175" r="27"/><circle cx="181" cy="175" r="27"/><circle cx="156" cy="207" r="23"/>
+  </g>
+  <g fill="#fff" opacity=".42"><ellipse cx="120" cy="82" rx="8" ry="5" transform="rotate(-35 120 82)"/><ellipse cx="171" cy="82" rx="8" ry="5" transform="rotate(-35 171 82)"/><ellipse cx="146" cy="124" rx="8" ry="5" transform="rotate(-35 146 124)"/></g>
+</svg>

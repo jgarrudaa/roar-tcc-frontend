@@ -8,6 +8,8 @@ const ICONS = Object.freeze({
     cores: "fi fi-br-palette",
     "animais-fazenda": "fi fi-br-paw",
     emocoes: "fi fi-br-grin-alt",
+    sentimentos: "fi fi-br-grin-alt",
+    "3": "fi fi-br-grin-alt",
     comida: "fi fi-br-apple-whole",
     familia: "fi fi-br-users",
     casa: "fi fi-br-home",

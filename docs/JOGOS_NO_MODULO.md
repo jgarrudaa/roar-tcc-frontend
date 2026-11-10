@@ -9,6 +9,7 @@ São usados somente cartões com imagem e palavra já presentes no módulo. O ca
 - Aves e mamíferos.
 - Membros (braços e pernas, incluindo mãos e pés) e cabeça/tronco.
 - Frutas e verduras/legumes, sem itens de classificação ambígua como tomate.
+- Sentimentos agradáveis (alegria, amor, calma, entusiasmo, surpresa) e sentimentos difíceis (tristeza, medo, raiva, ansiedade, culpa, vergonha, nojo).
 
 A rodada só aparece quando o módulo contém pelo menos um cartão em cada grupo. Usa até dois cartões distintos por grupo. Palavras desconhecidas não são classificadas por suposição. Cada cartão oferece duas alternativas, iguais para todos os modos e níveis TEA. Um acerto avança automaticamente no intervalo configurado pelo professor (padrão: um segundo); um erro permite tentar novamente.
 
@@ -20,6 +21,7 @@ Todos os módulos usam o mesmo motor, recortes com abas, encaixes, controles e s
 
 - Corpo Humano: **Monte o corpo**, com as partes do corpo.
 - Animais/Fazenda: **Monte os animais**, com os animais do módulo.
+- Sentimentos: **Monte os sentimentos**, com os sentimentos do módulo (alegria, amor, ansiedade, calma, culpa, entusiasmo, medo, nojo, raiva, surpresa, tristeza, vergonha). O modo suporte 1 utiliza as fotos reais de `sentimento_real`; os modos suporte 2 e 3 utilizam as ilustrações de `sentimento_vetor`.
 - Demais temas: **Monte as imagens**, com o vocabulário correspondente.
 
 “Complete a cena”, com caixa e mesa, foi retirado da sequência. O tema altera o título, as imagens e as palavras; a forma de jogar permanece a mesma.

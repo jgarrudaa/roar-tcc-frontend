@@ -312,6 +312,10 @@
     width: 100%;
 }
 
+.module-practice--color-sort .practice-choices {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .practice-option {
     display: flex;
     flex-direction: column;
@@ -452,6 +456,10 @@
 }
 
 @media (max-width: 480px) {
+    .module-practice--color-sort .practice-choices {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .practice-choices {
         gap: 10px;
     }
@@ -486,4 +494,141 @@
     width: 100%;
     min-width: 0;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+
+/* Associe o objeto à cor */
+@media (min-width: 900px) and (min-height: 680px) {
+    #activity-stage>.activity-content.module-practice--color-sort {
+        display: grid;
+        grid-template-columns: minmax(210px, 0.75fr) minmax(0, 1.5fr);
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
+        grid-template-areas:
+            "titulo titulo"
+            "rodada rodada"
+            "objeto cores"
+            "ajuda ajuda";
+
+        align-items: center;
+        justify-items: stretch;
+        align-content: center;
+        gap: 8px 24px;
+
+        width: min(100%, 1120px);
+        max-width: 1120px;
+        height: 100%;
+        min-height: 0;
+        margin-inline: auto;
+        padding: 10px 14px;
+    }
+
+    .module-practice--color-sort>h2 {
+        grid-area: titulo;
+        margin: 0;
+    }
+
+    .module-practice--color-sort>p:not(.practice-help) {
+        grid-area: rodada;
+        margin: 0;
+    }
+
+    .module-practice--color-sort>.practice-card {
+        grid-area: objeto;
+        align-self: center;
+        justify-self: center;
+        width: min(100%, 240px);
+        margin: 0;
+        padding: 12px;
+    }
+
+    .module-practice--color-sort .practice-illustration {
+        width: 120px;
+        height: 120px;
+    }
+
+    .module-practice--color-sort>.practice-choices {
+        grid-area: cores;
+        align-self: stretch;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+        min-height: 0;
+        gap: 8px;
+    }
+
+    .module-practice--color-sort .practice-option {
+        min-height: 0;
+        gap: 2px;
+    }
+
+    .module-practice--color-sort .practice-choice {
+        min-height: 0;
+        height: 100%;
+        gap: 4px;
+        padding: 8px;
+    }
+
+    .module-practice--color-sort .practice-pictogram {
+        width: 64px;
+        height: 68px;
+    }
+
+    .module-practice--color-sort .practice-choice strong {
+        font-size: clamp(1rem, 1.5vw, 1.3rem);
+    }
+
+    .module-practice--color-sort .practice-dictionary summary {
+        min-height: 32px;
+        padding: 2px 8px;
+    }
+
+    .module-practice--color-sort>.practice-help {
+        grid-area: ajuda;
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+}
+
+/* Em telas menores ou janelas baixas, mantém o conteúdo rolável. */
+@media (max-width: 899px),
+(max-height: 679px) {
+    .activity-page:has(.module-practice--color-sort) .activity-stage {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    #activity-stage>.activity-content.module-practice--color-sort {
+        display: flex;
+        flex-direction: column;
+        width: min(100%, 800px);
+        height: auto;
+        min-height: 100%;
+        max-height: none;
+        margin-inline: auto;
+        overflow: visible;
+    }
+
+    .module-practice--color-sort>.practice-choices {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .module-practice--color-sort>.practice-choices {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .module-practice--color-sort .practice-pictogram {
+        width: 64px;
+        height: 72px;
+    }
+}
+
+.module-practice--color-sort>h2 {
+    display: none;
+}
+
+.module-practice--color-sort > .practice-help {
+    display: none;
 }
