@@ -357,6 +357,44 @@
         refresh,
     );
 
+    function populateSpinners(root = document) {
+        try {
+            root.querySelectorAll?.(".spinner").forEach((spinner) => {
+                if (!spinner.children.length) {
+                    spinner.innerHTML = "<span></span><span></span><span></span><span></span>";
+                }
+            });
+        } catch (_) {}
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => populateSpinners());
+    } else {
+        populateSpinners();
+    }
+
+    if (typeof MutationObserver !== "undefined") {
+        try {
+            const observer = new MutationObserver((mutations) => {
+                for (const mutation of mutations) {
+                    for (const node of mutation.addedNodes) {
+                        if (node.nodeType === 1) {
+                            if (node.classList?.contains("spinner") && !node.children.length) {
+                                node.innerHTML = "<span></span><span></span><span></span><span></span>";
+                            }
+                            node.querySelectorAll?.(".spinner").forEach((s) => {
+                                if (!s.children.length) {
+                                    s.innerHTML = "<span></span><span></span><span></span><span></span>";
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+            observer.observe(document.documentElement, { childList: true, subtree: true });
+        } catch (_) {}
+    }
+
     window.ROARTheme =
         Object.freeze({
             get() {
