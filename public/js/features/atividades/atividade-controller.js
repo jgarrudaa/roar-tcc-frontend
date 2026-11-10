@@ -20,7 +20,7 @@ import { createBodyPuzzleActivity } from './body-puzzle.js?v=2';
 import { createVocabularyReviewActivity } from './vocabulary-review.js';
 import { createVocabularyPracticeActivity } from './vocabulary-practice.js';
 import { activityProgressService, activityFingerprint, createAttemptId } from '../../services/activity-progress-service.js?v=2';
-
+import { createColorMixActivity } from "./mistura-cores.js?v=1";
 
 
 
@@ -43,6 +43,7 @@ const ACTIVITY_FACTORIES = Object.freeze({
     vocabularyReview: createVocabularyReviewActivity,
     vocabularyPractice: createVocabularyPracticeActivity,
     animalPuzzle: createBodyPuzzleActivity,
+    colorMix: createColorMixActivity,
 });
 
 function navigateTo(url) {
@@ -199,10 +200,26 @@ export async function createActivityController({
     const phases = [activity];
     const practicePhases = currentIndex === module.activities.length - 1
         ? getModulePracticePhases(context) : [];
-    if (activity.type === "memory" && Number(student.supportLevel) === 2 &&
-        !practicePhases.some(phase => phase.type === 'animalPuzzle')) {
-        phases.push({ ...activity, type: "shadow", instruction:
-            "Agora monte a imagem! Arraste cada peça até a sombra ou toque para encaixar." });
+    if (
+        activity.type === "memory" &&
+        Number(student.supportLevel) === 2 &&
+        !practicePhases.some(phase => phase.type === "animalPuzzle")
+    ) {
+        if (Number(module.id) === 3) {
+            phases.push({
+                ...activity,
+                type: "colorMix",
+                instruction:
+                    "Observe as duas cores e descubra qual cor elas formam.",
+            });
+        } else {
+            phases.push({
+                ...activity,
+                type: "shadow",
+                instruction:
+                    "Agora monte a imagem! Arraste cada peça até a sombra ou toque para encaixar.",
+            });
+        }
     }
     phases.push(...practicePhases);
     const fingerprint = activityFingerprint(context);
@@ -215,8 +232,10 @@ export async function createActivityController({
     const words = new Map();
     const vocabulary = new Map(module.items.map(item => [String(item.en).trim().toUpperCase(), item]));
     for (const row of Array.isArray(draft?.words) ? draft.words : []) {
-        if (row && vocabulary.has(row.palavra)) words.set(row.palavra, { palavra: row.palavra,
-            acertos: count(row.acertos), erros: count(row.erros), ajudas: count(row.ajudas) });
+        if (row && vocabulary.has(row.palavra)) words.set(row.palavra, {
+            palavra: row.palavra,
+            acertos: count(row.acertos), erros: count(row.erros), ajudas: count(row.ajudas)
+        });
     }
     const attemptId = draft?.attemptId || createAttemptId();
     let elapsedBeforeStart = count(draft?.elapsedSeconds);

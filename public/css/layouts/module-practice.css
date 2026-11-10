@@ -629,6 +629,60 @@
     display: none;
 }
 
-.module-practice--color-sort > .practice-help {
+.module-practice--color-sort>.practice-help {
     display: none;
+}
+
+.module-practice--color-sort .practice-choice.is-filled {
+    border-style: solid;
+    border-color: #197746;
+    background: #e1f5e9;
+    color: #143d28;
+    cursor: default;
+}
+
+.module-practice--color-sort .practice-choice.is-filled .practice-pictogram {
+    display: none;
+}
+
+.module-practice--color-sort .practice-placed-object {
+    display: block;
+    width: clamp(52px, 6vw, 78px);
+    height: clamp(52px, 6vw, 78px);
+    object-fit: contain;
+    flex: 0 0 auto;
+}
+
+.practice-category-translation {
+    display: block;
+    margin-top: 4px;
+    color: #5f6b80;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.practice-classified-animals {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.practice-classified-animal {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    background: #eaf5fd;
+    color: #245a96;
+    font-size: 0.8rem;
+}
+
+.practice-classified-animal img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
 }

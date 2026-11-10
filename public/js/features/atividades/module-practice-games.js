@@ -22,7 +22,51 @@ function createPracticeActivity(context, kind) {
     const savedState = candidate?.version === 1 && candidate.key === stateKey &&
         Number.isInteger(candidate.index) && candidate.index >= 0 && candidate.index < rounds.length &&
         typeof candidate.answered === "boolean" ? candidate : null;
+
+    const isAnimalClassification =
+        kind === "categories" &&
+        activity.groups?.some(group =>
+            ["birds", "mammals"].includes(group.id)
+        );
+
+    const classifiedAnimalsByGroup = new Map(
+        (activity.groups || []).map(group => [group.id, []])
+    );
+
+
     let index = savedState?.index ?? 0;
+    const placedByCategory = new Map();
+
+    if (isAnimalClassification && savedState) {
+        const completedRounds = Math.min(
+            rounds.length,
+            savedState.index + (savedState.answered ? 1 : 0),
+        );
+
+        for (const previousRound of rounds.slice(0, completedRounds)) {
+            const items = classifiedAnimalsByGroup.get(previousRound.category);
+
+            if (items && previousRound.item) {
+                items.push(previousRound.item);
+            }
+        }
+    }
+
+    if (dragToCategory && savedState) {
+        const completedRounds = Math.min(
+            rounds.length,
+            savedState.index + (savedState.answered ? 1 : 0),
+        );
+
+        for (const previousRound of rounds.slice(0, completedRounds)) {
+            if (previousRound.category) {
+                placedByCategory.set(
+                    previousRound.category,
+                    previousRound.item,
+                );
+            }
+        }
+    }
     let answered = false;
     let completed = false;
     let selectedButton;
@@ -47,6 +91,21 @@ function createPracticeActivity(context, kind) {
         ]);
     }
 
+    function createClassifiedAnimal(item) {
+        const chip = document.createElement("span");
+        chip.className = "practice-classified-animal";
+
+        const image = createImage(item, student.supportLevel);
+        image.alt = "";
+        image.setAttribute("aria-hidden", "true");
+
+        const label = document.createElement("span");
+        label.textContent = item.pt || item.en;
+
+        chip.append(image, label);
+        return chip;
+    }
+
     function render() {
         if (lifecycle.destroyed) return;
         dragController?.destroy();
@@ -60,8 +119,6 @@ function createPracticeActivity(context, kind) {
         content.className = `activity-content module-practice${dragToCategory ? " module-practice--color-sort" : ""}`;
         const heading = document.createElement("h2");
         heading.textContent = activity.title || (kind === "categories" ? "Separe por categorias" : "Complete a cena");
-        const counter = document.createElement("p");
-        counter.textContent = `Cartão ${index + 1} de ${rounds.length}`;
         const card = createButton("", "practice-card");
         selectedButton = card;
         card.setAttribute("aria-label", `Ouvir ${round.item.en}`);
@@ -149,20 +206,51 @@ function createPracticeActivity(context, kind) {
             }
             const english = document.createElement("strong");
             english.textContent = option.en;
+
+            const placedItem = dragToCategory
+                ? placedByCategory.get(option.id)
+                : null;
+
+            if (placedItem) {
+                const placedImage = createImage(
+                    placedItem,
+                    student.supportLevel,
+                );
+
+                placedImage.alt = "";
+                placedImage.setAttribute("aria-hidden", "true");
+                placedImage.className = "practice-placed-object";
+
+                button.classList.add("is-filled", "is-correct");
+                button.disabled = true;
+                button.setAttribute(
+                    "aria-label",
+                    `${option.en}. ${placedItem.pt} associado.`,
+                );
+                button.append(placedImage);
+            }
+
             button.append(english);
-            const dictionary = document.createElement("details");
-            dictionary.className = "practice-dictionary";
-            const summary = document.createElement("summary");
-            summary.textContent = "? Ajuda";
-            summary.setAttribute("aria-label", `Tradução de ${option.en}`);
-            const portuguese = document.createElement("p");
-            portuguese.textContent = option.pt;
-            const listen = createButton("Ouvir em inglês", "practice-listen");
-            lifecycle.listen(listen, "click", () => audioService.speak(option.en, "en-US"));
-            dictionary.append(summary, portuguese, listen);
-            lifecycle.listen(dictionary, "toggle", () => {
-                if (dictionary.open && !answered && !completed) context.onHelp?.(round.item);
-            });
+            if (isAnimalClassification) {
+                const translation = document.createElement("span");
+                translation.className = "practice-category-translation";
+                translation.textContent = option.pt;
+                button.append(translation);
+
+                const animalTray = document.createElement("span");
+                animalTray.className = "practice-classified-animals";
+                animalTray.setAttribute("aria-label", `${option.pt} classificados`);
+
+                for (const animal of classifiedAnimalsByGroup.get(option.id) || []) {
+                    animalTray.append(createClassifiedAnimal(animal));
+                }
+
+                button.append(animalTray);
+            }
+
+
+
+
             buttons.push(button);
             lifecycle.listen(button, "click", () => {
                 if (answered || completed) return;
@@ -190,10 +278,40 @@ function createPracticeActivity(context, kind) {
                     placed.alt = "";
                     placed.className = "practice-placed-card";
                     button.querySelector(".practice-place").append(placed);
-                } else if (dragToCategory) {
+                }
+
+                if (isAnimalClassification) {
+                    const items = classifiedAnimalsByGroup.get(option.id) || [];
+                    items.push(round.item);
+                    classifiedAnimalsByGroup.set(option.id, items);
+
+                    button.querySelector(".practice-classified-animals")
+                        ?.append(createClassifiedAnimal(round.item));
+
+                    button.setAttribute(
+                        "aria-label",
+                        `${option.en}. ${round.item.pt} classificado.`,
+                    );
+                }
+
+                else if (dragToCategory) {
                     card.classList.remove("is-selected");
                     card.classList.add("is-placed");
                     card.setAttribute("aria-pressed", "false");
+
+                    placedByCategory.set(option.id, round.item);
+
+                    const placedImage = image.cloneNode(true);
+                    placedImage.alt = "";
+                    placedImage.setAttribute("aria-hidden", "true");
+                    placedImage.className = "practice-placed-object";
+
+                    button.classList.add("is-filled");
+                    button.setAttribute(
+                        "aria-label",
+                        `${option.en}.${round.item.pt} associado.`,
+                    );
+                    button.insertBefore(placedImage, english);
                 }
                 completed = index === rounds.length - 1;
                 elements.setProgress(index + 1, rounds.length);
@@ -202,15 +320,14 @@ function createPracticeActivity(context, kind) {
                 elements.nextButton.focus?.({ preventScroll: true });
                 context.onStateChange?.();
                 onCorrect({
-                    ...round.item, id: `${kind}:${index}:${round.item.id}`,
-                    itemId: `${kind}:${index}:${round.item.itemId}`
+                    ...round.item, id: `${kind}: ${index}: ${round.item.id}`,
+                    itemId: `${kind}: ${index}: ${round.item.itemId}`
                 });
             });
             optionContainer.append(button);
-            if (context.gameSettings?.showHints !== false) optionContainer.append(dictionary);
             choices.append(optionContainer);
         });
-        content.append(counter, card, choices);
+        content.append(card, choices);
         elements.stage.replaceChildren(content);
         if (requiresCardSelection) {
             dragController = createSceneDrag({

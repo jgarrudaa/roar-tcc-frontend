@@ -72,6 +72,41 @@ export function categoryPictogram(id) {
     }
     if (id === 'limbs') return bodyPictogram(['arm', 'hand', 'leg', 'foot']);
     if (id === 'head-torso') return bodyPictogram(['head', 'neck', 'torso']);
+
+    if (id === "mammals") {
+        return svg(`
+        <ellipse cx="60" cy="88" rx="23" ry="19"
+            fill="#85C7F2" stroke="#245A96" stroke-width="4"/>
+        <ellipse cx="30" cy="59" rx="10" ry="14"
+            fill="#85C7F2" stroke="#245A96" stroke-width="4"
+            transform="rotate(-25 30 59)"/>
+        <ellipse cx="48" cy="43" rx="10" ry="14"
+            fill="#85C7F2" stroke="#245A96" stroke-width="4"
+            transform="rotate(-8 48 43)"/>
+        <ellipse cx="72" cy="43" rx="10" ry="14"
+            fill="#85C7F2" stroke="#245A96" stroke-width="4"
+            transform="rotate(8 72 43)"/>
+        <ellipse cx="90" cy="59" rx="10" ry="14"
+            fill="#85C7F2" stroke="#245A96" stroke-width="4"
+            transform="rotate(25 90 59)"/>
+    `);
+    }
+
+    if (id === "birds") {
+        return svg(`
+        <path d="M31 105 C43 80 49 46 91 27
+            C91 69 72 97 31 105 Z"
+            fill="#85C7F2" stroke="#245A96" stroke-width="4"
+            stroke-linejoin="round"/>
+        <path d="M37 99 C52 77 66 58 86 34"
+            fill="none" stroke="#245A96" stroke-width="4"
+            stroke-linecap="round"/>
+        <path d="M49 82 L43 58 M61 68 L66 45 M48 84 L72 86"
+            fill="none" stroke="#245A96" stroke-width="3"
+            stroke-linecap="round"/>
+    `);
+    }
+
     const drawings = {
         birds: '<ellipse cx="57" cy="80" rx="34" ry="25" fill="#f0c34a"/><circle cx="82" cy="49" r="18" fill="#f0c34a"/><path d="M98 48 L115 55 L98 61" fill="#cb691a"/><path d="M29 77 L9 58 L17 88 M48 104 L45 123 M65 104 L69 123" stroke="#825224" stroke-width="5" fill="none"/><path d="M41 76 Q64 61 72 86 Q52 98 41 76" fill="#cc9c2a"/><circle cx="85" cy="45" r="3" fill="#17243c"/>',
         mammals: '<path d="M27 68 L14 41 L41 54 M79 54 L106 41 L93 69" fill="#b78759" stroke="#825224" stroke-width="3"/><rect x="28" y="48" width="64" height="72" rx="28" fill="#d4ad7d"/><ellipse cx="60" cy="98" rx="26" ry="18" fill="#efdbc0"/><circle cx="44" cy="76" r="4"/><circle cx="76" cy="76" r="4"/><ellipse cx="60" cy="94" rx="7" ry="5" fill="#513a2b"/>',
