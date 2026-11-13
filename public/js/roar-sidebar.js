@@ -3,6 +3,57 @@
    Sidebar, logout e toast compartilhados entre páginas
    ============================================================ */
 
+function initResponsivePageTitle() {
+    const navbar = document.querySelector(".main-content .navbar");
+    const pageBody = document.querySelector(".main-content .page-body");
+    const titleBlock = navbar?.querySelector(".navbar__page-title");
+
+    if (!navbar || !pageBody || !titleBlock) return;
+
+    /* No celular o cabeçalho fica só com menu, notificações e perfil;
+       o título desce para o topo do conteúdo. */
+    const mobileTitle = window.matchMedia("(max-width: 768px)");
+    const originalParent = titleBlock.parentNode;
+    const originalNextSibling = titleBlock.nextSibling;
+
+    let slot = null;
+
+    function restoreTitle() {
+        if (titleBlock.parentNode !== slot) return;
+
+        if (originalNextSibling && originalNextSibling.parentNode === originalParent) {
+            originalParent.insertBefore(titleBlock, originalNextSibling);
+        } else {
+            originalParent.append(titleBlock);
+        }
+
+        slot.remove();
+        slot = null;
+    }
+
+    function applyTitlePlacement() {
+        if (mobileTitle.matches) {
+            if (titleBlock.parentNode === slot) return;
+
+            if (!slot) {
+                slot = document.createElement("div");
+                slot.className = "page-title-mobile";
+                slot.dataset.pageTitle = "mobile";
+                pageBody.prepend(slot);
+            }
+
+            slot.append(titleBlock);
+            return;
+        }
+
+        restoreTitle();
+    }
+
+    mobileTitle.addEventListener("change", applyTitlePlacement);
+    applyTitlePlacement();
+}
+
+
 function initSidebar() {
     const sidebar =
         document.getElementById("sidebar");
@@ -158,6 +209,8 @@ function initSidebar() {
         });
     }
     updateActiveSidebarLink();
+
+    initResponsivePageTitle();
 
     initLogout();
 }
