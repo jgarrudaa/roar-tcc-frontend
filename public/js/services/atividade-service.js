@@ -172,9 +172,20 @@ function normalizeStudent(profile) {
     });
 }
 
+const COLOR_IMAGES_DIR = "/public/assets/imagens/modulos/cores";
 const COLOR_OBJECTS_DIR = "/public/assets/imagens/modulos/cores-formas/objetos";
 
-// Cada cor do módulo "Cores" é ilustrada pelo objeto de mesma cor.
+// Reconhecer, associar, memória e mistura de cores mostram a cor.
+const COLOR_IMAGE_MAP = Object.freeze({
+    RED: `${COLOR_IMAGES_DIR}/red.png`,
+    BLUE: `${COLOR_IMAGES_DIR}/blue.png`,
+    GREEN: `${COLOR_IMAGES_DIR}/green.png`,
+    YELLOW: `${COLOR_IMAGES_DIR}/yellow.png`,
+    ORANGE: `${COLOR_IMAGES_DIR}/orange.png`,
+    PURPLE: `${COLOR_IMAGES_DIR}/purple.png`,
+});
+
+// A atividade de arrastar usa os objetos: cada cor tem o seu.
 const COLOR_OBJECT_FILES = Object.freeze({
     RED: "aple.png",
     BLUE: "fish.png",
@@ -184,29 +195,42 @@ const COLOR_OBJECT_FILES = Object.freeze({
     PURPLE: "grapes.png",
 });
 
-const COLOR_IMAGE_MAP = Object.freeze(
-    Object.fromEntries(
-        Object.entries(COLOR_OBJECT_FILES).map(([color, fileName]) => [
-            color,
-            `${COLOR_OBJECTS_DIR}/${fileName}`,
-        ]),
-    ),
-);
-
-const COLOR_OBJECT_NAME_TO_COLOR = Object.freeze({
+const COLOR_ALIASES = Object.freeze({
     red: "RED",
+    vermelho: "RED",
     aple: "RED",
     apple: "RED",
     blue: "BLUE",
+    azul: "BLUE",
     fish: "BLUE",
+    peixe: "BLUE",
     green: "GREEN",
+    verde: "GREEN",
     leaf: "GREEN",
+    folha: "GREEN",
     yellow: "YELLOW",
+    amarelo: "YELLOW",
     banana: "YELLOW",
     orange: "ORANGE",
+    laranja: "ORANGE",
     purple: "PURPLE",
+    roxo: "PURPLE",
+    violeta: "PURPLE",
+    grape: "PURPLE",
     grapes: "PURPLE",
+    uva: "PURPLE",
 });
+
+function normalizeColorKey(value) {
+    return String(value ?? "")
+        .trim()
+        .toLowerCase()
+        .replace(/^(?:color|cor)[-_ ]/, "");
+}
+
+function findColor(value) {
+    return COLOR_ALIASES[normalizeColorKey(value)] ?? null;
+}
 
 function findColorForImageUrl(url) {
     const match = String(url ?? "").match(
@@ -218,7 +242,7 @@ function findColorForImageUrl(url) {
     }
 
     for (const token of match[1].toLowerCase().split("-")) {
-        const color = COLOR_OBJECT_NAME_TO_COLOR[token];
+        const color = COLOR_ALIASES[token];
 
         if (color) {
             return color;
@@ -238,6 +262,24 @@ function resolveColorImageUrl(url, englishWord) {
     const colorFromUrl = findColorForImageUrl(url);
 
     return colorFromUrl ? COLOR_IMAGE_MAP[colorFromUrl] : url;
+}
+
+// Só a atividade de arrastar usa objetos: o cartão é o objeto e o cesto é a cor.
+function resolveColorObjectImageUrl(url, englishWord, group) {
+    const colorFromWord = findColor(englishWord);
+
+    if (colorFromWord) {
+        return `${COLOR_OBJECTS_DIR}/${COLOR_OBJECT_FILES[colorFromWord]}`;
+    }
+
+    const color =
+        findColor(group?.en) ??
+        findColor(group?.id) ??
+        findColorForImageUrl(url);
+
+    return color
+        ? `${COLOR_OBJECTS_DIR}/${COLOR_OBJECT_FILES[color]}`
+        : url;
 }
 
 function normalizeModuleItem(rawItem) {
@@ -330,10 +372,15 @@ function normalizeActivity(rawActivity) {
         const groupsById = new Map(groups.map(group => [group.id, group]));
         cards = (rawActivity?.cartoes || []).map(card => {
             const group = groupsById.get(normalizeText(card?.grupo));
-            const image = normalizeMediaUrl(card?.url_imagem);
             const itemId = requirePositiveInteger(card?.id, "cartao.id");
             const englishWord = normalizeText(card?.palavra_en)
                 .toLocaleUpperCase("en-US");
+            // O cartão é o objeto que o aluno arrasta até o cesto da cor.
+            const image = resolveColorObjectImageUrl(
+                normalizeMediaUrl(card?.url_imagem),
+                englishWord,
+                group,
+            );
 
             if (!group || !englishWord || !image) {
                 throw new Error("A atividade de categorias possui um cartão incompleto.");

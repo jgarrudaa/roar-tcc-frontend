@@ -36,21 +36,28 @@ export function itemPictogram(word) {
     return parts ? bodyPictogram(parts) : null;
 }
 
-const COLOR_OBJECTS_DIR = "/public/assets/imagens/modulos/cores-formas/objetos";
+const COLOR_IMAGES_DIR = "/public/assets/imagens/modulos/cores";
 
+// O cesto da atividade de arrastar mostra a cor, não o objeto.
 const COLOR_IMAGES = Object.freeze({
-    "color-red": `${COLOR_OBJECTS_DIR}/aple.png`,
-    "color-blue": `${COLOR_OBJECTS_DIR}/fish.png`,
-    "color-yellow": `${COLOR_OBJECTS_DIR}/banana.png`,
-    "color-green": `${COLOR_OBJECTS_DIR}/leaf.png`,
-    "color-orange": `${COLOR_OBJECTS_DIR}/orange.png`,
-    "color-purple": `${COLOR_OBJECTS_DIR}/grapes.png`,
+    red: `${COLOR_IMAGES_DIR}/red.png`,
+    blue: `${COLOR_IMAGES_DIR}/blue.png`,
+    yellow: `${COLOR_IMAGES_DIR}/yellow.png`,
+    green: `${COLOR_IMAGES_DIR}/green.png`,
+    orange: `${COLOR_IMAGES_DIR}/orange.png`,
+    purple: `${COLOR_IMAGES_DIR}/purple.png`,
 });
 
 export function categoryPictogram(id) {
-    if (COLOR_IMAGES[id]) {
+    const colorKey = String(id ?? "")
+        .trim()
+        .toLowerCase()
+        .replace(/^(?:color|cor)[-_ ]/, "");
+    const colorImage = COLOR_IMAGES[colorKey];
+
+    if (colorImage) {
         return svg(`
-            <image href="${COLOR_IMAGES[id]}" xlink:href="${COLOR_IMAGES[id]}" x="16" y="26" width="88" height="88" preserveAspectRatio="xMidYMid meet"/>
+            <image href="${colorImage}" xlink:href="${colorImage}" x="16" y="26" width="88" height="88" preserveAspectRatio="xMidYMid meet"/>
         `);
     }
     if (id === 'limbs') return bodyPictogram(['arm', 'hand', 'leg', 'foot']);
