@@ -75,10 +75,6 @@
                 profileAvatar.textContent = "";
                 img = document.createElement("img");
                 img.className = "profile-avatar-img";
-                img.style.width = "100%";
-                img.style.height = "100%";
-                img.style.objectFit = "contain";
-                img.style.padding = "4px";
                 profileAvatar.appendChild(img);
             }
             img.src = imgPath;
