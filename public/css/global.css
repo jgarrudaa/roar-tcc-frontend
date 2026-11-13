@@ -2579,3 +2579,37 @@ canvas {
         padding-inline: 12px;
     }
 }
+
+/* ============================================================
+   TÍTULO DA PÁGINA NO CELULAR
+   O h1 sai do cabeçalho e abre o conteúdo; na barra ficam apenas
+   menu, notificações e perfil.
+   ============================================================ */
+@media (max-width: 768px) {
+    /* Evita piscar o título na barra antes do JS reposicionar. */
+    .navbar .navbar__page-title {
+        display: none;
+    }
+}
+
+.page-title-mobile {
+    padding: 6px 0 10px;
+}
+
+.page-title-mobile .navbar__page-title {
+    min-width: 0;
+}
+
+.page-title-mobile .navbar__page-title h1 {
+    margin: 0;
+    color: var(--c-text);
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    font-size: clamp(1.35rem, 5.4vw, 1.6rem);
+    line-height: 1.25;
+}
+
+.page-title-mobile .navbar__page-title p {
+    display: none;
+}
