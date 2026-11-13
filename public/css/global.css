@@ -897,6 +897,29 @@ html.sidebar-collapsed .sidebar .sidebar__link i,
     object-fit: cover;
 }
 
+/* ============================================================
+   FOTO DE PERFIL EM BUSTO
+   Mostra a cabeça e a metade de cima do corpo do mascote,
+   em vez do corpo inteiro, tanto no cabeçalho quanto no perfil.
+   ============================================================ */
+.navbar__avatar,
+#profileAvatar {
+    position: relative;
+}
+
+.navbar__avatar img,
+#profileAvatar .profile-avatar-img {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: auto;
+    height: 122%;
+    max-width: none;
+    object-fit: contain;
+    object-position: center top;
+    transform: translateX(-50%);
+}
+
 .avatar--lg {
     width: 72px;
     height: 72px;
@@ -2201,6 +2224,13 @@ html[data-theme="dark"] .sidebar .sidebar__logo {
     -ms-overflow-style: none;
 }
 
+/* Área do professor no modo escuro: nada de faixa clara atrás do conteúdo. */
+[data-theme="dark"] .teacher-area {
+    --teacher-surface: #0b111a;
+    --teacher-navy: #0d1826;
+    --teacher-blue: #85c7f2;
+}
+
 .teacher-area .main-content::-webkit-scrollbar {
     display: none;
 }
@@ -2478,26 +2508,17 @@ canvas {
         width: auto;
         min-width: 44px;
         min-height: 44px;
-        padding: 0 12px;
-        border: 1.5px solid var(--c-border);
+        padding: 0 10px;
+        border: 1.5px solid color-mix(in srgb, currentColor 30%, transparent);
         border-radius: var(--r-sm);
-        background: transparent;
-        color: var(--c-text);
+        background: color-mix(in srgb, currentColor 8%, transparent);
     }
 
-    .sidebar .sidebar__toggle i {
-        display: none;
-    }
-
-    .sidebar .sidebar__toggle::before {
-        content: "✕";
-        font-size: 1rem;
-        line-height: 1;
-    }
-
+    /* O botão mantém só o ícone de menu + "Fechar" (sem o ✕ duplicado). */
     .sidebar .sidebar__toggle::after {
         content: "Fechar";
-        color: var(--c-text-soft);
+        color: inherit;
+        opacity: 0.85;
         font-size: 0.82rem;
         font-weight: 600;
     }

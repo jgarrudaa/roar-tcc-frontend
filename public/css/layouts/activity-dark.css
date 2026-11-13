@@ -1,0 +1,194 @@
+/* ============================================================
+   ATIVIDADES — MODO ESCURO
+   Complementa a paleta de variables.css cobrindo as cores fixas
+   usadas pelos jogos (cartões, rodapé, silhuetas e estados).
+   Carregado por último em atividade.html.
+   ============================================================ */
+
+:root[data-theme="dark"] body {
+    background: var(--roar-background);
+    color: var(--roar-ink);
+}
+
+/* Cabeçalho ------------------------------------------------- */
+:root[data-theme="dark"] .activity-back,
+:root[data-theme="dark"] .audio-button {
+    background: var(--roar-blue-light);
+    color: var(--roar-blue);
+}
+
+:root[data-theme="dark"] .activity-back:hover,
+:root[data-theme="dark"] .audio-button:hover {
+    background: #35577a;
+}
+
+:root[data-theme="dark"] .activity-back svg,
+:root[data-theme="dark"] .audio-button svg {
+    stroke: currentColor;
+}
+
+/* Palco ----------------------------------------------------- */
+:root[data-theme="dark"] .activity-stage {
+    background: var(--roar-surface);
+    border-color: var(--roar-border);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.42);
+}
+
+:root[data-theme="dark"] .activity-stage img.prompt-image,
+:root[data-theme="dark"] .activity-content > .prompt-image,
+:root[data-theme="dark"] .recognize-card img,
+:root[data-theme="dark"] .validation-image-button img {
+    border-color: var(--roar-border);
+}
+
+/* Rodapé ---------------------------------------------------- */
+:root[data-theme="dark"] .lex-feedback {
+    background: #1b2b3f;
+    color: var(--roar-ink);
+}
+
+:root[data-theme="dark"] .activity-progress {
+    color: var(--roar-muted);
+}
+
+:root[data-theme="dark"] .activity-progress progress {
+    accent-color: #5aa9e6;
+}
+
+:root[data-theme="dark"] .next-button {
+    background: #2f6fb3;
+    color: #ffffff;
+}
+
+:root[data-theme="dark"] .next-button:disabled {
+    opacity: 0.45;
+}
+
+/* Cartões de escolha, memória e prática --------------------- */
+:root[data-theme="dark"] .choice-card,
+:root[data-theme="dark"] .recognize-card,
+:root[data-theme="dark"] .validation-image-button,
+:root[data-theme="dark"] .association-prompt-button,
+:root[data-theme="dark"] .memory-card-front,
+:root[data-theme="dark"] .sentence-target,
+:root[data-theme="dark"] .word-token,
+:root[data-theme="dark"] .practice-card,
+:root[data-theme="dark"] .practice-choice,
+:root[data-theme="dark"] .practice-listen,
+:root[data-theme="dark"] .practice-drop-target,
+:root[data-theme="dark"] .memory-preview-word,
+:root[data-theme="dark"] .color-mix-tile,
+:root[data-theme="dark"] .color-mix-option {
+    background: var(--roar-surface);
+    border-color: var(--roar-border);
+    color: var(--roar-ink);
+}
+
+:root[data-theme="dark"] .choice-card.is-selected,
+:root[data-theme="dark"] .practice-draggable.is-selected {
+    background: #1d3a56;
+    border-color: var(--roar-blue);
+}
+
+:root[data-theme="dark"] .choice-card.is-correct,
+:root[data-theme="dark"] .recognize-card.is-correct,
+:root[data-theme="dark"] .memory-card.is-matched,
+:root[data-theme="dark"] .memory-card.is-matched .memory-card-back,
+:root[data-theme="dark"] .practice-choice.is-correct,
+:root[data-theme="dark"] .practice-drop-target.is-filled,
+:root[data-theme="dark"] .shadow-puzzle-target.is-solved,
+:root[data-theme="dark"] .color-mix-option.is-correct {
+    background: #173a2a;
+    border-color: #3f9c6b;
+    color: #d7f5e5;
+}
+
+:root[data-theme="dark"] .choice-card.is-wrong,
+:root[data-theme="dark"] .color-mix-option.is-wrong,
+:root[data-theme="dark"] .truth-button.is-wrong {
+    background: #3a1d1d;
+    border-color: #b3574f;
+    color: #ffd9d5;
+}
+
+:root[data-theme="dark"] .practice-choice.is-filled {
+    background: #173a2a;
+}
+
+/* Quebra-cabeça de sombra ----------------------------------- */
+:root[data-theme="dark"] .shadow-board-panel {
+    background: #0f1a27;
+    border-color: var(--roar-border);
+}
+
+:root[data-theme="dark"] .shadow-tray-panel {
+    background: var(--roar-surface);
+    border-color: var(--roar-border);
+}
+
+:root[data-theme="dark"] .shadow-piece {
+    background: #182739;
+    border-color: var(--roar-border);
+    color: var(--roar-ink);
+}
+
+:root[data-theme="dark"] .shadow-puzzle-target {
+    background: #16243a;
+    border-color: var(--roar-blue);
+}
+
+:root[data-theme="dark"] .shadow-puzzle-target.is-drag-over {
+    background: #1d3350;
+}
+
+:root[data-theme="dark"] .shadow-puzzle-target .shadow-puzzle-silhouette {
+    filter: brightness(0) invert(1) opacity(0.42);
+}
+
+:root[data-theme="dark"] .shadow-puzzle-piece {
+    background: var(--roar-surface);
+    border-color: var(--roar-border);
+    color: var(--roar-ink);
+}
+
+:root[data-theme="dark"] .shadow-puzzle-piece.is-placed {
+    background: #173a2a;
+}
+
+/* Erro / carregamento --------------------------------------- */
+:root[data-theme="dark"] .activity-error-recovery,
+:root[data-theme="dark"] .activity-loading,
+:root[data-theme="dark"] .activity-blocked {
+    color: var(--roar-ink);
+}
+
+:root[data-theme="dark"] .activity-error-actions .next-button {
+    background: #2f6fb3;
+}
+
+:root[data-theme="dark"] .activity-error-back {
+    color: var(--roar-blue);
+}
+
+/* Prática do módulo ---------------------------------------- */
+:root[data-theme="dark"] .practice-help,
+:root[data-theme="dark"] .practice-word,
+:root[data-theme="dark"] .practice-category-translation,
+:root[data-theme="dark"] .shadow-counter,
+:root[data-theme="dark"] .shadow-help {
+    color: var(--roar-muted);
+}
+
+:root[data-theme="dark"] .practice-classified-animal {
+    background: #1b2c40;
+    color: var(--roar-ink);
+}
+
+/* Formulários / caixas de texto ----------------------------- */
+:root[data-theme="dark"] .writing-input,
+:root[data-theme="dark"] .sentence-target,
+:root[data-theme="dark"] .word-bank-option {
+    background: var(--roar-surface);
+    border-color: var(--roar-border);
+    color: var(--roar-ink);
+}

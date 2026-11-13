@@ -19,3 +19,19 @@
     --roar-space-5: 24px;
     --roar-space-6: 32px;
 }
+
+/* Modo escuro: a mesma paleta, com superfícies e textos invertidos. */
+:root[data-theme="dark"],
+:root.dark-theme {
+    --roar-primary: #44f698;
+    --roar-blue-light: #29445f;
+    --roar-blue: #8fc9f5;
+    --roar-ink: #e8eef7;
+    --roar-muted: #a3b2c6;
+    --roar-surface: #131d2a;
+    --roar-background: #0b111a;
+    --roar-border: #2b3b50;
+    --roar-success: #4ed398;
+    --roar-danger: #ff8f85;
+    --roar-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
