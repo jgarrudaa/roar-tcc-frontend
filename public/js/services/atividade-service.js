@@ -172,25 +172,72 @@ function normalizeStudent(profile) {
     });
 }
 
-const COLOR_IMAGE_MAP = Object.freeze({
-    RED: "/public/assets/imagens/modulos/cores/red.png",
-    BLUE: "/public/assets/imagens/modulos/cores/blue.png",
-    GREEN: "/public/assets/imagens/modulos/cores/green.png",
-    YELLOW: "/public/assets/imagens/modulos/cores/yellow.png",
-    ORANGE: "/public/assets/imagens/modulos/cores/orange.png",
-    PURPLE: "/public/assets/imagens/modulos/cores/purple.png",
+const COLOR_OBJECTS_DIR = "/public/assets/imagens/modulos/cores-formas/objetos";
+
+// Cada cor do módulo "Cores" é ilustrada pelo objeto de mesma cor.
+const COLOR_OBJECT_FILES = Object.freeze({
+    RED: "aple.png",
+    BLUE: "fish.png",
+    GREEN: "leaf.png",
+    YELLOW: "banana.png",
+    ORANGE: "orange.png",
+    PURPLE: "grapes.png",
 });
+
+const COLOR_IMAGE_MAP = Object.freeze(
+    Object.fromEntries(
+        Object.entries(COLOR_OBJECT_FILES).map(([color, fileName]) => [
+            color,
+            `${COLOR_OBJECTS_DIR}/${fileName}`,
+        ]),
+    ),
+);
+
+const COLOR_OBJECT_NAME_TO_COLOR = Object.freeze({
+    red: "RED",
+    aple: "RED",
+    apple: "RED",
+    blue: "BLUE",
+    fish: "BLUE",
+    green: "GREEN",
+    leaf: "GREEN",
+    yellow: "YELLOW",
+    banana: "YELLOW",
+    orange: "ORANGE",
+    purple: "PURPLE",
+    grapes: "PURPLE",
+});
+
+function findColorForImageUrl(url) {
+    const match = String(url ?? "").match(
+        /(?:cores-formas|cores)\/(?:objetos\/)?([a-z]+(?:-[a-z]+)*)\.(?:svg|png|jpe?g)/i,
+    );
+
+    if (!match) {
+        return null;
+    }
+
+    for (const token of match[1].toLowerCase().split("-")) {
+        const color = COLOR_OBJECT_NAME_TO_COLOR[token];
+
+        if (color) {
+            return color;
+        }
+    }
+
+    return null;
+}
 
 function resolveColorImageUrl(url, englishWord) {
     const wordKey = String(englishWord ?? "").trim().toUpperCase();
+
     if (COLOR_IMAGE_MAP[wordKey]) {
         return COLOR_IMAGE_MAP[wordKey];
     }
-    const match = String(url ?? "").match(/(?:cores-formas|cores)\/(red|blue|green|orange|purple|yellow)\.(?:svg|png)/i);
-    if (match) {
-        return `/public/assets/imagens/modulos/cores/${match[1].toLowerCase()}.png`;
-    }
-    return url;
+
+    const colorFromUrl = findColorForImageUrl(url);
+
+    return colorFromUrl ? COLOR_IMAGE_MAP[colorFromUrl] : url;
 }
 
 function normalizeModuleItem(rawItem) {
@@ -717,33 +764,33 @@ function getMockModulePayload(moduleId, student) {
             itens: [
                 {
                     item_id: 1, ordem: 1, palavra_pt: "vermelho", palavra_en: "RED",
-                    url_imagem_real: "/public/assets/imagens/modulos/cores/red.png",
-                    url_imagem_vetor: "/public/assets/imagens/modulos/cores/red.png"
+                    url_imagem_real: COLOR_IMAGE_MAP.RED,
+                    url_imagem_vetor: COLOR_IMAGE_MAP.RED
                 },
                 {
                     item_id: 2, ordem: 2, palavra_pt: "azul", palavra_en: "BLUE",
-                    url_imagem_real: "/public/assets/imagens/modulos/cores/blue.png",
-                    url_imagem_vetor: "/public/assets/imagens/modulos/cores/blue.png"
+                    url_imagem_real: COLOR_IMAGE_MAP.BLUE,
+                    url_imagem_vetor: COLOR_IMAGE_MAP.BLUE
                 },
                 {
                     item_id: 3, ordem: 3, palavra_pt: "amarelo", palavra_en: "YELLOW",
-                    url_imagem_real: "/public/assets/imagens/modulos/cores/yellow.png",
-                    url_imagem_vetor: "/public/assets/imagens/modulos/cores/yellow.png"
+                    url_imagem_real: COLOR_IMAGE_MAP.YELLOW,
+                    url_imagem_vetor: COLOR_IMAGE_MAP.YELLOW
                 },
                 {
                     item_id: 4, ordem: 4, palavra_pt: "verde", palavra_en: "GREEN",
-                    url_imagem_real: "/public/assets/imagens/modulos/cores/green.png",
-                    url_imagem_vetor: "/public/assets/imagens/modulos/cores/green.png"
+                    url_imagem_real: COLOR_IMAGE_MAP.GREEN,
+                    url_imagem_vetor: COLOR_IMAGE_MAP.GREEN
                 },
                 {
                     item_id: 5, ordem: 5, palavra_pt: "laranja", palavra_en: "ORANGE",
-                    url_imagem_real: "/public/assets/imagens/modulos/cores/orange.png",
-                    url_imagem_vetor: "/public/assets/imagens/modulos/cores/orange.png"
+                    url_imagem_real: COLOR_IMAGE_MAP.ORANGE,
+                    url_imagem_vetor: COLOR_IMAGE_MAP.ORANGE
                 },
                 {
                     item_id: 6, ordem: 6, palavra_pt: "roxo", palavra_en: "PURPLE",
-                    url_imagem_real: "/public/assets/imagens/modulos/cores/purple.png",
-                    url_imagem_vetor: "/public/assets/imagens/modulos/cores/purple.png"
+                    url_imagem_real: COLOR_IMAGE_MAP.PURPLE,
+                    url_imagem_vetor: COLOR_IMAGE_MAP.PURPLE
                 },
             ],
             atividades: [

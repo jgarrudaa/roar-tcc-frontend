@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="title desc">
-  <title id="title">Yellow banana</title><desc id="desc">A curved ripe yellow banana.</desc>
-  <ellipse cx="160" cy="208" rx="79" ry="12" fill="#dce9f5"/>
-  <path d="M66 81c31 67 86 105 157 91 13-3 26-8 38-16-17 41-59 66-103 63-59-3-109-48-118-107-2-13 8-24 26-31Z" fill="#ffd45e" stroke="#c58c20" stroke-width="6" stroke-linejoin="round"/>
-  <path d="M66 81q-12 5-17 18l12 9q8-13 20-14M261 156q10-3 17-13l-11-10q-9 11-20 13" fill="#805b34" stroke="#67421e" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M95 119c26 37 62 58 102 60" fill="none" stroke="#fff1ad" stroke-width="10" stroke-linecap="round" opacity=".75"/>
-</svg>

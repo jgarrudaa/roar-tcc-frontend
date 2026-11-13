@@ -36,13 +36,15 @@ export function itemPictogram(word) {
     return parts ? bodyPictogram(parts) : null;
 }
 
+const COLOR_OBJECTS_DIR = "/public/assets/imagens/modulos/cores-formas/objetos";
+
 const COLOR_IMAGES = Object.freeze({
-    "color-red": "/public/assets/imagens/modulos/cores/red.png",
-    "color-blue": "/public/assets/imagens/modulos/cores/blue.png",
-    "color-yellow": "/public/assets/imagens/modulos/cores/yellow.png",
-    "color-green": "/public/assets/imagens/modulos/cores/green.png",
-    "color-orange": "/public/assets/imagens/modulos/cores/orange.png",
-    "color-purple": "/public/assets/imagens/modulos/cores/purple.png",
+    "color-red": `${COLOR_OBJECTS_DIR}/aple.png`,
+    "color-blue": `${COLOR_OBJECTS_DIR}/fish.png`,
+    "color-yellow": `${COLOR_OBJECTS_DIR}/banana.png`,
+    "color-green": `${COLOR_OBJECTS_DIR}/leaf.png`,
+    "color-orange": `${COLOR_OBJECTS_DIR}/orange.png`,
+    "color-purple": `${COLOR_OBJECTS_DIR}/grapes.png`,
 });
 
 export function categoryPictogram(id) {

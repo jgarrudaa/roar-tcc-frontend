@@ -259,43 +259,43 @@
           "id": "red",
           "pt": "vermelho",
           "en": "RED",
-          "realImage": "/public/assets/imagens/modulos/cores/red.png",
-          "vectorImage": "/public/assets/imagens/modulos/cores/red.png"
+          "realImage": "/public/assets/imagens/modulos/cores-formas/objetos/aple.png",
+          "vectorImage": "/public/assets/imagens/modulos/cores-formas/objetos/aple.png"
         },
         {
           "id": "blue",
           "pt": "azul",
           "en": "BLUE",
-          "realImage": "/public/assets/imagens/modulos/cores/blue.png",
-          "vectorImage": "/public/assets/imagens/modulos/cores/blue.png"
+          "realImage": "/public/assets/imagens/modulos/cores-formas/objetos/fish.png",
+          "vectorImage": "/public/assets/imagens/modulos/cores-formas/objetos/fish.png"
         },
         {
           "id": "yellow",
           "pt": "amarelo",
           "en": "YELLOW",
-          "realImage": "/public/assets/imagens/modulos/cores/yellow.png",
-          "vectorImage": "/public/assets/imagens/modulos/cores/yellow.png"
+          "realImage": "/public/assets/imagens/modulos/cores-formas/objetos/banana.png",
+          "vectorImage": "/public/assets/imagens/modulos/cores-formas/objetos/banana.png"
         },
         {
           "id": "green",
           "pt": "verde",
           "en": "GREEN",
-          "realImage": "/public/assets/imagens/modulos/cores/green.png",
-          "vectorImage": "/public/assets/imagens/modulos/cores/green.png"
+          "realImage": "/public/assets/imagens/modulos/cores-formas/objetos/leaf.png",
+          "vectorImage": "/public/assets/imagens/modulos/cores-formas/objetos/leaf.png"
         },
         {
           "id": "orange",
           "pt": "laranja",
           "en": "ORANGE",
-          "realImage": "/public/assets/imagens/modulos/cores/orange.png",
-          "vectorImage": "/public/assets/imagens/modulos/cores/orange.png"
+          "realImage": "/public/assets/imagens/modulos/cores-formas/objetos/orange.png",
+          "vectorImage": "/public/assets/imagens/modulos/cores-formas/objetos/orange.png"
         },
         {
           "id": "purple",
           "pt": "roxo",
           "en": "PURPLE",
-          "realImage": "/public/assets/imagens/modulos/cores/purple.png",
-          "vectorImage": "/public/assets/imagens/modulos/cores/purple.png"
+          "realImage": "/public/assets/imagens/modulos/cores-formas/objetos/grapes.png",
+          "vectorImage": "/public/assets/imagens/modulos/cores-formas/objetos/grapes.png"
         }
       ],
       "activities": []

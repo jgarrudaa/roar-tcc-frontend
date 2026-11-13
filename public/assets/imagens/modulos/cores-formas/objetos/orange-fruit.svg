@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="title desc">
-  <title id="title">Orange</title><desc id="desc">A round orange fruit with a green leaf.</desc>
-  <ellipse cx="160" cy="208" rx="79" ry="12" fill="#dce9f5"/>
-  <circle cx="157" cy="128" r="75" fill="#ff9b45" stroke="#d76a20" stroke-width="6"/>
-  <path d="M156 54q-3-20 11-31" fill="none" stroke="#78502c" stroke-width="9" stroke-linecap="round"/>
-  <path d="M166 37q31-24 51-5-18 27-51 16" fill="#58bf83" stroke="#25875c" stroke-width="4"/>
-  <path d="M116 84c-21 17-31 41-27 65" fill="none" stroke="#ffd0a3" stroke-width="10" stroke-linecap="round" opacity=".8"/>
-  <circle cx="156" cy="54" r="5" fill="#e67d2b"/><circle cx="157" cy="202" r="5" fill="#e67d2b"/>
-</svg>
