@@ -32,7 +32,21 @@ export function createColorMixActivity(context) {
         module.items.map(item => [normalizeWord(item.en), item]),
     );
 
-    const rounds = RECIPES.map(recipe => {
+    const targetWord = normalizeWord(
+        activity.answer || activity.item?.en,
+    );
+
+    const matchingRecipes = RECIPES.filter(
+        recipe => normalizeWord(recipe.result) === targetWord,
+    );
+
+    if (matchingRecipes.length === 0) {
+        throw new Error(
+            `Não existe uma mistura cadastrada para ${targetWord}.`,
+        );
+    }
+
+    const rounds = matchingRecipes.map(recipe => {
         const firstItem = itemsByWord.get(recipe.first);
         const secondItem = itemsByWord.get(recipe.second);
         const resultItem = itemsByWord.get(recipe.result);
@@ -57,11 +71,11 @@ export function createColorMixActivity(context) {
 
     const savedState =
         resumeState?.version === 1 &&
-        resumeState.key === stateKey &&
-        Number.isInteger(resumeState.index) &&
-        resumeState.index >= 0 &&
-        resumeState.index < rounds.length &&
-        typeof resumeState.resolved === "boolean"
+            resumeState.key === stateKey &&
+            Number.isInteger(resumeState.index) &&
+            resumeState.index >= 0 &&
+            resumeState.index < rounds.length &&
+            typeof resumeState.resolved === "boolean"
             ? resumeState
             : null;
 

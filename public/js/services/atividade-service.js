@@ -63,6 +63,7 @@ const INTERACTION_TYPES = Object.freeze({
     escrita: "writing",
     bancopalavras: "wordBank",
     separarporcor: "categories",
+    misturacores: "colorMix",
 });
 
 function requirePositiveInteger(value, fieldName) {
