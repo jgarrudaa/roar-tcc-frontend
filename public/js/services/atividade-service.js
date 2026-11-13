@@ -172,6 +172,27 @@ function normalizeStudent(profile) {
     });
 }
 
+const COLOR_IMAGE_MAP = Object.freeze({
+    RED: "/public/assets/imagens/modulos/cores/red.png",
+    BLUE: "/public/assets/imagens/modulos/cores/blue.png",
+    GREEN: "/public/assets/imagens/modulos/cores/green.png",
+    YELLOW: "/public/assets/imagens/modulos/cores/yellow.png",
+    ORANGE: "/public/assets/imagens/modulos/cores/orange.png",
+    PURPLE: "/public/assets/imagens/modulos/cores/purple.png",
+});
+
+function resolveColorImageUrl(url, englishWord) {
+    const wordKey = String(englishWord ?? "").trim().toUpperCase();
+    if (COLOR_IMAGE_MAP[wordKey]) {
+        return COLOR_IMAGE_MAP[wordKey];
+    }
+    const match = String(url ?? "").match(/(?:cores-formas|cores)\/(red|blue|green|orange|purple|yellow)\.(?:svg|png)/i);
+    if (match) {
+        return `/public/assets/imagens/modulos/cores/${match[1].toLowerCase()}.png`;
+    }
+    return url;
+}
+
 function normalizeModuleItem(rawItem) {
     const itemId = requirePositiveInteger(
         rawItem?.item_id,
@@ -188,13 +209,13 @@ function normalizeModuleItem(rawItem) {
         );
     }
 
-    const realImage = normalizeMediaUrl(
+    const realImage = resolveColorImageUrl(normalizeMediaUrl(
         rawItem?.url_imagem_real,
-    );
+    ), englishWord);
 
-    const vectorImage = normalizeMediaUrl(
+    const vectorImage = resolveColorImageUrl(normalizeMediaUrl(
         rawItem?.url_imagem_vetor,
-    );
+    ), englishWord);
 
     if (!realImage && !vectorImage) {
         throw new Error(
@@ -684,6 +705,63 @@ function getMockModulePayload(moduleId, student) {
                 {
                     atividade_id: 23, ordem_sequencia: 3, tipo_interacao: "validate", palavra_chave: "PIG",
                     instrucao_lex: "Ouça a palavra em inglês e escolha a imagem correta.", resposta_correta: "PIG"
+                },
+            ],
+        };
+    }
+
+    if (moduleId === 3) {
+        return {
+            modulo: { id: 3, nome: "Cores" },
+            aluno: { id: student.id },
+            itens: [
+                {
+                    item_id: 1, ordem: 1, palavra_pt: "vermelho", palavra_en: "RED",
+                    url_imagem_real: "/public/assets/imagens/modulos/cores/red.png",
+                    url_imagem_vetor: "/public/assets/imagens/modulos/cores/red.png"
+                },
+                {
+                    item_id: 2, ordem: 2, palavra_pt: "azul", palavra_en: "BLUE",
+                    url_imagem_real: "/public/assets/imagens/modulos/cores/blue.png",
+                    url_imagem_vetor: "/public/assets/imagens/modulos/cores/blue.png"
+                },
+                {
+                    item_id: 3, ordem: 3, palavra_pt: "amarelo", palavra_en: "YELLOW",
+                    url_imagem_real: "/public/assets/imagens/modulos/cores/yellow.png",
+                    url_imagem_vetor: "/public/assets/imagens/modulos/cores/yellow.png"
+                },
+                {
+                    item_id: 4, ordem: 4, palavra_pt: "verde", palavra_en: "GREEN",
+                    url_imagem_real: "/public/assets/imagens/modulos/cores/green.png",
+                    url_imagem_vetor: "/public/assets/imagens/modulos/cores/green.png"
+                },
+                {
+                    item_id: 5, ordem: 5, palavra_pt: "laranja", palavra_en: "ORANGE",
+                    url_imagem_real: "/public/assets/imagens/modulos/cores/orange.png",
+                    url_imagem_vetor: "/public/assets/imagens/modulos/cores/orange.png"
+                },
+                {
+                    item_id: 6, ordem: 6, palavra_pt: "roxo", palavra_en: "PURPLE",
+                    url_imagem_real: "/public/assets/imagens/modulos/cores/purple.png",
+                    url_imagem_vetor: "/public/assets/imagens/modulos/cores/purple.png"
+                },
+            ],
+            atividades: [
+                {
+                    atividade_id: 31, ordem_sequencia: 1, tipo_interacao: "recognize", palavra_chave: "RED",
+                    instrucao_lex: "Toque na cor: vermelho.", resposta_correta: "RED"
+                },
+                {
+                    atividade_id: 32, ordem_sequencia: 2, tipo_interacao: "associate", palavra_chave: "BLUE",
+                    instrucao_lex: "Observe a cor. Escolha a palavra correta.", resposta_correta: "BLUE"
+                },
+                {
+                    atividade_id: 33, ordem_sequencia: 3, tipo_interacao: "validate", palavra_chave: "GREEN",
+                    instrucao_lex: "Ouça a palavra em inglês e escolha a cor correta.", resposta_correta: "GREEN"
+                },
+                {
+                    atividade_id: 34, ordem_sequencia: 4, tipo_interacao: "memory", palavra_chave: "YELLOW",
+                    instrucao_lex: "Encontre os pares das cores.", resposta_correta: "YELLOW"
                 },
             ],
         };

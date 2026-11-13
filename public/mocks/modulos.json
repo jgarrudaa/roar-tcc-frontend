@@ -254,7 +254,50 @@
       "id": "cores",
       "title": "Cores",
       "status": "preparing",
-      "items": [],
+      "items": [
+        {
+          "id": "red",
+          "pt": "vermelho",
+          "en": "RED",
+          "realImage": "/public/assets/imagens/modulos/cores/red.png",
+          "vectorImage": "/public/assets/imagens/modulos/cores/red.png"
+        },
+        {
+          "id": "blue",
+          "pt": "azul",
+          "en": "BLUE",
+          "realImage": "/public/assets/imagens/modulos/cores/blue.png",
+          "vectorImage": "/public/assets/imagens/modulos/cores/blue.png"
+        },
+        {
+          "id": "yellow",
+          "pt": "amarelo",
+          "en": "YELLOW",
+          "realImage": "/public/assets/imagens/modulos/cores/yellow.png",
+          "vectorImage": "/public/assets/imagens/modulos/cores/yellow.png"
+        },
+        {
+          "id": "green",
+          "pt": "verde",
+          "en": "GREEN",
+          "realImage": "/public/assets/imagens/modulos/cores/green.png",
+          "vectorImage": "/public/assets/imagens/modulos/cores/green.png"
+        },
+        {
+          "id": "orange",
+          "pt": "laranja",
+          "en": "ORANGE",
+          "realImage": "/public/assets/imagens/modulos/cores/orange.png",
+          "vectorImage": "/public/assets/imagens/modulos/cores/orange.png"
+        },
+        {
+          "id": "purple",
+          "pt": "roxo",
+          "en": "PURPLE",
+          "realImage": "/public/assets/imagens/modulos/cores/purple.png",
+          "vectorImage": "/public/assets/imagens/modulos/cores/purple.png"
+        }
+      ],
       "activities": []
     },
     {

@@ -36,39 +36,20 @@ export function itemPictogram(word) {
     return parts ? bodyPictogram(parts) : null;
 }
 
+const COLOR_IMAGES = Object.freeze({
+    "color-red": "/public/assets/imagens/modulos/cores/red.png",
+    "color-blue": "/public/assets/imagens/modulos/cores/blue.png",
+    "color-yellow": "/public/assets/imagens/modulos/cores/yellow.png",
+    "color-green": "/public/assets/imagens/modulos/cores/green.png",
+    "color-orange": "/public/assets/imagens/modulos/cores/orange.png",
+    "color-purple": "/public/assets/imagens/modulos/cores/purple.png",
+});
+
 export function categoryPictogram(id) {
-
-    const colorSwatches = {
-        "color-red": "#F36B67",
-        "color-blue": "#55A8F5",
-        "color-yellow": "#FFD45E",
-        "color-green": "#58C98B",
-        "color-orange": "#FF9B55",
-        "color-purple": "#A980E8",
-    };
-
-    if (colorSwatches[id]) {
-        const fill = colorSwatches[id];
-
+    if (COLOR_IMAGES[id]) {
         return svg(`
-        <circle
-            cx="60"
-            cy="70"
-            r="38"
-            fill="${fill}"
-            stroke="#173F75"
-            stroke-width="7"
-        />
-        <ellipse
-            cx="48"
-            cy="56"
-            rx="13"
-            ry="7"
-            fill="#fff"
-            opacity=".35"
-            transform="rotate(-30 48 56)"
-        />
-    `);
+            <image href="${COLOR_IMAGES[id]}" xlink:href="${COLOR_IMAGES[id]}" x="16" y="26" width="88" height="88" preserveAspectRatio="xMidYMid meet"/>
+        `);
     }
     if (id === 'limbs') return bodyPictogram(['arm', 'hand', 'leg', 'foot']);
     if (id === 'head-torso') return bodyPictogram(['head', 'neck', 'torso']);
