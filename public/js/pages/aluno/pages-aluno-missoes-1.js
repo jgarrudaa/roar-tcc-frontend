@@ -454,14 +454,9 @@ function renderLoading() {
             role="status"
             aria-live="polite"
         >
-            <i
-                class="
-                    fi
-                    fi-br-spinner
-                    missions-state__spinner
-                "
-                aria-hidden="true"
-            ></i>
+            <div class="spinner" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+            </div>
 
             <h2>Carregando missões</h2>
 

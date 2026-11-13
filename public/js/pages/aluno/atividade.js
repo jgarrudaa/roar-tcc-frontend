@@ -156,10 +156,18 @@ function showLoading() {
     elements.stage.inert = false;
     elements.stage.classList.remove("memory-stage", "practice-stage");
     document.body.classList.remove("is-practice");
-    const status = document.createElement("p");
+    const status = document.createElement("div");
     status.className = "activity-loading";
     status.setAttribute("role", "status");
-    status.textContent = "Carregando atividade...";
+    status.innerHTML = `
+        <div class="spinner" aria-label="Carregando atividade..." title="Carregando atividade...">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <p>Carregando atividade...</p>
+    `;
     elements.stage.replaceChildren(status);
     if (elements.backButton) {
         elements.backButton.href = "atividades.html";

@@ -689,13 +689,17 @@ function renderMedals(medals) {
 
 function showLoading() {
     const loading =
-        document.createElement("p");
+        document.createElement("div");
 
     loading.className =
         "achievements-loading";
 
-    loading.textContent =
-        "Carregando suas conquistas...";
+    loading.innerHTML = `
+        <div class="spinner" aria-label="Carregando conquistas...">
+            <span></span><span></span><span></span><span></span>
+        </div>
+        <p style="margin-top: 12px;">Carregando suas conquistas...</p>
+    `;
 
     elements.unlockedGrid
         .replaceChildren(loading);
