@@ -30,6 +30,7 @@ input {
 
 .auth-page {
     min-height: 100vh;
+    min-height: 100dvh;
     display: grid;
     place-items: center;
     padding: 32px;
@@ -446,70 +447,184 @@ input {
 }
 
 
+/* ============================================================
+   CELULARES E TABLETS: formulário abaixo da arte e mascote
+   no fluxo, para nunca cobrir o texto.
+   ============================================================ */
 @media (max-width: 960px) {
     .auth-page {
-        padding: 20px;
+        padding: 16px;
+        min-height: 100dvh;
     }
 
     .auth-card {
-        width: min(100%, 620px);
+        width: 100%;
+        max-width: 640px;
         height: auto;
         min-height: 0;
         grid-template-columns: 1fr;
+        border-radius: 18px;
     }
 
     .auth-visual {
-        min-height: 430px;
-        padding: 36px;
+        height: auto;
+        min-height: 0;
+        padding: 26px 24px 0;
+        gap: 16px;
+        justify-content: flex-start;
+        overflow: clip;
+    }
+
+    .auth-logo {
+        width: 148px;
+        height: 54px;
+    }
+
+    .auth-greeting {
+        font-size: clamp(22px, 6.4vw, 28px);
+    }
+
+    .auth-copy p {
+        max-width: 44ch;
+        margin-top: 12px;
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    /* O palco deixa de flutuar: vira a última linha da arte, à direita. */
+    .auth-mascot-stage {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        margin-top: 10px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        pointer-events: none;
+    }
+
+    .auth-dino {
+        position: static;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        width: auto;
+        height: clamp(96px, 28vw, 158px);
+        max-width: min(50vw, 200px);
+        margin-right: -4px;
+        transform: none;
+        object-fit: contain;
+        object-position: right bottom;
     }
 
     .auth-form-panel {
-        padding: 36px;
+        height: auto;
+        padding: 30px 24px max(30px, env(safe-area-inset-bottom));
     }
 
     .auth-form,
     .auth-form--register {
         min-height: 0;
+        gap: 16px;
+    }
+
+    .auth-form-header h2 {
+        font-size: 22px;
     }
 }
 
-@media (max-width: 520px) {
+/* Celulares baixos (ex.: 640px de altura) */
+@media (max-width: 960px) and (max-height: 720px) {
     .auth-page {
-        padding: 0;
+        padding: 12px;
     }
 
-    .auth-card {
-        border-radius: 0;
+    .auth-visual {
+        padding-top: 18px;
+        gap: 10px;
+    }
+
+    .auth-logo {
+        width: 122px;
+        height: 46px;
+    }
+
+    .auth-copy p {
+        margin-top: 8px;
+        font-size: 14px;
+    }
+
+    .auth-dino {
+        height: clamp(76px, 22vw, 116px);
+    }
+
+    .auth-form-panel {
+        padding-block: 22px;
+    }
+
+    .auth-form {
+        gap: 12px;
+    }
+
+    .auth-fields {
+        gap: 12px;
+    }
+
+    .auth-input,
+    .buttonlogin,
+    .auth-submit,
+    .buttoncadastro {
+        height: 44px;
+    }
+}
+
+/* Celular deitado / telas muito baixas */
+@media (max-width: 960px) and (max-height: 520px) {
+    .auth-mascot-stage {
+        display: none;
+    }
+
+    .auth-visual {
+        padding-bottom: 18px;
+    }
+
+    .auth-greeting {
+        font-size: 20px;
+    }
+
+    .auth-copy p {
+        font-size: 13px;
+    }
+}
+
+/* Celulares estreitos (320–380px) */
+@media (max-width: 380px) {
+    .auth-page {
+        padding: 10px;
     }
 
     .auth-visual,
     .auth-form-panel {
-        padding: 28px 24px;
+        padding-inline: 18px;
     }
 
     .auth-logo {
-        width: 160px;
-        height: 64px;
+        width: 126px;
+        height: 46px;
     }
 
     .auth-greeting {
-        font-size: 25px;
+        font-size: 21px;
     }
 
     .auth-copy p {
-        max-width: 290px;
-        margin-top: 32px;
-        font-size: 15px;
+        font-size: 14px;
     }
 
-    .auth-mascot-stage {
-        width: 200px;
-        height: 180px;
-    }
-
-    .auth-dino {
-        height: 165px;
-        max-width: 200px;
+    .auth-input {
+        padding-inline: 12px;
     }
 }
 
@@ -528,22 +643,6 @@ input {
     border: 0;
     background: transparent;
     cursor: pointer;
-}
-
-@media (max-width: 360px) {
-
-    .auth-visual,
-    .auth-form-panel {
-        padding: 20px 14px;
-    }
-
-    .auth-greeting {
-        font-size: 22px;
-    }
-
-    .auth-input {
-        padding: 0 12px;
-    }
 }
 
 @media (min-width: 1921px) {

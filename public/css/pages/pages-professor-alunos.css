@@ -1142,3 +1142,10 @@
         width: 100%;
     }
 }
+/* Estatísticas da turma em 2x2 no celular: cabe mais conteúdo na primeira tela. */
+@media (max-width: 600px) {
+    #turmaStats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-sm);
+    }
+}

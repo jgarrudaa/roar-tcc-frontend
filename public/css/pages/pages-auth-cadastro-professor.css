@@ -6,9 +6,11 @@
     background-image: url("../../assets/imagens/bg2.png");
 }
 
-.auth-page--teacher-register .auth-mascot-stage {
-    right: 24px;
-    bottom: 32px;
+@media (min-width: 961px) {
+    .auth-page--teacher-register .auth-mascot-stage {
+        right: 24px;
+        bottom: 32px;
+    }
 }
 
 .auth-page--teacher-register .auth-form-label {

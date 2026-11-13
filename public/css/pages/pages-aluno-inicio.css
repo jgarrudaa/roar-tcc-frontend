@@ -481,3 +481,37 @@
         flex-wrap: wrap;
     }
 }
+/* ============================================================
+   Celulares estreitos: cartão principal usa a largura toda e
+   o botão de ação desce para a própria linha.
+   ============================================================ */
+@media (max-width: 480px) {
+    .hero-card {
+        width: 100%;
+        padding: var(--space-md);
+        align-items: flex-start;
+    }
+
+    .hero-card__img-wrap {
+        width: 56px;
+        height: 56px;
+        font-size: 1.6rem;
+    }
+
+    .hero-card__title {
+        font-size: 1.05rem;
+    }
+
+    .u-pages-aluno-inicio-005 {
+        margin-bottom: 6px;
+    }
+
+    .u-pages-aluno-inicio-007 {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .hero-card__content .btn {
+        width: 100%;
+    }
+}

@@ -886,3 +886,10 @@
         padding: var(--space-sm) var(--space-md);
     }
 }
+/* Estatísticas em 2x2 no celular. */
+@media (max-width: 600px) {
+    .page-body > .grid-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-sm);
+    }
+}

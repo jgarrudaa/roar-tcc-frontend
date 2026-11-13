@@ -2410,3 +2410,172 @@ html[data-theme="dark"] .sidebar .sidebar__logo {
         gap: var(--space-sm);
     }
 }
+/* ============================================================
+   AJUSTES RESPONSIVOS — CELULARES
+   Menu sanduíche, cabeçalho fixo e leitura segura em qualquer
+   largura (320px a 430px) e em telas baixas.
+   ============================================================ */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+img,
+svg,
+video,
+canvas {
+    max-width: 100%;
+}
+
+@media (max-width: 1024px) {
+
+    /* Cabeçalho fica no topo durante a rolagem: o menu sempre alcança. */
+    .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 140;
+        background: var(--c-secondary);
+        background: color-mix(in srgb, var(--c-secondary) 94%, transparent);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--c-border);
+    }
+
+    .navbar__page-title {
+        min-width: 0;
+    }
+
+    /* Com a gaveta aberta, o conteúdo de trás não rola. */
+    body.sidebar-menu-open .main-content {
+        overflow: hidden;
+    }
+
+    .sidebar__nav {
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding-bottom: 6px;
+        scrollbar-width: thin;
+    }
+
+    .sidebar__nav::before {
+        content: "Menu";
+        margin: 2px 12px 10px;
+        color: var(--c-text-soft);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+    }
+
+    .sidebar .sidebar__link {
+        min-height: 48px;
+    }
+
+    .sidebar .sidebar__toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        width: auto;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0 12px;
+        border: 1.5px solid var(--c-border);
+        border-radius: var(--r-sm);
+        background: transparent;
+        color: var(--c-text);
+    }
+
+    .sidebar .sidebar__toggle i {
+        display: none;
+    }
+
+    .sidebar .sidebar__toggle::before {
+        content: "✕";
+        font-size: 1rem;
+        line-height: 1;
+    }
+
+    .sidebar .sidebar__toggle::after {
+        content: "Fechar";
+        color: var(--c-text-soft);
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+}
+
+@media (max-width: 600px) {
+
+    /* Cabeçalho em uma linha só, sem empurrar o conteúdo para baixo. */
+    .navbar {
+        flex-wrap: nowrap;
+        gap: 10px;
+        padding: 10px 14px;
+        min-height: 64px;
+    }
+
+    .navbar__page-title h1 {
+        font-size: 1.15rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .navbar__right {
+        flex-shrink: 0;
+        gap: 8px;
+    }
+
+    .teacher-area .navbar {
+        flex-wrap: nowrap;
+        padding: 10px 14px;
+        min-height: 64px;
+    }
+
+    .teacher-area .navbar__right {
+        width: auto;
+    }
+
+    .navbar .btn {
+        min-height: 42px;
+        padding-inline: 12px;
+        font-size: 0.8rem;
+    }
+
+    .navbar__avatar {
+        width: 42px;
+        height: 42px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .navbar {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+
+    .navbar__page-title h1 {
+        font-size: 1.02rem;
+    }
+
+    .mobile-menu-btn {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
+    }
+
+    .navbar__avatar {
+        width: 38px;
+        height: 38px;
+    }
+
+    .navbar .btn {
+        padding-inline: 10px;
+        font-size: 0.74rem;
+    }
+
+    .page-body {
+        padding-inline: 12px;
+    }
+}
