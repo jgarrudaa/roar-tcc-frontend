@@ -439,6 +439,9 @@ function normalizeActivity(rawActivity) {
         learningMode: normalizeText(
             rawActivity?.modo_alvo,
         ),
+
+        sentenceTemplate: normalizeText(rawActivity?.frase_modelo),
+        promptImage: normalizeMediaUrl(rawActivity?.url_midia),
     });
 }
 
@@ -637,6 +640,9 @@ function createActivity(
             groups: selectedActivity.groups,
             cards: selectedActivity.cards,
             dragToCategory: selectedActivity.dragToCategory,
+        } : {}), ...(selectedActivity.type === "completeSentence" ? {
+            sentenceTemplate: selectedActivity.sentenceTemplate,
+            promptImage: selectedActivity.promptImage,
         } : {}),
 
         /*
