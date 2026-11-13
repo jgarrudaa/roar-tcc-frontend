@@ -19,14 +19,55 @@ function initSidebar() {
 
     const responsiveMenu = window.matchMedia("(max-width: 1024px)");
 
-    function setMenuOpen(isOpen) {
+    let lastFocusedElement = null;
+
+    function getFirstMenuLink() {
+        return sidebar?.querySelector(".sidebar__nav .sidebar__link, .sidebar__link");
+    }
+
+    function setMenuOpen(isOpen, { restoreFocus = true } = {}) {
         if (!sidebar || !backdrop) return;
+
+        const isDrawer = responsiveMenu.matches;
+
+        if (isOpen && isDrawer && !sidebar.classList.contains("open")) {
+            lastFocusedElement = document.activeElement instanceof HTMLElement
+                ? document.activeElement
+                : null;
+        }
+
         sidebar.classList.toggle("open", isOpen);
         backdrop.classList.toggle("open", isOpen);
         document.body.classList.toggle("sidebar-menu-open", isOpen);
         mobileButton?.setAttribute("aria-expanded", String(isOpen));
         toggle?.setAttribute("aria-expanded", String(isOpen));
         toggle?.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
+
+        if (!isDrawer) {
+            sidebar.inert = false;
+            return;
+        }
+
+        /* Fecha o foco do teclado dentro da gaveta quando ela está oculta. */
+        sidebar.inert = !isOpen;
+
+        if (isOpen) {
+            window.requestAnimationFrame(() => {
+                getFirstMenuLink()?.focus({ preventScroll: true });
+            });
+            return;
+        }
+
+        const focusTarget = lastFocusedElement instanceof HTMLElement &&
+            lastFocusedElement !== document.body
+            ? lastFocusedElement
+            : mobileButton;
+
+        if (restoreFocus && focusTarget?.focus) {
+            focusTarget.focus({ preventScroll: true });
+        }
+
+        lastFocusedElement = null;
     }
 
     const savedCollapsed =
@@ -90,7 +131,10 @@ function initSidebar() {
         }
     });
 
-    responsiveMenu.addEventListener("change", () => setMenuOpen(false));
+    responsiveMenu.addEventListener("change", () => setMenuOpen(false, { restoreFocus: false }));
+
+    /* Estado inicial: no celular a gaveta começa fechada e fora do foco. */
+    setMenuOpen(false, { restoreFocus: false });
 
     sidebar?.querySelectorAll(".sidebar__link").forEach((link) => {
         link.addEventListener("click", () => {

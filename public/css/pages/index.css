@@ -973,3 +973,73 @@ button {
         font-size: 3.5rem;
     }
 }
+
+/* ============================================================
+   AJUSTES RESPONSIVOS — CELULARES
+   ============================================================ */
+@media (max-width: 920px) {
+
+    /* No celular a entrada é só vertical: nada de deslocar para o lado
+       e criar rolagem horizontal. */
+    .reveal--right {
+        transform: translateY(28px);
+    }
+
+    .menu-toggle {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-content: center;
+        gap: 4px;
+        padding: 0;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        cursor: pointer;
+    }
+
+    .menu-toggle:focus-visible {
+        outline: 3px solid rgba(31, 108, 227, 0.45);
+        outline-offset: 2px;
+    }
+
+    .site-nav.open {
+        z-index: 60;
+        max-height: calc(100dvh - 72px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        box-shadow: 0 18px 40px rgba(13, 36, 64, 0.14);
+    }
+
+    .site-nav a {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 6px 2px;
+    }
+
+    body.nav-open {
+        overflow: hidden;
+    }
+}
+
+@media (max-width: 380px) {
+    .hero h1 {
+        font-size: 2.35rem;
+    }
+
+    .site-header {
+        gap: 10px;
+        padding-inline: 12px;
+    }
+
+    .header-actions {
+        gap: 6px;
+    }
+
+    .header-actions .button,
+    .access-link {
+        padding-inline: 10px;
+        font-size: 0.68rem;
+    }
+}

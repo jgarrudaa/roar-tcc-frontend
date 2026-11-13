@@ -6,8 +6,10 @@
     background-image: url("../../assets/imagens/bg1.png");
 }
 
-.auth-page--student-register .auth-mascot-stage {
-    right: 24px;
+@media (min-width: 961px) {
+    .auth-page--student-register .auth-mascot-stage {
+        right: 24px;
+    }
 }
 
 .auth-form-panel--student-register {
@@ -234,5 +236,33 @@
 
 .auth-submit--success:hover {
     background: #34d884;
+}
+
+/* ============================================================
+   Celulares: formulário ocupa a largura toda e pode rolar
+   ============================================================ */
+@media (max-width: 960px) {
+    .auth-form-panel--student-register {
+        padding: 26px 22px max(26px, env(safe-area-inset-bottom));
+        overflow: visible;
+    }
+
+    .auth-form--student-register {
+        height: auto;
+    }
+
+    .student-register-step {
+        height: auto;
+    }
+
+    .student-summary {
+        padding: 14px;
+    }
+}
+
+@media (max-width: 380px) {
+    .auth-form-panel--student-register {
+        padding-inline: 18px;
+    }
 }
 
