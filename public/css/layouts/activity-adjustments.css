@@ -303,101 +303,98 @@
 }
 
 @media (min-width: 761px) {
-  #activity-stage:has(
-    .shadow-game .shadow-tray > :nth-child(6):last-child
-  ) {
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+    #activity-stage:has(.shadow-game .shadow-tray > :nth-child(6):last-child) {
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-  #activity-stage:has(
-    .shadow-game .shadow-tray > :nth-child(6):last-child
-  ) .shadow-game {
-    box-sizing: border-box;
-    width: min(100%, 1160px);
-    max-width: 1160px;
-    height: 100%;
-    min-height: 0;
-    align-content: center;
-    grid-template-rows: auto minmax(0, 1fr);
-    gap: 10px clamp(14px, 1.5vw, 22px);
-  }
+    #activity-stage:has(.shadow-game .shadow-tray > :nth-child(6):last-child) .shadow-game {
+        box-sizing: border-box;
+        width: min(100%, 1160px);
+        max-width: 1160px;
+        height: 100%;
+        min-height: 0;
+        align-content: center;
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 10px clamp(14px, 1.5vw, 22px);
+    }
 
-  #activity-stage:has(
-    .shadow-game .shadow-tray > :nth-child(6):last-child
-  ) .shadow-workspace {
-    min-height: 0;
-    gap: clamp(10px, 1vw, 18px);
-  }
+    #activity-stage:has(.shadow-game .shadow-tray > :nth-child(6):last-child) .shadow-workspace {
+        min-height: 0;
+        gap: clamp(10px, 1vw, 18px);
+    }
 
-  #activity-stage:has(
-    .shadow-game .shadow-tray > :nth-child(6):last-child
-  ) .shadow-board-panel,
-  #activity-stage:has(
-    .shadow-game .shadow-tray > :nth-child(6):last-child
-  ) .shadow-tray-panel {
-    padding: 12px;
-  }
+    #activity-stage:has(.shadow-game .shadow-tray > :nth-child(6):last-child) .shadow-board-panel,
+    #activity-stage:has(.shadow-game .shadow-tray > :nth-child(6):last-child) .shadow-tray-panel {
+        padding: 12px;
+    }
 
-  #activity-stage:has(
-    .shadow-game .shadow-tray > :nth-child(6):last-child
-  ) .shadow-board {
-    width: min(100%, 30vh, 260px);
-  }
+    #activity-stage:has(.shadow-game .shadow-tray > :nth-child(6):last-child) .shadow-board {
+        width: min(100%, 30vh, 260px);
+    }
 
-  #activity-stage:has(
-    .shadow-game .shadow-tray > :nth-child(6):last-child
-  ) .shadow-tray {
-    min-height: 0;
-    align-content: center;
-    gap: 8px;
-  }
+    #activity-stage:has(.shadow-game .shadow-tray > :nth-child(6):last-child) .shadow-tray {
+        min-height: 0;
+        align-content: center;
+        gap: 8px;
+    }
 
-  #activity-stage:has(
-    .shadow-game .shadow-tray > :nth-child(6):last-child
-  ) .shadow-piece {
-    box-sizing: border-box;
-    min-height: 0;
-    height: clamp(76px, 12vh, 98px);
-    padding: 6px;
-  }
+    #activity-stage:has(.shadow-game .shadow-tray > :nth-child(6):last-child) .shadow-piece {
+        box-sizing: border-box;
+        min-height: 0;
+        height: clamp(76px, 12vh, 98px);
+        padding: 6px;
+    }
 
-  #activity-stage:has(
-    .shadow-game .shadow-tray > :nth-child(6):last-child
-  ) .shadow-piece .shadow-piece-graphic {
-    max-height: 10vh;
-  }
+    #activity-stage:has(.shadow-game .shadow-tray > :nth-child(6):last-child) .shadow-piece .shadow-piece-graphic {
+        max-height: 10vh;
+    }
 }
 
 @media (min-width: 1025px) {
-  #activity-stage .complete-sentence-game {
-    box-sizing: border-box;
-    width: min(100%, 1120px);
-    max-width: 1120px;
-    margin-inline: auto;
-    padding: clamp(20px, 2.4vw, 32px);
-    grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
-    column-gap: clamp(32px, 4vw, 64px);
-  }
+    #activity-stage .complete-sentence-game {
+        box-sizing: border-box;
+        width: min(100%, 1120px);
+        max-width: 1120px;
+        margin-inline: auto;
+        padding: clamp(20px, 2.4vw, 32px);
+        grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+        column-gap: clamp(32px, 4vw, 64px);
+    }
 
-  #activity-stage .complete-sentence-image {
-    box-sizing: border-box;
-    width: 100%;
-    height: min(360px, 44vh);
-    padding: 18px;
-  }
+    #activity-stage .complete-sentence-image {
+        box-sizing: border-box;
+        width: 100%;
+        height: min(360px, 44vh);
+        padding: 18px;
+    }
 
-  #activity-stage .complete-sentence-image .prompt-image {
-    max-height: 320px;
-    object-fit: contain;
-    object-position: center;
-  }
+    #activity-stage .complete-sentence-image .prompt-image {
+        max-height: 320px;
+        object-fit: contain;
+        object-position: center;
+    }
 
-  #activity-stage .complete-sentence-area,
+    #activity-stage .complete-sentence-area,
+    #activity-stage .complete-sentence-options {
+        justify-self: center;
+        width: min(100%, 620px);
+    }
+}
+
+@media (min-width: 761px) {
   #activity-stage .complete-sentence-options {
-    justify-self: center;
-    width: min(100%, 620px);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  #activity-stage .complete-sentence-option {
+    box-sizing: border-box;
+    flex: 0 0 calc((100% - 24px) / 3);
+    min-width: 0;
   }
 }
