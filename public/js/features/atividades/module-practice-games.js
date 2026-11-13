@@ -1,7 +1,7 @@
 import { createActivityLifecycle } from "./activity-lifecycle.js";
 import { audioService } from "../../services/audio-service.js";
 import { createButton, createImage, shuffle } from "./activity-helpers.js";
-import { categoryPictogram, itemPictogram, armHighlight } from "./practice-pictograms.js";
+import { categoryPictogram, itemPictogram, armHighlight } from "./practice-pictograms.js?v=2";
 import { createSceneDrag } from "./scene-drag.js";
 
 // Both activities use native buttons for touch, mouse, Enter and Space.

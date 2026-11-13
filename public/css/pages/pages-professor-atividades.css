@@ -924,3 +924,29 @@
     font-size: 0.75rem;
     color: var(--c-text-soft);
 }
+/* ============================================================
+   Modo escuro: ícones das categorias em tons claros
+   ============================================================ */
+[data-theme="dark"] .cat-icon--blue,
+[data-theme="dark"] .act-icon--blue {
+    background: rgba(133, 199, 242, 0.18);
+    color: #a9d9f8;
+}
+
+[data-theme="dark"] .cat-icon--green,
+[data-theme="dark"] .act-icon--green {
+    background: rgba(68, 246, 152, 0.16);
+    color: #8bf3c1;
+}
+
+[data-theme="dark"] .cat-icon--purple,
+[data-theme="dark"] .act-icon--purple {
+    background: rgba(168, 85, 247, 0.24);
+    color: #d5baff;
+}
+
+[data-theme="dark"] .cat-icon--orange,
+[data-theme="dark"] .act-icon--orange {
+    background: rgba(245, 158, 11, 0.22);
+    color: #ffd580;
+}

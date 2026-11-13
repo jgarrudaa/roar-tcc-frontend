@@ -251,10 +251,12 @@
 
 .shadow-target.is-hinted,
 .shadow-target.is-over {
+    /* A linha tracejada fica exatamente sobre a borda da peça e acima
+       das peças vizinhas, sem deslocamento. */
     outline: 3px dashed var(--roar-blue);
-    outline-offset: -2px;
+    outline-offset: 0;
     background: color-mix(in srgb, var(--roar-blue-light) 25%, transparent);
-    z-index: 2;
+    z-index: 6;
 }
 
 .shadow-target.is-matched {

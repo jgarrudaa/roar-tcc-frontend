@@ -2224,6 +2224,13 @@ html[data-theme="dark"] .sidebar .sidebar__logo {
     -ms-overflow-style: none;
 }
 
+/* Área do professor no modo escuro: nada de faixa clara atrás do conteúdo. */
+[data-theme="dark"] .teacher-area {
+    --teacher-surface: #0b111a;
+    --teacher-navy: #0d1826;
+    --teacher-blue: #85c7f2;
+}
+
 .teacher-area .main-content::-webkit-scrollbar {
     display: none;
 }

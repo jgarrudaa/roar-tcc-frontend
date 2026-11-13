@@ -48,6 +48,13 @@ const COLOR_IMAGES = Object.freeze({
     purple: `${COLOR_IMAGES_DIR}/purple.png`,
 });
 
+const FARM_PHOTOS_DIR = "/public/assets/imagens/modulos/fazenda/animais_reais";
+
+const CATEGORY_PHOTOS = Object.freeze({
+    mammals: `${FARM_PHOTOS_DIR}/cow.png`,
+    birds: `${FARM_PHOTOS_DIR}/duck.png`,
+});
+
 export function categoryPictogram(id) {
     const colorKey = String(id ?? "")
         .trim()
@@ -63,43 +70,17 @@ export function categoryPictogram(id) {
     if (id === 'limbs') return bodyPictogram(['arm', 'hand', 'leg', 'foot']);
     if (id === 'head-torso') return bodyPictogram(['head', 'neck', 'torso']);
 
-    if (id === "mammals") {
-        return svg(`
-        <ellipse cx="60" cy="88" rx="23" ry="19"
-            fill="#85C7F2" stroke="#245A96" stroke-width="4"/>
-        <ellipse cx="30" cy="59" rx="10" ry="14"
-            fill="#85C7F2" stroke="#245A96" stroke-width="4"
-            transform="rotate(-25 30 59)"/>
-        <ellipse cx="48" cy="43" rx="10" ry="14"
-            fill="#85C7F2" stroke="#245A96" stroke-width="4"
-            transform="rotate(-8 48 43)"/>
-        <ellipse cx="72" cy="43" rx="10" ry="14"
-            fill="#85C7F2" stroke="#245A96" stroke-width="4"
-            transform="rotate(8 72 43)"/>
-        <ellipse cx="90" cy="59" rx="10" ry="14"
-            fill="#85C7F2" stroke="#245A96" stroke-width="4"
-            transform="rotate(25 90 59)"/>
-    `);
-    }
+    /* Categorias com fotos reais: a imagem real do animal dentro do
+       pictograma, no lugar do desenho vetorial. */
+    if (CATEGORY_PHOTOS[id]) {
+        const photo = CATEGORY_PHOTOS[id];
 
-    if (id === "birds") {
         return svg(`
-        <path d="M31 105 C43 80 49 46 91 27
-            C91 69 72 97 31 105 Z"
-            fill="#85C7F2" stroke="#245A96" stroke-width="4"
-            stroke-linejoin="round"/>
-        <path d="M37 99 C52 77 66 58 86 34"
-            fill="none" stroke="#245A96" stroke-width="4"
-            stroke-linecap="round"/>
-        <path d="M49 82 L43 58 M61 68 L66 45 M48 84 L72 86"
-            fill="none" stroke="#245A96" stroke-width="3"
-            stroke-linecap="round"/>
-    `);
+            <image href="${photo}" xlink:href="${photo}" x="6" y="18" width="108" height="108" preserveAspectRatio="xMidYMid meet"/>
+        `);
     }
 
     const drawings = {
-        birds: '<ellipse cx="57" cy="80" rx="34" ry="25" fill="#f0c34a"/><circle cx="82" cy="49" r="18" fill="#f0c34a"/><path d="M98 48 L115 55 L98 61" fill="#cb691a"/><path d="M29 77 L9 58 L17 88 M48 104 L45 123 M65 104 L69 123" stroke="#825224" stroke-width="5" fill="none"/><path d="M41 76 Q64 61 72 86 Q52 98 41 76" fill="#cc9c2a"/><circle cx="85" cy="45" r="3" fill="#17243c"/>',
-        mammals: '<path d="M27 68 L14 41 L41 54 M79 54 L106 41 L93 69" fill="#b78759" stroke="#825224" stroke-width="3"/><rect x="28" y="48" width="64" height="72" rx="28" fill="#d4ad7d"/><ellipse cx="60" cy="98" rx="26" ry="18" fill="#efdbc0"/><circle cx="44" cy="76" r="4"/><circle cx="76" cy="76" r="4"/><ellipse cx="60" cy="94" rx="7" ry="5" fill="#513a2b"/>',
         fruit: '<path d="M60 48 C18 15 7 85 39 116 Q60 125 62 117 Q94 127 105 80 C117 29 79 26 60 48" fill="#dc5151" stroke="#9b3030" stroke-width="3"/><path d="M60 47 Q55 24 65 14" stroke="#825224" stroke-width="6" fill="none"/><path d="M65 28 Q95 2 99 24 Q86 39 65 28" fill="#37824c"/>',
         vegetables: '<path d="M33 50 Q62 28 86 53 L44 125 Z" fill="#ed942c" stroke="#a45c16" stroke-width="3"/><path d="M55 43 L36 12 M63 40 L69 7 M72 43 L95 18" stroke="#37824c" stroke-width="8" stroke-linecap="round"/><path d="M43 66 L62 73 M48 88 L60 93" stroke="#a45c16" stroke-width="4"/>',
         'positive-feelings': '<circle cx="60" cy="70" r="38" fill="#ffd54f" stroke="#ffb300" stroke-width="4"/><circle cx="48" cy="62" r="5" fill="#2d3748"/><circle cx="72" cy="62" r="5" fill="#2d3748"/><path d="M44 78 Q60 98 76 78" stroke="#2d3748" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M60 18 L64 28 L74 30 L66 37 L69 47 L60 41 L51 47 L54 37 L46 30 L56 28 Z" fill="#ffb300"/>',

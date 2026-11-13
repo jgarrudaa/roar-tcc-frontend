@@ -738,19 +738,19 @@ function getMockModulePayload(moduleId, student) {
             ],
             atividades: [
                 {
-                    atividade_id: 1, ordem_sequencia: 1, tipo_interacao: "recognize", palavra_chave: "HEAD",
+                    atividade_id: 1, ordem_sequencia: 1, tipo_interacao: "tap", palavra_chave: "HEAD",
                     instrucao_lex: "Toque na imagem: cabeça.", resposta_correta: "HEAD"
                 },
                 {
-                    atividade_id: 2, ordem_sequencia: 2, tipo_interacao: "associate", palavra_chave: "ARM",
+                    atividade_id: 2, ordem_sequencia: 2, tipo_interacao: "associacao", palavra_chave: "ARM",
                     instrucao_lex: "Observe a imagem. Escolha a palavra correta.", resposta_correta: "ARM"
                 },
                 {
-                    atividade_id: 3, ordem_sequencia: 3, tipo_interacao: "validate", palavra_chave: "BELLY",
+                    atividade_id: 3, ordem_sequencia: 3, tipo_interacao: "multiplaescolha", palavra_chave: "BELLY",
                     instrucao_lex: "Ouça a palavra em inglês e escolha a imagem correta.", resposta_correta: "BELLY"
                 },
                 {
-                    atividade_id: 4, ordem_sequencia: 4, tipo_interacao: "shadowPuzzle", palavra_chave: "LEG",
+                    atividade_id: 4, ordem_sequencia: 4, tipo_interacao: "arrastarsombra", palavra_chave: "LEG",
                     instrucao_lex: "Encaixe a imagem na sombra correspondente.", resposta_correta: "LEG"
                 },
             ],
@@ -790,15 +790,15 @@ function getMockModulePayload(moduleId, student) {
             ],
             atividades: [
                 {
-                    atividade_id: 21, ordem_sequencia: 1, tipo_interacao: "recognize", palavra_chave: "COW",
+                    atividade_id: 21, ordem_sequencia: 1, tipo_interacao: "tap", palavra_chave: "COW",
                     instrucao_lex: "Toque na imagem: vaca.", resposta_correta: "COW"
                 },
                 {
-                    atividade_id: 22, ordem_sequencia: 2, tipo_interacao: "associate", palavra_chave: "HORSE",
+                    atividade_id: 22, ordem_sequencia: 2, tipo_interacao: "associacao", palavra_chave: "HORSE",
                     instrucao_lex: "Observe a imagem. Escolha a palavra correta.", resposta_correta: "HORSE"
                 },
                 {
-                    atividade_id: 23, ordem_sequencia: 3, tipo_interacao: "validate", palavra_chave: "PIG",
+                    atividade_id: 23, ordem_sequencia: 3, tipo_interacao: "multiplaescolha", palavra_chave: "PIG",
                     instrucao_lex: "Ouça a palavra em inglês e escolha a imagem correta.", resposta_correta: "PIG"
                 },
             ],
@@ -843,19 +843,19 @@ function getMockModulePayload(moduleId, student) {
             ],
             atividades: [
                 {
-                    atividade_id: 31, ordem_sequencia: 1, tipo_interacao: "recognize", palavra_chave: "RED",
+                    atividade_id: 31, ordem_sequencia: 1, tipo_interacao: "tap", palavra_chave: "RED",
                     instrucao_lex: "Toque na cor: vermelho.", resposta_correta: "RED"
                 },
                 {
-                    atividade_id: 32, ordem_sequencia: 2, tipo_interacao: "associate", palavra_chave: "BLUE",
+                    atividade_id: 32, ordem_sequencia: 2, tipo_interacao: "associacao", palavra_chave: "BLUE",
                     instrucao_lex: "Observe a cor. Escolha a palavra correta.", resposta_correta: "BLUE"
                 },
                 {
-                    atividade_id: 33, ordem_sequencia: 3, tipo_interacao: "validate", palavra_chave: "GREEN",
+                    atividade_id: 33, ordem_sequencia: 3, tipo_interacao: "multiplaescolha", palavra_chave: "GREEN",
                     instrucao_lex: "Ouça a palavra em inglês e escolha a cor correta.", resposta_correta: "GREEN"
                 },
                 {
-                    atividade_id: 34, ordem_sequencia: 4, tipo_interacao: "memory", palavra_chave: "YELLOW",
+                    atividade_id: 34, ordem_sequencia: 4, tipo_interacao: "memoria", palavra_chave: "YELLOW",
                     instrucao_lex: "Encontre os pares das cores.", resposta_correta: "YELLOW"
                 },
             ],
