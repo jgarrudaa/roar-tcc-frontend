@@ -2606,7 +2606,7 @@ canvas {
    O h1 sai do cabeçalho e abre o conteúdo; na barra ficam apenas
    menu, notificações e perfil.
    ============================================================ */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     /* Evita piscar o título na barra antes do JS reposicionar. */
     .navbar .navbar__page-title {
         display: none;

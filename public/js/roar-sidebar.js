@@ -12,7 +12,8 @@ function initResponsivePageTitle() {
 
     /* No celular o cabeçalho fica só com menu, notificações e perfil;
        o título desce para o topo do conteúdo. */
-    const mobileTitle = window.matchMedia("(max-width: 768px)");
+    /* Celulares e tablets (até 1024px): o título desce para o conteúdo. */
+    const mobileTitle = window.matchMedia("(max-width: 1024px)");
     const originalParent = titleBlock.parentNode;
     const originalNextSibling = titleBlock.nextSibling;
 
