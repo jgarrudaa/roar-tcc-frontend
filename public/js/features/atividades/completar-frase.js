@@ -86,6 +86,13 @@ export function createCompleteSentenceActivity(
 
     const item = activity.item;
 
+    const correctItem =
+        module.items.find(
+            moduleItem =>
+                normalizeAnswer(moduleItem.en) ===
+                getCorrectAnswer(activity),
+        ) || item;
+
     let resolved = false;
 
 
@@ -106,10 +113,14 @@ export function createCompleteSentenceActivity(
 
 
     function handleImageClick() {
-        speakWord(item.en);
+        const inicioDaFrase = String(
+            activity.sentenceTemplate || "",
+        ).split("___")[0].trim();
+
+        speakWord(inicioDaFrase || item.en);
 
         elements.setMessage(
-            "Ouça a palavra. Depois, complete a frase.",
+            "Ouça a frase. Depois, complete com a cor correta.",
         );
     }
 
@@ -161,8 +172,12 @@ export function createCompleteSentenceActivity(
                 ),
             );
 
+            const fraseCompleta = String(
+                activity.sentenceTemplate || "This is my ___.",
+            ).replace("___", correctAnswer);
+
             elements.setMessage(
-                `Muito bem! A frase é: This is my ${item.en}.`,
+                `Muito bem! A frase é: ${fraseCompleta}`,
             );
 
             elements.setProgress(
@@ -173,7 +188,7 @@ export function createCompleteSentenceActivity(
             elements.nextButton.disabled =
                 false;
 
-            onCorrect(item);
+            onCorrect(correctItem);
 
             return;
         }
@@ -189,7 +204,7 @@ export function createCompleteSentenceActivity(
             ),
         );
 
-        onWrong(item);
+        onWrong(correctItem);
 
         lifecycle.timeout(
             () => {
@@ -203,77 +218,68 @@ export function createCompleteSentenceActivity(
 
 
     function createPromptButton() {
-        const button =
-            document.createElement("button");
+        const button = document.createElement("button");
 
-        const image =
-            createImage(
-                item,
-                student.supportLevel,
-            );
+        const promptItem = activity.promptImage
+            ? {
+                ...item,
+                realImage: activity.promptImage,
+                vectorImage: activity.promptImage,
+            }
+            : item;
+
+        const image = createImage(
+            promptItem,
+            student.supportLevel,
+        );
 
         button.type = "button";
-
-        button.className =
-            "complete-sentence-image";
-
-        button.title =
-            "Clique para ouvir a palavra";
+        button.className = "complete-sentence-image";
+        button.title = "Clique para ouvir a palavra";
 
         button.setAttribute(
             "aria-label",
-            (
-                "Imagem da atividade. " +
-                "Clique para ouvir a palavra."
-            ),
+            "Imagem da atividade. Clique para ouvir a palavra.",
         );
 
-        image.alt =
-            `Imagem de ${item.pt}`;
+        image.alt = activity.promptImage
+            ? "Imagem de apoio para completar a frase."
+            : `Imagem de ${item.pt}`;
 
         button.append(image);
 
-        lifecycle.listen(button,
-            "click",
-            handleImageClick,
-        );
+        lifecycle.listen(button, "click", handleImageClick);
 
         return button;
     }
 
 
-    function createSentence() {
-        const sentence =
-            document.createElement("p");
+    function createSentence(template) {
+        const sentence = document.createElement("p");
+        const blank = document.createElement("span");
+        const marker = "___";
+        const phrase = String(template || "This is my ___.");
+        const markerIndex = phrase.indexOf(marker);
 
-        const blank =
-            document.createElement("span");
+        sentence.className = "complete-sentence-text";
+        blank.className = "complete-sentence-blank";
+        blank.textContent = "_____";
 
-        sentence.className =
-            "complete-sentence-text";
+        if (markerIndex < 0) {
+            sentence.textContent = phrase;
+            sentence.append(document.createTextNode(" "));
+            sentence.append(blank);
+        } else {
+            sentence.append(
+                document.createTextNode(phrase.slice(0, markerIndex)),
+                blank,
+                document.createTextNode(
+                    phrase.slice(markerIndex + marker.length),
+                ),
+            );
+        }
 
-        blank.className =
-            "complete-sentence-blank";
-
-        blank.textContent =
-            "_____";
-
-        sentence.append(
-            document.createTextNode(
-                "This is my ",
-            ),
-
-            blank,
-
-            document.createTextNode(
-                ".",
-            ),
-        );
-
-        return {
-            sentence,
-            blank,
-        };
+        return { sentence, blank };
     }
 
 
@@ -298,10 +304,11 @@ export function createCompleteSentenceActivity(
         const optionsContainer =
             document.createElement("div");
 
-        const {
-            sentence,
-            blank,
-        } = createSentence();
+        const { sentence, blank } = createSentence(
+            activity.sentenceTemplate,
+        );
+
+
 
         content.className =
             (
@@ -329,12 +336,10 @@ export function createCompleteSentenceActivity(
             sentence,
         );
 
-        const options =
-            createOptions(
-                item,
-                module.items,
-            );
-
+        const options = createOptions(
+            correctItem,
+            module.items,
+        );
         options.forEach(
             (option) => {
                 const button =
