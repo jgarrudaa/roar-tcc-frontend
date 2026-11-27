@@ -1,7 +1,7 @@
 import { showToast } from "../../components/toast.js";
 import { createActivityController } from "../../features/atividades/atividade-controller.js?v=6";
 import { renderModuleCompletion } from "../../features/atividades/module-completion.js?v=1";
-import { atividadeService } from "../../services/atividade-service.js?v=2";
+import { atividadeService } from "../../services/atividade-service.js?v=3";
 import { activityProgressService, activityFingerprint } from "../../services/activity-progress-service.js?v=2";
 
 
@@ -246,7 +246,29 @@ async function openStage(
     }
     try {
         if (!moduleContext) {
-            const loaded = await atividadeService.loadModuleContext(moduleId);
+            let loaded;
+            try {
+                loaded = await atividadeService.loadModuleContext(
+                    moduleId,
+                    targetStage,
+                );
+            } catch (error) {
+                if (error?.code !== "ACTIVITY_LOCKED") {
+                    throw error;
+                }
+
+                const unlockedStage = Number(
+                    error.details?.proxima_etapa,
+                );
+                if (!Number.isInteger(unlockedStage) || unlockedStage <= 0) {
+                    throw error;
+                }
+                loaded = await atividadeService.loadModuleContext(
+                    moduleId,
+                    unlockedStage,
+                );
+                targetStage = unlockedStage;
+            }
             if (!requestIsCurrent(requestId)) return false;
             moduleContext = loaded;
         }

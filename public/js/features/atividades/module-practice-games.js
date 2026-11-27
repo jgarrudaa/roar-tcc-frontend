@@ -29,6 +29,12 @@ function createPracticeActivity(context, kind) {
             ["birds", "mammals"].includes(group.id)
         );
 
+    const isBodyPartClassification =
+        kind === "categories" &&
+        ["limbs", "head-torso"].every(groupId =>
+            activity.groups?.some(group => group.id === groupId)
+        );
+
     const classifiedAnimalsByGroup = new Map(
         (activity.groups || []).map(group => [group.id, []])
     );
@@ -149,13 +155,30 @@ function createPracticeActivity(context, kind) {
         caption.textContent = round.item.en;
         const illustration = document.createElement("span");
         illustration.className = "practice-illustration";
-        illustration.append(image);
-        const highlight = armHighlight(image.src);
-        if (highlight && context.gameSettings?.showHints !== false) illustration.append(highlight);
-        const bodyGuide = isLeg ? null : itemPictogram(round.item.en);
-        if (bodyGuide && context.gameSettings?.showHints !== false) {
-            bodyGuide.classList.add("practice-body-guide");
-            illustration.append(bodyGuide);
+        const bodyGuide = itemPictogram(round.item.en);
+        let promptPresentation = null;
+
+        if (isBodyPartClassification && bodyGuide && context.gameSettings?.showHints !== false) {
+            card.classList.add("practice-card--body-reference");
+            illustration.append(image);
+            const highlight = armHighlight(image.src);
+            if (highlight) illustration.append(highlight);
+            promptPresentation = document.createElement("div");
+            promptPresentation.className = "practice-body-prompt-layout";
+            const reference = document.createElement("span");
+            reference.className = "practice-body-reference";
+            reference.setAttribute("aria-hidden", "true");
+            bodyGuide.classList.add("practice-body-reference-map");
+            reference.append(bodyGuide);
+            promptPresentation.append(card, reference);
+        } else {
+            illustration.append(image);
+            const highlight = armHighlight(image.src);
+            if (highlight && context.gameSettings?.showHints !== false) illustration.append(highlight);
+            if (bodyGuide && context.gameSettings?.showHints !== false) {
+                bodyGuide.classList.add("practice-body-guide");
+                illustration.append(bodyGuide);
+            }
         }
         card.append(illustration, caption);
         lifecycle.listen(card, "click", () => {
@@ -182,7 +205,11 @@ function createPracticeActivity(context, kind) {
                 `Arraste o cartão ${round.destination === "in" ? "para dentro da caixa" : "para cima da mesa"}. Ou selecione o cartão e depois o destino.`;
         const choices = document.createElement("div");
         choices.className = "practice-choices";
-        const options = kind === "categories" ? shuffle(activity.groups) : [
+        // Keep category buttons in the same positions through every round.
+        // Predictable placement reduces extra visual search between questions.
+        const options = kind === "categories"
+            ? isBodyPartClassification ? activity.groups : shuffle(activity.groups)
+            : [
             { id: "in", en: "In the box", pt: "Dentro da caixa" },
             { id: "on", en: "On the table", pt: "Sobre a mesa" },
         ];
@@ -192,8 +219,6 @@ function createPracticeActivity(context, kind) {
             optionContainer.className = "practice-option";
             const button = createButton("", "practice-choice");
             button.dataset.choice = option.id;
-            button.setAttribute("aria-label", option.en);
-            button.lang = "en";
             if (kind === "scene") {
                 button.classList.add("practice-drop-target");
                 const place = document.createElement("span");
@@ -205,6 +230,7 @@ function createPracticeActivity(context, kind) {
                 button.append(categoryPictogram(option.id));
             }
             const english = document.createElement("strong");
+            english.lang = "en";
             english.textContent = option.en;
 
             const placedItem = dragToCategory
@@ -231,12 +257,15 @@ function createPracticeActivity(context, kind) {
             }
 
             button.append(english);
-            if (isAnimalClassification) {
+            if ((isBodyPartClassification || isAnimalClassification) && !dragToCategory && option.pt) {
                 const translation = document.createElement("span");
                 translation.className = "practice-category-translation";
+                translation.lang = "pt-BR";
                 translation.textContent = option.pt;
                 button.append(translation);
+            }
 
+            if (isAnimalClassification) {
                 const animalTray = document.createElement("span");
                 animalTray.className = "practice-classified-animals";
                 animalTray.setAttribute("aria-label", `${option.pt} classificados`);
@@ -262,7 +291,9 @@ function createPracticeActivity(context, kind) {
                 if (!correct) {
                     if (requiresCardSelection) selectCard(false);
                     button.classList.add("is-wrong");
-                    elements.setMessage("Vamos tentar de novo, com calma. Você pode ouvir a instrução novamente.");
+                    elements.setMessage(isBodyPartClassification
+                        ? "Quase. Observe o esquema do corpo e tente novamente. Você pode ouvir a palavra de novo."
+                        : "Vamos tentar de novo, com calma. Você pode ouvir a instrução novamente.");
                     onWrong(round.item);
                     lifecycle.timeout(() => button.classList.remove("is-wrong"), 650);
                     return;
@@ -315,7 +346,10 @@ function createPracticeActivity(context, kind) {
                 }
                 completed = index === rounds.length - 1;
                 elements.setProgress(index + 1, rounds.length);
-                elements.setMessage(completed ? "Muito bem! Você completou o jogo." : "Isso! Você encontrou o lugar certo.");
+                const categoryFeedback = isBodyPartClassification
+                    ? `Isso! ${round.item.en} pertence a ${option.en}${option.pt ? ` (${option.pt.toLocaleLowerCase("pt-BR")})` : ""}.`
+                    : "Isso! Você encontrou o lugar certo.";
+                elements.setMessage(completed ? "Muito bem! Você completou o jogo." : categoryFeedback);
                 elements.nextButton.disabled = false;
                 elements.nextButton.focus?.({ preventScroll: true });
                 context.onStateChange?.();
@@ -327,7 +361,7 @@ function createPracticeActivity(context, kind) {
             optionContainer.append(button);
             choices.append(optionContainer);
         });
-        content.append(card, choices);
+        content.append(promptPresentation || card, choices);
         elements.stage.replaceChildren(content);
         if (requiresCardSelection) {
             dragController = createSceneDrag({

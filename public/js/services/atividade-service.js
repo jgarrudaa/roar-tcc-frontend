@@ -1,5 +1,5 @@
 import { alunosApi } from "../api/alunos-api.js";
-import { atividadesApi } from "../api/atividades-api.js";
+import { atividadesApi } from "../api/atividades-api.js?v=3";
 import { gameSettingsService } from "./game-settings-service.js";
 
 const LEARNING_MODES = Object.freeze({
@@ -886,7 +886,7 @@ function getMockModulePayload(moduleId, student) {
     return null;
 }
 
-async function loadModuleContext(moduleId) {
+async function loadModuleContext(moduleId, requestedStage = null) {
     const validModuleId = resolveModuleId(moduleId);
 
     const [profile, gameSettings] = await Promise.all([alunosApi.getCurrent(), gameSettingsService.getCurrent()]);
@@ -897,10 +897,14 @@ async function loadModuleContext(moduleId) {
         payload = await atividadesApi.getModuleForStudent(
             validModuleId,
             student.id,
+            requestedStage,
         );
         validatePayload(payload);
         validatePayloadStudent(payload, student);
     } catch (apiError) {
+        if (apiError?.code === "ACTIVITY_LOCKED") {
+            throw apiError;
+        }
         payload = getMockModulePayload(validModuleId, student);
         if (!payload) {
             throw apiError;
@@ -955,8 +959,8 @@ export const atividadeService = Object.freeze({
         return normalizeStudent(await alunosApi.getCurrent());
     },
 
-    async loadModuleContext(moduleId) {
-        return loadModuleContext(moduleId);
+    async loadModuleContext(moduleId, requestedStage = null) {
+        return loadModuleContext(moduleId, requestedStage);
     },
 
     getActivityContext(moduleContext, stage) {
@@ -964,7 +968,7 @@ export const atividadeService = Object.freeze({
     },
 
     async getContext(moduleId, stage) {
-        const moduleContext = await loadModuleContext(moduleId);
+        const moduleContext = await loadModuleContext(moduleId, stage);
         return createActivityContext(moduleContext, stage);
     },
 

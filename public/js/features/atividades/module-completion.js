@@ -21,7 +21,7 @@ export function renderModuleCompletion({ module, elements }) {
     elements.title.textContent = module?.title || "Módulo concluído";
     elements.setInstruction("Confira as palavras que você praticou neste módulo.");
     elements.setMessage(words.length
-        ? `Muito bem! Você praticou ${words.length} ${words.length === 1 ? "palavra" : "palavras"}. Toque para ouvir de novo.`
+        ? `Módulo concluído! Você praticou ${words.length} ${words.length === 1 ? "palavra" : "palavras"}.`
         : "Muito bem! Você concluiu este módulo.");
     elements.nextButton.hidden = true;
     elements.nextButton.disabled = true;
@@ -43,7 +43,7 @@ export function renderModuleCompletion({ module, elements }) {
     heading.id = "module-completion-title";
     heading.tabIndex = -1;
     const description = makeElement("p", "module-completion__description",
-        `Estas são as palavras do módulo ${module?.title || ""}. Você pode ouvir cada uma quantas vezes quiser.`);
+        `Você praticou ${words.length} ${words.length === 1 ? "palavra" : "palavras"} no módulo ${module?.title || ""}. Toque em uma palavra para ouvir novamente.`);
 
     const wordList = makeElement("ul", "module-completion__words");
     wordList.setAttribute("aria-label", `Palavras do módulo ${module?.title || ""}`);
@@ -88,10 +88,10 @@ export function renderModuleCompletion({ module, elements }) {
 
     const backToModules = makeElement("a", "module-completion__back", "Voltar aos módulos");
     backToModules.href = "atividades.html";
-    actions.append(listenAll, backToModules);
+    actions.append(backToModules, listenAll);
 
     const helper = makeElement("p", "module-completion__helper",
-        "Você pode voltar a este módulo para praticar novamente.");
+        "Você pode ouvir as palavras novamente quando quiser.");
 
     panel.append(badge, heading, description);
     if (words.length) panel.append(wordList);

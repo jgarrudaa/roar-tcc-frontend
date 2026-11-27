@@ -18,7 +18,7 @@
 
     <link rel="stylesheet" href="../../public/css/components/feedback.css">
 
-    <link rel="stylesheet" href="../../public/css/pages/pages-professor-inicio.css?v=2">
+    <link rel="stylesheet" href="../../public/css/pages/pages-professor-inicio.css?v=3">
 </head>
 
 <body class="teacher-area" data-auth-role="teacher">
@@ -37,7 +37,7 @@
                 </button>
             </div>
 
-            <nav class="sidebar__nav" aria-label="Navegação do professor">
+            <nav class="sidebar__nav" aria-label="Navegação do professor" data-tour="menu">
                 <a href="inicio.html" class="sidebar__link active" aria-current="page">
                     <i class="fi fi-br-home" aria-hidden="true"></i>
                     <span>Início</span>
@@ -90,7 +90,8 @@
                 </div>
 
                 <div class="navbar__right u-pages-professor-inicio-001">
-                    <a href="cadastro-aluno.html" class="btn btn--primary u-pages-professor-inicio-003">
+                    <a href="cadastro-aluno.html" class="btn btn--primary u-pages-professor-inicio-003"
+                        data-tour="novo-aluno">
                         <i class="fi fi-br-plus u-pages-professor-inicio-004" aria-hidden="true"></i>
                         Novo aluno
                     </a>
@@ -103,7 +104,8 @@
             </header>
 
             <main class="page-body fade-in">
-                <section class="grid-4 u-pages-professor-inicio-008" aria-label="Estatísticas da turma">
+                <section class="grid-4 u-pages-professor-inicio-008" aria-label="Estatísticas da turma"
+                    data-tour="indicadores">
                     <article class="stat-card">
                         <div class="stat-card__icon u-pages-professor-inicio-009">
                             <i class="fi fi-br-users" aria-hidden="true"></i>
@@ -170,7 +172,7 @@
                 </section>
 
                 <section class="grid-2 u-pages-professor-inicio-008">
-                    <article class="card">
+                    <article class="card" data-tour="lista-alunos">
                         <div class="section-header mb-md">
                             <h2>
                                 Alunos e níveis de suporte
@@ -186,7 +188,7 @@
                         </div>
                     </article>
 
-                    <article class="card">
+                    <article class="card" data-tour="atencao">
                         <div class="section-header mb-md">
                             <h2>
                                 Precisam de atenção
@@ -236,7 +238,7 @@
                         <div id="histList" aria-live="polite"></div>
                     </article>
 
-                    <article class="card u-pages-professor-inicio-015">
+                    <article class="card u-pages-professor-inicio-015" data-tour="relatorios">
                         <div class="section-header mb-md">
                             <h2>
                                 Relatório pedagógico
@@ -296,6 +298,36 @@
         </div>
     </div>
 
+
+    <div id="professorTour" class="tour" hidden>
+        <div class="tour__card" role="dialog" aria-modal="true" aria-labelledby="tourTitle" aria-describedby="tourText">
+            <div class="tour__content">
+                <img class="tour__mascot" src="../../public/assets/imagens/dino-guia-apontando.png"
+                    alt="Mascote Lex apontando para a etapa destacada.">
+                <div class="tour__copy">
+                    <p id="tourStep" class="tour__step"></p>
+                    <h2 id="tourTitle"></h2>
+                    <p id="tourText"></p>
+                </div>
+            </div>
+
+            <div class="tour__actions">
+                <button id="tourSkip" class="btn btn--secondary" type="button">
+                    Pular guia
+                </button>
+
+                <div class="tour__navigation">
+                    <button id="tourPrevious" class="btn btn--secondary" type="button">
+                        Anterior
+                    </button>
+                    <button id="tourNext" class="btn btn--primary" type="button">
+                        Próximo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="toast-container"></div>
 
     <script src="../../public/js/roar-page-transition.js"></script>
@@ -303,6 +335,8 @@
     <script type="module" src="../../public/js/pages/auth/route-guard.js"></script>
 
     <script type="module" src="../../public/js/roar-sidebar.js?v=4"></script>
+
+    <script type="module" src="../../public/js/pages/professor/onboarding-professor.js"></script>
 
     <script src="../../public/js/roar-theme.js"></script>
 

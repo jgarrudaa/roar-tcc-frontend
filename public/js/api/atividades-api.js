@@ -27,7 +27,7 @@ function requireObject(value, fieldName) {
 }
 
 export const atividadesApi = Object.freeze({
-    getModuleForStudent(moduleId, studentId) {
+    getModuleForStudent(moduleId, studentId, stage = null) {
         const validModuleId = requirePositiveInteger(
             moduleId,
             "moduleId",
@@ -38,9 +38,14 @@ export const atividadesApi = Object.freeze({
             "studentId",
         );
 
-        return apiClient.get(
-            `/atividades/modulo/${validModuleId}/aluno/${validStudentId}`,
-        );
+        const query = stage === null || stage === undefined
+            ? ""
+            : "?etapa=" + requirePositiveInteger(stage, "stage");
+        const endpoint =
+            "/atividades/modulo/" + validModuleId +
+            "/aluno/" + validStudentId + query;
+
+        return apiClient.get(endpoint);
     },
 
     saveProgress(progressData) {

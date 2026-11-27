@@ -3467,10 +3467,18 @@
 
     .shadow-puzzle-pieces {
         width: min(100%, 440px);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
     }
 
     .shadow-puzzle-piece {
         height: clamp(120px, 19vh, 170px);
+    }
+
+    .shadow-puzzle-piece-label {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        font-size: clamp(0.75rem, 3.4vw, 0.9rem);
     }
 }
 

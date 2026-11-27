@@ -177,6 +177,46 @@
     font-weight: 700;
 }
 
+.practice-body-prompt-layout {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.practice-card--body-reference {
+    width: min(220px, calc(100% - 86px));
+    min-height: 220px;
+    margin: 0;
+    justify-items: center;
+    align-content: center;
+}
+
+.practice-card--body-reference .practice-word {
+    width: 100%;
+    text-align: center;
+}
+
+.practice-body-reference {
+    position: absolute;
+    top: 10px;
+    left: calc(50% + 120px);
+    display: grid;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    flex: 0 0 76px;
+    border: 2px solid #688ab8;
+    border-radius: 10px;
+    background: var(--roar-surface, #fff);
+}
+
+.practice-body-reference .practice-body-reference-map {
+    display: block;
+    width: 58px;
+    height: 66px;
+}
+
 .practice-draggable {
     cursor: grab;
     touch-action: none;
@@ -470,6 +510,25 @@
 
     .practice-card .prompt-image {
         height: 100px;
+    }
+
+    .practice-card--body-reference {
+        width: min(180px, max(136px, calc(100% - 152px)));
+        min-height: 200px;
+    }
+
+    .practice-body-reference {
+        top: 8px;
+        right: 0;
+        left: auto;
+        width: 68px;
+        height: 68px;
+        flex-basis: 68px;
+    }
+
+    .practice-body-reference .practice-body-reference-map {
+        width: 52px;
+        height: 60px;
     }
 }
 

@@ -562,15 +562,20 @@
 }
 
 .dino-card[data-rarity="epico"] .dino-card__rarity {
-    background: rgba(36, 77, 140, 0.14);
-    color: var(--c-blue-dark);
+    background: rgba(117, 36, 140, 0.14);
+    color: purple;
 }
 
-.dino-card[data-rarity="lendario"] .dino-card__rarity,
-.dino-card[data-rarity="mitico"] .dino-card__rarity {
+.dino-card[data-rarity="lendario"] .dino-card__rarity{
     background: rgba(245, 158, 11, 0.14);
     color: #b45309;
 }
+
+.dino-card[data-rarity="mitico"] .dino-card__rarity {
+    background: rgba(245, 11, 11, 0.14);
+    color: #b40909;
+}
+
 
 .dino-card__price-pill {
     display: inline-flex;
